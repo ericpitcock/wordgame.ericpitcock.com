@@ -11,51 +11,89 @@
                 padding: 100px;
                 text-align: center;
             }
+            .word-palette{
+                width: 100%;
+                height: auto;
+                min-height: 100px;
+                margin-bottom: 40px;
+            }
+            .letter-box {
+                float: left;
+                margin-right: 10px;
+                width: 80px;
+                height: 98px;
+                border: 1px solid black;
+            }
             input {
                 width: 100%;
                 height: 60px;
                 text-align: center;
                 font-size: 40px;
             }
+            h3 {
+                position: absolute;
+                bottom: 20px;
+            }
         </style>
     </head>
     <body>
         
-        <h1 class="test"></h1>
         <h1>Guess the word</h1>
+        <div class="word-palette"></div>
         <input type="text" placeholder="" />
+        <!-- <h3>The secret word is: </h3> -->
         
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
         <script>
-            var secretWord;
+            // get secret word
+            $.ajax({
+                type: "GET",
+                url: "http://randomword.setgetgo.com/get.php",
+                dataType: "jsonp",
+                jsonpCallback: "runGuessTheWord"
+            });
             
-            // get random word
-            function getRandomWord() {
-                var requestStr = "http://randomword.setgetgo.com/get.php";
-        
-                $.ajax({
-                    type: "GET",
-                    url: requestStr,
-                    dataType: "jsonp",
-                    jsonpCallback: "processRandomWord"
-                });
-            }
-            // do stuff to the random word
-            function processRandomWord(data) {
-                var secretWord = data.Word;
-                var characterCount = data.Word.length - 2;
-                $("input").attr("placeholder", characterCount + " characters");
-                $("h1.test").append(secretWord);
+            // run guess the word
+            function runGuessTheWord(data) {
+                // clean the secret word
+                var secretWord = data.Word.replace(/[^a-zA-Z 0-9]+/g, "");
+                console.log(secretWord);
                 
-                $("input").keypress(function() {
-                    console.log(this.value);
-                    if (secretWord.indexOf(this.value) != -1) {
-                        console.log("found");
+                // get character count of secret word
+                var characterCount = secretWord.length;
+                //console.log(characterCount);
+                
+                // output letter boxes
+                for (var i = 0; i < characterCount; i++) {
+                    $(".word-palette").append('<div class="letter-box"></div>');
+                }
+                
+                $("input").attr("placeholder", characterCount + " characters");
+                //$("h3").append(secretWord);
+                
+                var letterArray = [];
+                
+                $("input").keydown(function(e) {
+                    var letter = e.which;
+                    //console.log(e.which);
+                    
+                    // allow only letters
+                    if ((letter >= 58 && letter <= 90) || letter == 8) {
+                        console.log("a letter or delete!");
+                    } else {
+                        e.preventDefault();
+                    }
+                    
+                    if (secretWord.indexOf(e.keyCode) > -1 ) {
+                        // if match, put it in the array
+                        //letterArray.push(this.value);
+                        console.log("match");
                     }
                 });
+            
             }
             
-            getRandomWord();
+            
         </script>
     </body>
 </html>
