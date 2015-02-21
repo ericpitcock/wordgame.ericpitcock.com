@@ -19,8 +19,6 @@ var getSecretWord = (function getSecretWord() {
     return getSecretWord;
 }());
 
-
-
 function processSecretWord(data) {
     secretWord = data.word.toLowerCase();
     characterCount = secretWord.length;
@@ -56,22 +54,21 @@ function processSecretWord(data) {
     for (var index = 0; index < secretWordCharacterArray.length; index++) {
         $(".word-palette")
             .css("width", characterCount * 90 - 10)
-            .append('<div class="letter-box"><input readonly type="text" value="'+secretWordCharacterArray[index]+'" /></div>');
+            .append('<input class="letter-holder" readonly type="text" value="'+secretWordCharacterArray[index]+'" />');
     }
     
     //fill in placeholder shiz
     $("input.guess").attr("placeholder", characterCount + " characters");
 
-    
     $.ajax({
         type: "GET",
         url: "http://api.wordnik.com:80/v4/word.json/"+secretWord+"/definitions?limit=1&partOfSpeech=noun&includeRelated=false&sourceDictionaries=webster&useCanonical=true&includeTags=false&api_key=65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a",
         success: function(data) {
             processDefinition(data);
-            console.log(data);
+            //console.log(secretWord);
         }
     });
-        
+    
     function processDefinition(data) {
         definition = data[0].text;
         $(".definition").append("<p>"+definition+"</p>");
@@ -96,8 +93,9 @@ $("input.guess").keypress(function(e) {
         
         // it's a letter, let's see if it matches
         if (secretWordCharacterArray.indexOf(letter) != -1) {
-            // if match, put it in the array
-            //entryArray.push(this.value);
+            actualLetter = String.fromCharCode(letter);
+            $("input.letter-holder[value="+letter+"]").css("background", "red").val(actualLetter);
+            
             console.log("match");
         } else {
             console.log("NOT match");
@@ -114,7 +112,7 @@ $("input.guess").keypress(function(e) {
 // the refresh button
 $(".skip").click(function() {
     console.clear();
-    // empty all arrays
+    // empty all that shit
     secretWord = "";
     secretWordCharacterArray = [];
     characterCount = "";
@@ -123,5 +121,6 @@ $(".skip").click(function() {
     
     $(".word-palette").empty();
     $("input.guess").val("");
+    $(".definition").empty();
     getSecretWord();
 });
