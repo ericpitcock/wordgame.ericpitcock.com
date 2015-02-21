@@ -94,7 +94,7 @@ $("input.guess").keypress(function(e) {
         //console.log("entryArray: " + entryArray);
         
         // mark the letter as used
-        $("li[data-letter="+actualLetter+"]").css("color", "#ccc");
+        $("li[data-letter="+actualLetter+"]").css("display", "none");
         
         // it's a letter, let's see if it matches
         if (secretWordCharacterArray.indexOf(letter) != -1) {
@@ -125,6 +125,7 @@ $(".skip").click(function() {
     
     $(".word-palette").empty();
     $("input.guess").val("");
+    $(".alphabet li").css("display", "inline-block");
     $(".definition").empty();
     getSecretWord();
 });
