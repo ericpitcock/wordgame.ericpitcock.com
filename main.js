@@ -58,7 +58,8 @@ function processSecretWord(data) {
     }
     
     //fill in placeholder shiz
-    $("input.guess").attr("placeholder", characterCount + " characters");
+    //$("input.guess").attr("placeholder", characterCount + " characters");
+    $(".character-count").html(characterCount + " letters");
 
     $.ajax({
         type: "GET",
@@ -88,14 +89,17 @@ $("input.guess").keypress(function(e) {
     if ((letter >= 97 && letter <= 122) || letter == 127) {
         //console.log("a letter or delete!");
         entryArray.push(letter);
+        actualLetter = String.fromCharCode(letter);
         //console.log("secretWordCharacterArray: " + secretWordCharacterArray);
         //console.log("entryArray: " + entryArray);
         
+        // mark the letter as used
+        $("li[data-letter="+actualLetter+"]").css("color", "#ccc");
+        
         // it's a letter, let's see if it matches
         if (secretWordCharacterArray.indexOf(letter) != -1) {
-            actualLetter = String.fromCharCode(letter);
-            $("input.letter-holder[value="+letter+"]").css("background", "red").val(actualLetter);
             
+            $("input.letter-holder[value="+letter+"]").css("background", "#8dd5bc").val(actualLetter);
             console.log("match");
         } else {
             console.log("NOT match");
