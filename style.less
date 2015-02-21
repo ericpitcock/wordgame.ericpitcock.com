@@ -1,6 +1,9 @@
 @import "../common/reset.less";
 //@import "mixins.less";
 
+@green: #8dd5bc;
+@red : red;
+
 *, *:before, *:after {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -65,9 +68,34 @@ button {
     margin: 20px 0;
     
     li {
+        position: relative;
         margin: auto;
         text-transform: uppercase;
         cursor: pointer;
+        
+        &.letter-used {
+            color: #ccc;
+            cursor: default;
+            
+            &:after {
+                display: block;
+                content: "";
+                position: absolute;
+                top: -2px;
+                right: -8px;
+                width: 5px;
+                height: 5px;
+                border-radius: 3px;
+            }
+            
+            &.in-word:after {
+                background: @green;
+            }
+            
+            &.not-in-word:after {
+                background: @red;
+            }
+        }
     }
 }
 

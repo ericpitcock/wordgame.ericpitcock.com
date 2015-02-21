@@ -22,7 +22,8 @@ function processSecretWord(data) {
     // get the character count of secret word
     characterCount = secretWord.length;
     
-    console.log(secretWord, characterCount);
+    //console.log(secretWord, characterCount);
+    console.log(secretWord);
     
     // container width based on character count
     $(".word-palette").css("width", characterCount * 90 - 10)
@@ -34,7 +35,7 @@ function processSecretWord(data) {
         
         $(".word-palette")
             .css("width", characterCount * 90 - 10)
-            .append('<input class="letter-holder" readonly type="text" value="'+secretWordCharacterArray[index]+'" />');
+            .append('<input class="letter-holder" readonly type="text" value="' + secretWordCharacterArray[index] + '" />');
     }
     
     // display chracter count
@@ -43,56 +44,76 @@ function processSecretWord(data) {
     // get and display definition
     $.ajax({
         type: "GET",
-        url: "http://api.wordnik.com:80/v4/word.json/"+secretWord+"/definitions?limit=1&partOfSpeech=noun&includeRelated=false&sourceDictionaries=webster&useCanonical=true&includeTags=false&api_key=65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a",
+        url: "http://api.wordnik.com:80/v4/word.json/" + secretWord + "/definitions?limit=1&partOfSpeech=noun&includeRelated=false&sourceDictionaries=webster&useCanonical=true&includeTags=false&api_key=65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a",
         success: function(data) {
-            console.log(data);
+            //console.log(data);
             definition = data[0].text;
-            $(".definition").append("<p>"+definition+"</p>");
+            $(".definition").append("<p>" + definition + "</p>");
         }
     });
 }
 
-// do all types of shiz when the typing begins
+// when a key is pressed
 $(document).keypress(function(e) {
     // get letter pressed
-    var letter = e.which;
+    var characterCode = e.which;
     
     // first, make sure it's a letter
-    if ((letter >= 97 && letter <= 122) || letter == 127) {
+    if ((characterCode >= 97 && characterCode <= 122) || characterCode == 127) {
         // run letterMatcher
-        letterMatcher(letter);
+        letterMatcher(characterCode);
     } else {
         // do nah
         e.preventDefault();
     }
 });
 
-function letterMatcher(letter) {
-    entryArray.push(letter);
-    actualLetter = String.fromCharCode(letter);
+// when a letter is clicked
+$(".alphabet li").click(function(e) {
+    // if it's aleady been used, do nah
+    if ($(this).hasClass("letter-used") ) {
+        return false;
+    } else {
+        // convert letter to character code and run letterMatcher
+        letterMatcher($(this).data("character-code"));
+        // add used class
+        //$(this).addClass("letter-used");
+    }
+})
+
+function letterMatcher(characterCode) {
+    // letterMatcher works with character codes, let's convert it to the actual letter
+    actualLetter = String.fromCharCode(characterCode);
+    
     //console.log("secretWordCharacterArray: " + secretWordCharacterArray);
     //console.log("entryArray: " + entryArray);
     
     // mark the letter as used
-    $("li[data-letter="+actualLetter+"]").css("color", "#ccc");
+    $("li[data-character-code=" + characterCode + "]").addClass("letter-used");
     
     // it's a letter, let's see if it matches
-    if (secretWordCharacterArray.indexOf(letter) != -1) {
-        
-        $("input.letter-holder[value="+letter+"]").css("background", "#8dd5bc").val(actualLetter);
+    if (secretWordCharacterArray.indexOf(characterCode) != -1) {
+        // if it matches, light up the letter
+        $("input.letter-holder[value=" + characterCode + "]").css("background", "#8dd5bc").val(actualLetter);
+        // and give it a class
+        $("li[data-character-code=" + characterCode + "]").addClass("in-word");
+        entryArray.push(characterCode);
         console.log("match");
     } else {
         console.log("NOT match");
-        //$("body").addClass("error");
+        $("li[data-character-code=" + characterCode + "]").addClass("not-in-word");
     }
+    
+    //console.log("characterCount" + characterCount, "entryArray" + entryArray.length);
+    
+    // check for winner or nah
+    if (characterCount === entryArray.length) {
+        alert("OH SNAP YOU GUESSED THE WORD!");
+    }
+    
 }
 
-$(".alphabet li").click(function(e) {
-    // run letter select
-    //console.log($(this).text() + " was clicked");
-    letterMatcher($(this).text().charCodeAt(0));
-})
-
+// clear display and start again
 function clearEverything() {
     console.clear();
     
@@ -107,7 +128,7 @@ function clearEverything() {
     // and reset all stuffs
     $(".word-palette").empty();
     $("input.guess").val("");
-    $(".alphabet li").css("color", "black");
+    $(".alphabet li").removeClass();
     $(".definition").empty();
     
     $("body").fadeIn(700);
@@ -115,12 +136,12 @@ function clearEverything() {
     
 }
 
-// the refresh button
+// when the refresh button is clicked
 $(".skip").click(function() {
     clearEverything();
 });
 
-// enter key
+// when the enter key is pressed
 $(document).keypress(function(e) {
     if (e.which == 13) {
         clearEverything();    
