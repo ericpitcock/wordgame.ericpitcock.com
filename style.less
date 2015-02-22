@@ -111,8 +111,12 @@ button {
                 background: @green;
             }
             
-            &.unused:after {
-                background: @red;
+            &.unused {
+                top: 10px;
+            
+                &:after {
+                    background: @red;
+                }
             }
         }
     }

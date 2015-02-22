@@ -1,8 +1,58 @@
 var secretWord = "",
     secretWordCharacterArray = [],
+    matchingObject = {},
     characterCount = "",
     definition = "",
-    entryArray = [];
+    entryArray = [],
+    naughtyWords = [
+        "skank",
+        "wetback",
+        "bitch",
+        "cunt",
+        "dick",
+        "douchebag",
+        "dyke",
+        "fag",
+        "nigger",
+        "tranny",
+        "trannies",
+        "paki",
+        "pussy",
+        "retard",
+        "slut",
+        "titt",
+        "tits",
+        "wop",
+        "whore",
+        "chink",
+        "fatass",
+        "shemale",
+        "daygo",
+        "dego",
+        "dago",
+        "gook",
+        "kike",
+        "kraut",
+        "spic",
+        "twat",
+        "lesbo",
+        "homo",
+        "fatso",
+        "lardass",
+        "jap",
+        "biatch",
+        "tard",
+        "gimp",
+        "gyp",
+        "chinaman",
+        "chinamen",
+        "golliwog",
+        "crip",
+        "raghead",
+        "negro",
+        "darky",
+        "hooker"
+    ];
 
 // a reusable, self-executing function to get the secret word
 var getSecretWord = (function getSecretWord() {
@@ -19,38 +69,51 @@ var getSecretWord = (function getSecretWord() {
 function processSecretWord(data) {
     // get secret word from object and make it lowercase
     secretWord = data.word.toLowerCase();
-    // get the character count of secret word
-    characterCount = secretWord.length;
     
-    //console.log(secretWord, characterCount);
-    console.log(secretWord);
+    // also have to check for acented characters
+    //&& (/([a-z])/.test(secretWord) === false)) 
     
-    // container width based on character count
-    $(".word-palette").css("width", characterCount * 90 - 10)
-    
-    // create character code array and letter holders
-    for (var index = 0; index < characterCount; index++) {
-        var charCodes = secretWord.charCodeAt(index);
-        secretWordCharacterArray.push(charCodes);
+    // check if it's naughty or nice
+    if ($.inArray(secretWord, naughtyWords) == -1) {
         
-        $(".word-palette")
-            .css("width", characterCount * 90 - 10)
-            .append('<input class="letter-holder" readonly type="text" value="' + secretWordCharacterArray[index] + '" />');
-    }
-    
-    // display chracter count
-    $(".character-count").html(characterCount + " letters");
-
-    // get and display definition
-    $.ajax({
-        type: "GET",
-        url: "http://api.wordnik.com:80/v4/word.json/" + secretWord + "/definitions?limit=1&partOfSpeech=noun&includeRelated=false&sourceDictionaries=webster&useCanonical=true&includeTags=false&api_key=65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a",
-        success: function(data) {
-            //console.log(data);
-            definition = data[0].text;
-            $(".definition").append("<p>" + definition + "</p>");
+        // get the character count of secret word
+        characterCount = secretWord.length;
+        
+        //console.log(secretWord, characterCount);
+        console.log(secretWord);
+        
+        // container width based on character count
+        $(".word-palette").css("width", characterCount * 90 - 10);
+        
+        // create character code array and letter holders
+        for (var index = 0; index < characterCount; index++) {
+            var charCodes = secretWord.charCodeAt(index);
+            secretWordCharacterArray.push(charCodes);
+            
+            $(".word-palette")
+                .css("width", characterCount * 90 - 10)
+                .append('<input class="letter-holder" readonly type="text" value="' + secretWordCharacterArray[index] + '" />');
         }
-    });
+        
+        // display chracter count
+        $(".character-count").html(characterCount + " letters");
+    
+        // get and display definition
+        $.ajax({
+            type: "GET",
+            url: "http://api.wordnik.com:80/v4/word.json/" + secretWord + "/definitions?limit=1&partOfSpeech=noun&includeRelated=false&sourceDictionaries=webster&useCanonical=true&includeTags=false&api_key=65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a",
+            success: function(data) {
+                //console.log(data);
+                definition = data[0].text;
+                $(".definition").append("<p>" + definition + "</p>");
+            }
+        });
+    
+    } else {
+        // run that shit again
+        console.log("the word was naughty, running again");
+        getSecretWord();
+    }
 }
 
 // when a key is pressed
@@ -79,34 +142,42 @@ $(".alphabet li").click(function(e) {
         // add used class
         //$(this).addClass("letter-selected");
     }
-})
+});
 
 function letterMatcher(characterCode) {
     
-    // mark the letter as used
-    $("li[data-character-code=" + characterCode + "]").addClass("letter-selected");
+    // if it's not already in the array, run the shiz
+    if ($.inArray(characterCode, entryArray) == -1) {
+        
+        // mark the letter as used
+        $("li[data-character-code=" + characterCode + "]").addClass("letter-selected");
+        
+        // now let's decide if it's in the secret word or not
+        if (secretWordCharacterArray.indexOf(characterCode) != -1) {
+            console.log("match");
+            // it's in the secret word, light up the letter
+            $("input.letter-holder[value=" + characterCode + "]").val(String.fromCharCode(characterCode)).addClass("highlight");
+            // and give it a class
+            $("li[data-character-code=" + characterCode + "]").addClass("used");
+            // put it in the array
+            entryArray.push(characterCode);
+            console.log(entryArray);
+        } else {
+            console.log("NOT match");
+            $("li[data-character-code=" + characterCode + "]").addClass("unused");
+        }
+        
+        //console.log("characterCount" + characterCount, "entryArray" + entryArray.length);
+        
+        // check for winner or nah
+        if (entryArray.length === characterCount) {
+            alert("OH SNAP YOU GUESSED THE WORD!");
+        }
     
-    // now let's decide if it's in the secret word or not
-    if (secretWordCharacterArray.indexOf(characterCode) != -1) {
-        // it's in the secret word, light up the letter
-        $("input.letter-holder[value=" + characterCode + "]").val(String.fromCharCode(characterCode)).addClass("highlight");
-        // and give it a class
-        $("li[data-character-code=" + characterCode + "]").addClass("used");
-        // put it in the array
-        entryArray.push(characterCode);
-        //console.log("match");
     } else {
-        //console.log("NOT match");
-        $("li[data-character-code=" + characterCode + "]").addClass("unused");
+        //return false;
+        console.log("match, but already in the array");
     }
-    
-    //console.log("characterCount" + characterCount, "entryArray" + entryArray.length);
-    
-    // check for winner or nah
-    if (entryArray.length === characterCount) {
-        alert("OH SNAP YOU GUESSED THE WORD!");
-    }
-    
 }
 
 // clear display and start again
@@ -119,7 +190,7 @@ function clearEverything() {
     secretWord = "";
     secretWordCharacterArray = [];
     characterCount = "";
-    definition = "",
+    definition = "";
     entryArray = [];
     // and reset all stuffs
     $(".word-palette").empty();
