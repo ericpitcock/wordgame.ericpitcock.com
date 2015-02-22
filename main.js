@@ -191,7 +191,7 @@ function letterMatcher(characterCode) {
 
 // expose the secret word
 function exposeSecretWord() {
-    $("input.letter-holder").each(function() {
+    $("input.letter-holder:not(.highlight)").each(function() {
         $(this).val(String.fromCharCode($(this).val())).addClass("highlight"); 
     })
 }
