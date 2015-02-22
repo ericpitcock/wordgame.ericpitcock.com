@@ -160,13 +160,13 @@ function letterMatcher(characterCode) {
             // and give it a class
             $("li[data-character-code=" + characterCode + "]").addClass("used");
             
-            // it's there, but how many times does it occur
+            // it's there, but how many times does it occur, for each, add it to the entryArray
             var occurrences = secretWord.split(String.fromCharCode(characterCode)).length - 1;
-            console.log("match - that letter appears " + occurrences + " time(s)");
-            
             for (var index = 0; index < occurrences; index++) {
                 entryArray.push(characterCode);
             }
+            
+            console.log("match - that letter appears " + occurrences + " time(s)");
             console.log(entryArray);
         } else {
             console.log("NOT match");
@@ -177,7 +177,11 @@ function letterMatcher(characterCode) {
         
         // check for winner or nah
         if (entryArray.length === characterCount) {
-            alert("OH SNAP YOU GUESSED THE WORD!");
+            if ($("#auto-proceed").prop("checked")) {
+                setTimeout("clearEverything()", 1000);
+            } else {
+                alert("OH SNAP YOU GUESSED THE WORD!");
+            }
         }
     
     } else {
@@ -199,10 +203,10 @@ function clearEverything() {
     definition = "";
     entryArray = [];
     // and reset all stuffs
-    $(".word-palette").empty();
-    $("input.guess").val("");
+    $(".word-palette, .definition").empty();
+    //$("input.guess").val("");
     $(".alphabet li").removeClass();
-    $(".definition").empty();
+    //$(".definition").empty();
     
     $("body").fadeIn(700);
     getSecretWord();
@@ -210,9 +214,23 @@ function clearEverything() {
 }
 
 // when the refresh button is clicked
-$(".skip").click(function() {
+$(".surrender, .proceed").click(function() {
     clearEverything();
 });
+
+/*
+$("#auto-proceed").change(validate);
+
+function validate() {
+    if ($(".file-checkbox").is(":checked")) {
+        $("button.push-internet").prop("disabled", false);
+    } else {
+        $("button.push-internet").prop("disabled", true);
+    }
+}
+validate();
+$(".file-checkbox").change(validate);
+*/
 
 // when the enter key is pressed
 $(document).keypress(function(e) {
