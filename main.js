@@ -1,6 +1,5 @@
 var secretWord = "",
     secretWordCharacterArray = [],
-    matchingObject = {},
     characterCount = "",
     definition = "",
     entryArray = [],
@@ -190,6 +189,13 @@ function letterMatcher(characterCode) {
     }
 }
 
+// expose the secret word
+function exposeSecretWord() {
+    $("input.letter-holder").each(function() {
+        $(this).val(String.fromCharCode($(this).val())).addClass("highlight"); 
+    })
+}
+
 // clear display and start again
 function clearEverything() {
     console.clear();
@@ -214,8 +220,12 @@ function clearEverything() {
 }
 
 // when the refresh button is clicked
-$(".surrender, .proceed").click(function() {
+$(".proceed").click(function() {
     clearEverything();
+});
+
+$(".surrender").click(function() {
+    exposeSecretWord();
 });
 
 /*

@@ -16,10 +16,6 @@ body {
     font-size: 20px;
 }
 
-body.error {
-    background: red;
-}
-
 .header {
     height: 60px;
     background: #ccc;
@@ -46,9 +42,11 @@ body.error {
         padding: 16px 0 0 0;
         border: 0;
         border-bottom: 5px solid black;
+        border-radius: 0;
         font-size: 60px;
         text-align: center;
         color: #fff;
+        cursor: default;
         
         &:last-child {
             margin-right: 0;
@@ -81,14 +79,16 @@ button {
     right: 0;
     bottom: 0;
     left: 0;
-    display: flex;
+    //display: flex;
     padding-top: 20px;
     border-top: 1px solid black;
     margin: 20px 0;
     
     li {
         position: relative;
-        margin: auto;
+        display: inline-block;
+        width: 3.3%;
+        //margin: auto;
         text-transform: uppercase;
         cursor: pointer;
         
@@ -101,7 +101,7 @@ button {
                 content: "";
                 position: absolute;
                 top: -2px;
-                right: -8px;
+                right: 12px;
                 width: 5px;
                 height: 5px;
                 border-radius: 3px;
@@ -112,7 +112,7 @@ button {
             }
             
             &.unused {
-                top: 10px;
+                //top: 10px;
             
                 &:after {
                     background: @red;
