@@ -101,7 +101,6 @@ function processSecretWord(data) {
         // get and display definition
         $.ajax({
             type: "GET",
-            //url: "http://api.wordnik.com:80/v4/word.json/" + secretWord + "/definitions?limit=1&partOfSpeech=noun&includeRelated=false&sourceDictionaries=webster&useCanonical=true&includeTags=false&api_key=65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a",
             url: "http://api.wordnik.com:80/v4/word.json/" + secretWord + "/definitions?limit=1&partOfSpeech=noun&includeRelated=true&sourceDictionaries=all&useCanonical=true&includeTags=false&api_key=65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a",
             success: function(data) {
                 //console.log(data);
@@ -165,17 +164,10 @@ function letterMatcher(characterCode) {
             var occurrences = secretWord.split(String.fromCharCode(characterCode)).length - 1;
             console.log("match - that letter appears " + occurrences + " time(s)");
             
-            if (occurrences > 1) {
-                // deal with multiple instances
-                for (var index = 0; index < occurrences; index++) {
-                    entryArray.push(characterCode);
-                }
-                console.log(entryArray);
-            } else {
-                // put it in the array
+            for (var index = 0; index < occurrences; index++) {
                 entryArray.push(characterCode);
-                console.log(entryArray);
             }
+            console.log(entryArray);
         } else {
             console.log("NOT match");
             $("li[data-character-code=" + characterCode + "]").addClass("unused");
