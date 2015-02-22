@@ -70,7 +70,7 @@ function processSecretWord(data) {
     // get secret word from object and make it lowercase
     secretWord = data.word.toLowerCase();
     
-    // also have to check for acented characters
+    // also have to check for acented characters, like fiancée
     //&& (/([a-z])/.test(secretWord) === false)) 
     
     // check if it's naughty or nice
@@ -101,7 +101,8 @@ function processSecretWord(data) {
         // get and display definition
         $.ajax({
             type: "GET",
-            url: "http://api.wordnik.com:80/v4/word.json/" + secretWord + "/definitions?limit=1&partOfSpeech=noun&includeRelated=false&sourceDictionaries=webster&useCanonical=true&includeTags=false&api_key=65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a",
+            //url: "http://api.wordnik.com:80/v4/word.json/" + secretWord + "/definitions?limit=1&partOfSpeech=noun&includeRelated=false&sourceDictionaries=webster&useCanonical=true&includeTags=false&api_key=65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a",
+            url: "http://api.wordnik.com:80/v4/word.json/" + secretWord + "/definitions?limit=1&partOfSpeech=noun&includeRelated=true&sourceDictionaries=all&useCanonical=true&includeTags=false&api_key=65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a",
             success: function(data) {
                 //console.log(data);
                 definition = data[0].text;
@@ -154,14 +155,27 @@ function letterMatcher(characterCode) {
         
         // now let's decide if it's in the secret word or not
         if (secretWordCharacterArray.indexOf(characterCode) != -1) {
-            console.log("match");
+            
             // it's in the secret word, light up the letter
             $("input.letter-holder[value=" + characterCode + "]").val(String.fromCharCode(characterCode)).addClass("highlight");
             // and give it a class
             $("li[data-character-code=" + characterCode + "]").addClass("used");
-            // put it in the array
-            entryArray.push(characterCode);
-            console.log(entryArray);
+            
+            // it's there, but how many times does it occur
+            var occurrences = secretWord.split(String.fromCharCode(characterCode)).length - 1;
+            console.log("match - that letter appears " + occurrences + " time(s)");
+            
+            if (occurrences > 1) {
+                // deal with multiple instances
+                for (var index = 0; index < occurrences; index++) {
+                    entryArray.push(characterCode);
+                }
+                console.log(entryArray);
+            } else {
+                // put it in the array
+                entryArray.push(characterCode);
+                console.log(entryArray);
+            }
         } else {
             console.log("NOT match");
             $("li[data-character-code=" + characterCode + "]").addClass("unused");
