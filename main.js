@@ -71,43 +71,39 @@ $(document).keypress(function(e) {
 // when a letter is clicked
 $(".alphabet li").click(function(e) {
     // if it's aleady been used, do nah
-    if ($(this).hasClass("letter-used") ) {
+    if ($(this).hasClass("letter-selected") ) {
         return false;
     } else {
         // convert letter to character code and run letterMatcher
         letterMatcher($(this).data("character-code"));
         // add used class
-        //$(this).addClass("letter-used");
+        //$(this).addClass("letter-selected");
     }
 })
 
 function letterMatcher(characterCode) {
-    // letterMatcher works with character codes, let's convert it to the actual letter
-    actualLetter = String.fromCharCode(characterCode);
-    
-    //console.log("secretWordCharacterArray: " + secretWordCharacterArray);
-    //console.log("entryArray: " + entryArray);
     
     // mark the letter as used
-    $("li[data-character-code=" + characterCode + "]").addClass("letter-used");
+    $("li[data-character-code=" + characterCode + "]").addClass("letter-selected");
     
-    // it's a letter, let's see if it matches
+    // now let's decide if it's in the secret word or not
     if (secretWordCharacterArray.indexOf(characterCode) != -1) {
-        // if it matches, light up the letter
-        $("input.letter-holder[value=" + characterCode + "]").css("background", "#8dd5bc").val(actualLetter);
+        // it's in the secret word, light up the letter
+        $("input.letter-holder[value=" + characterCode + "]").val(String.fromCharCode(characterCode)).addClass("highlight");
         // and give it a class
-        $("li[data-character-code=" + characterCode + "]").addClass("in-word");
+        $("li[data-character-code=" + characterCode + "]").addClass("used");
+        // put it in the array
         entryArray.push(characterCode);
-        console.log("match");
+        //console.log("match");
     } else {
-        console.log("NOT match");
-        $("li[data-character-code=" + characterCode + "]").addClass("not-in-word");
+        //console.log("NOT match");
+        $("li[data-character-code=" + characterCode + "]").addClass("unused");
     }
     
     //console.log("characterCount" + characterCount, "entryArray" + entryArray.length);
     
     // check for winner or nah
-    if (characterCount === entryArray.length) {
+    if (entryArray.length === characterCount) {
         alert("OH SNAP YOU GUESSED THE WORD!");
     }
     
