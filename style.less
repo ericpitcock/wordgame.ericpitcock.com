@@ -21,6 +21,10 @@ body {
     //color: #555;
     color: @type;
     overflow: hidden;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    cursor: default;
 }
 
 .title {
@@ -71,6 +75,9 @@ body {
             text-align: center;
             color: @background;
             cursor: default;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
             
             &:last-child {
                 margin-right: 0;
