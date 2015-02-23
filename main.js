@@ -62,65 +62,92 @@ if (wordGameScore === null) {
 }
 $(".score-value").text(scoreValue);
 
+function initializeWordGame() {
 
-// a reusable, self-executing function to get the secret word
-var getSecretWord = (function getSecretWord() {
-    $.ajax({
-        type: "GET",
-        url: "http://api.wordnik.com:80/v4/words.json/randomWord?hasDictionaryDef=true&includePartOfSpeech=noun&minCorpusCount=1000&maxCorpusCount=-1&minDictionaryCount=3&maxDictionaryCount=-1&minLength=3&maxLength=7&api_key=65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a",
-        success: function(data) {
-            processSecretWord(data);
-        }
-    });
-    return getSecretWord;
-}());
-
-function processSecretWord(data) {
-    // get secret word from object, make it lowercase, and replace any accented characters
-    secretWord = data.word.toLowerCase().replace("é", "e");
-    
-    // if it's naughty
-    if ($.inArray(secretWord, naughtyWords) > -1) {
-    
-        // run that shit again
-        console.log("the word was naughty, running again");
-        getSecretWord();
-    
-    } else {
-        
-        // get the character count of secret word
-        characterCount = secretWord.length;
-        
-        //console.log(secretWord, characterCount);
-        console.log(secretWord);
-        
-        // container width based on character count
-        $(".word-palette").css("width", characterCount * 90 - 10);
-        
-        // create character code array and letter holders
-        for (var index = 0; index < characterCount; index++) {
-            var charCodes = secretWord.charCodeAt(index);
-            secretWordCharacterArray.push(charCodes);
-            
-            $(".word-palette")
-                .css("width", characterCount * 90 - 10)
-                .append('<input class="letter-holder" readonly type="text" value="' + secretWordCharacterArray[index] + '" />');
-        }
-        
-        // display chracter count
-        $(".character-count").html(characterCount + " letters");
-    
-        // get and display definition
+    // a reusable, self-executing function to get the secret word
+    var getSecretWord = (function getSecretWord() {
         $.ajax({
+            async: false,
+            type: "GET",
+            url: "http://api.wordnik.com:80/v4/words.json/randomWord?hasDictionaryDef=true&includePartOfSpeech=noun&minCorpusCount=1000&maxCorpusCount=-1&minDictionaryCount=3&maxDictionaryCount=-1&minLength=3&maxLength=7&api_key=65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a",
+            success: function(data) {
+                secretWord = data.word.toLowerCase().replace("é", "e");
+                /* run through naughty filter
+                if ($.inArray(secretWord, naughtyWords) > -1) {
+                    console.log("the word was naughty, running again");
+                    getSecretWord();
+                } else {
+                    getDefinition();
+                }*/
+            }
+        });
+        return getSecretWord;
+    }());
+    
+    // get and display definition
+    var getDefinition = (function getDefinition() {
+        $.ajax({
+            async: false,
             type: "GET",
             url: "http://api.wordnik.com:80/v4/word.json/" + secretWord + "/definitions?limit=1&partOfSpeech=noun&includeRelated=true&sourceDictionaries=all&useCanonical=true&includeTags=false&api_key=65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a",
             success: function(data) {
-                //console.log(data);
                 definition = data[0].text;
-                $(".definition").append("<p>" + definition + "</p>");
+                /*console.log(data);
+                if (definition.indexOf(secretWord) != -1) {
+                    console.log("the word was in the definition, running again");
+                    getSecretWord();
+                } else {
+                    $(".definition").append("<p>" + definition + "</p>");
+                    processSecretWord();
+                }*/
             }
         });
+        return getDefinition;
+    }());
+    
+    // filter out naughty words and words with definitions that contain the word
+    if ($.inArray(secretWord, naughtyWords) > -1) {
+        console.log(secretWord + " is naughty, running again");
+        initializeWordGame();
+    } else if (definition.indexOf(secretWord) != -1) {
+        console.log(secretWord + " is in '" + definition + "' running again");
+        initializeWordGame();
+    } else {
+        console.log(secretWord);
+        console.log(definition);
+        processSecretWord();
     }
+}
+
+initializeWordGame();
+
+function processSecretWord() {
+    // get secret word from object, make it lowercase, and replace any accented characters
+    //secretWord = data.word.toLowerCase().replace("é", "e");
+    
+    // get the character count of secret word
+    characterCount = secretWord.length;
+    
+    //console.log(secretWord, characterCount);
+    //console.log(secretWord);
+    
+    // container width based on character count
+    $(".word-palette").css("width", characterCount * 90 - 10);
+    
+    // create character code array and letter holders
+    for (var index = 0; index < characterCount; index++) {
+        var charCodes = secretWord.charCodeAt(index);
+        secretWordCharacterArray.push(charCodes);
+        
+        $(".word-palette")
+            .css("width", characterCount * 90 - 10)
+            .append('<input class="letter-holder" readonly type="text" value="' + secretWordCharacterArray[index] + '" />');
+    }
+    
+    // display chracter count
+    $(".character-count").html(characterCount + " letters");
+    // display definition
+    $(".definition").append("<p>" + definition + "</p>");
 }
 
 // when a key is pressed
@@ -128,8 +155,12 @@ $(document).keypress(function(e) {
     // get letter pressed
     var characterCode = e.which;
     
-    // first, make sure it's a letter
-    if ((characterCode >= 97 && characterCode <= 122) || characterCode == 127) {
+    // if it's return
+    if (characterCode == 13) {
+        exposeSecretWord();
+        setTimeout("proceed()", 1000);    
+    // if it's a-z
+    } else if (characterCode >= 97 && characterCode <= 122) {
         // run letterMatcher
         letterMatcher(characterCode);
     } else {
@@ -204,7 +235,7 @@ function letterMatcher(characterCode) {
                 var newScore = parseInt(localStorage.getItem("word-game-score")) + 10;
                 localStorage.setItem("word-game-score", newScore);
             }
-            $(".surrender").attr("disabled", "disabled");
+            //$(".surrender").attr("disabled", "disabled");
         }
     
     } else {
@@ -217,7 +248,7 @@ function letterMatcher(characterCode) {
 function exposeSecretWord() {
     $("input.letter-holder:not(.highlight)").each(function() {
         $(this).val(String.fromCharCode($(this).val())).addClass("highlight"); 
-    })
+    });
 }
 
 // clear display and start again
@@ -238,50 +269,12 @@ function proceed() {
         function() {
             $(".word-palette, .definition").empty();
             $(".word-palette").removeClass("bounceOutLeft").addClass("bounceInRight");
-            getSecretWord();
+            initializeWordGame();;
         });
     
     $(".alphabet li").removeClass();
-    $(".surrender").removeAttr("disabled", "disabled");
+    //$(".surrender").removeAttr("disabled", "disabled");
     
     
     //$("body").fadeIn(700);
 }
-
-// when the refresh button is clicked
-$(".proceed").click(function() {
-    proceed();
-});
-
-$(".surrender").click(function() {
-    exposeSecretWord();
-    $(this).attr("disabled", "disabled");
-});
-
-/*
-$("#auto-proceed").change(validate);
-
-function validate() {
-    if ($(".file-checkbox").is(":checked")) {
-        $("button.push-internet").prop("disabled", false);
-    } else {
-        $("button.push-internet").prop("disabled", true);
-    }
-}
-validate();
-$(".file-checkbox").change(validate);
-*/
-
-// when the enter key is pressed
-$(document).keypress(function(e) {
-    if (e.which == 13) {
-        exposeSecretWord()
-        setTimeout("proceed()", 1000);    
-    }
-});
-
-/* browser refresh warning
-window.onbeforeunload = function() {
-    return "You will so lose errrything if you refresh";
-}
-*/
