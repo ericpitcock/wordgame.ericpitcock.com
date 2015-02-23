@@ -184,11 +184,15 @@ function letterMatcher(characterCode) {
         
         // check for winner or nah
         if (entryArray.length === characterCount) {
+            /*
             if ($("#auto-proceed").prop("checked")) {
                 setTimeout("proceed()", 1000);
             } else {
                 alert("OH SNAP! YOU GUESSED THE WORD!");
             }
+            */
+            
+            setTimeout("proceed()", 1000);
             
             // add points
             $(".score-value").text(function(i, v){ return +v + 10;});
@@ -271,7 +275,8 @@ $(".file-checkbox").change(validate);
 // when the enter key is pressed
 $(document).keypress(function(e) {
     if (e.which == 13) {
-        proceed();    
+        exposeSecretWord()
+        setTimeout("proceed()", 1000);    
     }
 });
 

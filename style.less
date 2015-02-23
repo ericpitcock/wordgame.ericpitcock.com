@@ -1,10 +1,10 @@
 @import "../common/reset.less";
 @import "bower_components/animate.css/animate.min.css";
 
-@background: #8dd6d5;
+@background: #8dced6;
 @border: desaturate(darken(@background, 10%), 10%);
 @type: desaturate(darken(@background, 40%), 20%);
-@red : red;
+@red: #cc8787;
 
 *, *:before, *:after {
     -webkit-box-sizing: border-box;
@@ -53,21 +53,21 @@ body {
     //border-bottom: 1px solid desaturate(darken(@background, 10%), 20%);
 
     .word-palette{
-        height: 100px;
+        height: 140px;
         margin: 0 auto 10px auto;
     
         input {
             float: left;
             margin-right: 10px;
             width: 80px;
-            height: 100px;
+            height: 140px;
             padding: 16px 0 0 0;
             border: 0;
             background: transparent;
             border-bottom: 5px solid @type;
             border-radius: 0;
             font-family: "Open Sans",sans-serif;
-            font-size: 60px;
+            font-size: 80px;
             text-align: center;
             color: @background;
             cursor: default;
@@ -107,15 +107,15 @@ body {
 }
 
 .alphabet {
-    position: absolute;
-    right: 30px;
-    bottom: 30px;
-    left: 30px;
+    //position: absolute;
+    //right: 30px;
+    //bottom: 30px;
+    //left: 30px;
     //display: flex;
     height: 60px;
     padding: 20px 0;
-    margin: 0;
-    border: 1px solid @border;
+    margin: 60px 30px 0;
+    //border: 1px solid @border;
     
     li {
         position: relative;
@@ -134,15 +134,15 @@ body {
                 display: block;
                 content: "";
                 position: absolute;
-                top: -2px;
-                right: 12px;
+                top: 26px;
+                right: 14px;
                 width: 5px;
                 height: 5px;
                 border-radius: 3px;
             }
             
             &.used:after {
-                background: @background;
+                background: #4fb526;
             }
             
             &.unused {
