@@ -3,6 +3,7 @@ var secretWord = "",
     characterCount = "",
     definition = "",
     entryArray = [],
+    wordGameScore = localStorage.getItem("word-game-score"),
     naughtyWords = [
         "skank",
         "wetback",
@@ -53,6 +54,15 @@ var secretWord = "",
         "hooker"
     ];
 
+// set score
+if (wordGameScore === null) {
+    scoreValue = "0";
+} else {
+    scoreValue = localStorage.getItem("word-game-score");
+}
+$(".score-value").text(scoreValue);
+
+
 // a reusable, self-executing function to get the secret word
 var getSecretWord = (function getSecretWord() {
     $.ajax({
@@ -66,14 +76,17 @@ var getSecretWord = (function getSecretWord() {
 }());
 
 function processSecretWord(data) {
-    // get secret word from object and make it lowercase
-    secretWord = data.word.toLowerCase();
+    // get secret word from object, make it lowercase, and replace any accented characters
+    secretWord = data.word.toLowerCase().replace("é", "e");
     
-    // also have to check for acented characters, like fiancée
-    //&& (/([a-z])/.test(secretWord) === false)) 
+    // if it's naughty
+    if ($.inArray(secretWord, naughtyWords) > -1) {
     
-    // check if it's naughty or nice
-    if ($.inArray(secretWord, naughtyWords) == -1) {
+        // run that shit again
+        console.log("the word was naughty, running again");
+        getSecretWord();
+    
+    } else {
         
         // get the character count of secret word
         characterCount = secretWord.length;
@@ -107,11 +120,6 @@ function processSecretWord(data) {
                 $(".definition").append("<p>" + definition + "</p>");
             }
         });
-    
-    } else {
-        // run that shit again
-        console.log("the word was naughty, running again");
-        getSecretWord();
     }
 }
 
@@ -134,7 +142,7 @@ $(document).keypress(function(e) {
 $(".alphabet li").click(function(e) {
     // if it's aleady been used, do nah
     if ($(this).hasClass("letter-selected") ) {
-        return false;
+        e.preventDefault();
     } else {
         // convert letter to character code and run letterMatcher
         letterMatcher($(this).data("character-code"));
@@ -153,14 +161,14 @@ function letterMatcher(characterCode) {
         
         // now let's decide if it's in the secret word or not
         if (secretWordCharacterArray.indexOf(characterCode) != -1) {
-            
             // it's in the secret word, light up the letter
             $("input.letter-holder[value=" + characterCode + "]").val(String.fromCharCode(characterCode)).addClass("highlight");
             // and give it a class
             $("li[data-character-code=" + characterCode + "]").addClass("used");
             
-            // it's there, but how many times does it occur, for each, add it to the entryArray
+            // it's there, but how many times does it occur?
             var occurrences = secretWord.split(String.fromCharCode(characterCode)).length - 1;
+            // for each occurence, add it to the entryArray
             for (var index = 0; index < occurrences; index++) {
                 entryArray.push(characterCode);
             }
@@ -177,10 +185,22 @@ function letterMatcher(characterCode) {
         // check for winner or nah
         if (entryArray.length === characterCount) {
             if ($("#auto-proceed").prop("checked")) {
-                setTimeout("clearEverything()", 1000);
+                setTimeout("proceed()", 1000);
             } else {
-                alert("OH SNAP YOU GUESSED THE WORD!");
+                alert("OH SNAP! YOU GUESSED THE WORD!");
             }
+            
+            // add points
+            $(".score-value").text(function(i, v){ return +v + 10;});
+            // store points
+            if (localStorage.getItem("word-game-score") === null) {
+                localStorage.setItem("word-game-score", 10);
+            } else {
+                //var currentScore = localStorage.getItem("word-game-score");
+                var newScore = parseInt(localStorage.getItem("word-game-score")) + 10;
+                localStorage.setItem("word-game-score", newScore);
+            }
+            $(".surrender").attr("disabled", "disabled");
         }
     
     } else {
@@ -197,10 +217,9 @@ function exposeSecretWord() {
 }
 
 // clear display and start again
-function clearEverything() {
+function proceed() {
     console.clear();
-    
-    $("body").hide();
+    //$("body").hide();
     
     // empty all variables
     secretWord = "";
@@ -209,23 +228,30 @@ function clearEverything() {
     definition = "";
     entryArray = [];
     // and reset all stuffs
-    $(".word-palette, .definition").empty();
-    //$("input.guess").val("");
+    $(".word-palette").addClass("animated bounceOutLeft");
+    
+    $(".word-palette").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
+        function() {
+            $(".word-palette, .definition").empty();
+            $(".word-palette").removeClass("bounceOutLeft").addClass("bounceInRight");
+            getSecretWord();
+        });
+    
     $(".alphabet li").removeClass();
-    //$(".definition").empty();
+    $(".surrender").removeAttr("disabled", "disabled");
     
-    $("body").fadeIn(700);
-    getSecretWord();
     
+    //$("body").fadeIn(700);
 }
 
 // when the refresh button is clicked
 $(".proceed").click(function() {
-    clearEverything();
+    proceed();
 });
 
 $(".surrender").click(function() {
     exposeSecretWord();
+    $(this).attr("disabled", "disabled");
 });
 
 /*
@@ -245,7 +271,7 @@ $(".file-checkbox").change(validate);
 // when the enter key is pressed
 $(document).keypress(function(e) {
     if (e.which == 13) {
-        clearEverything();    
+        proceed();    
     }
 });
 

@@ -6,19 +6,20 @@
         <title></title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans">
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <div class="header">
-            <span class="title">Guess the word</span>
-            <span class="points">Points: <span class="points-value"></span></span>
+        <div class="title">Word Game</div>
+        <div class="score">Score: <span class="score-value">00</span></div>
+        <div class="game-board">
+            <div class="definition"></div>
+            <div class="word-palette"></div>
+            <div class="character-count"></div>
+            <button class="surrender">I give up</button>
+            <button class="proceed">Next word</button>
+            <label for="auto-proceed"><input type="checkbox" id="auto-proceed" value="auto-proceed">Proceed automatically</label>
         </div>
-        <div class="definition"></div>
-        <div class="character-count"></div>
-        <div class="word-palette"></div>
-        <button class="surrender">I give up</button>
-        <button class="proceed">Next word</button>
-        <label for="auto-proceed"><input type="checkbox" id="auto-proceed" value="auto-proceed">Automatically proceed to next</label>
         <ul class="alphabet">
             <li data-character-code="97">a</li>
             <li data-character-code="98">b</li>
@@ -47,7 +48,7 @@
             <li data-character-code="121">y</li>
             <li data-character-code="122">z</li>
         </ul>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+        <script src="bower_components/jquery/dist/jquery.min.js"></script>
         <script src="main.js"></script>
     </body>
 </html>
