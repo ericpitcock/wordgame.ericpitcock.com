@@ -4,7 +4,7 @@ module.exports = function(grunt){
     grunt.initConfig({
         pkg: grunt.file.readJSON("package.json"),
         
-        /*uglify: {
+        uglify: {
 			options: {
 				mangle: false,
                 sourceMap: true
@@ -12,16 +12,13 @@ module.exports = function(grunt){
 			build: {
 				files: {
 					"assets/js/main.min.js": [
-						"assets/js/vendor/jquery-2.0.3.min.js",
-						"assets/js/vendor/retina-1.3.0.min.js",
-						"assets/js/vendor/flexslider/jquery.flexslider-min.js",
-						"assets/js/vendor/waypoints.min.js",
-						"assets/js/vendor/imagelightbox.min.js",
+						"bower_components/jquery/dist/jquery.min.js",
+						"bower_components/jquery-color/jquery.color.js",
 						"assets/js/main.js"
 					]
 				}
 			}
-		},*/
+		},
 		
 		less: {
 		  development: {
@@ -30,21 +27,21 @@ module.exports = function(grunt){
 				compress: true
 			},
 			files: {
-				"style.css": "style.less"
+				"assets/css/style.css": "assets/css/style.less"
 			}
 		  }
 		},
 
 		watch: {    
 			less: {
-				files: ["style.less"],
+				files: ["assets/css/style.less"],
 				tasks: ["less"]
 			},
 			
-			/*js: {
-				files: ["main.js"],
+			js: {
+				files: ["assets/js/main.js"],
 				tasks: ["uglify"]
-			}*/
+			}
 		}
     });
 
