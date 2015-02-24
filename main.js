@@ -50,9 +50,12 @@ var secretWord = "",
         "crip",
         "raghead",
         "negro",
-        "darky",
+        "darky", // ep additions being here
         "hooker",
-        "honky"
+        "honky",
+        "coolie",
+        "bastard",
+        "douche"
     ],
     backgroundColors = ["ee9494", "eeaa94", "eec194", "eed794", "eeee94", "c1de9d", "8fcba1", "95bcb1", "9fb2c6", "aea1c2", "b98cb9", "d390a7"];
 
@@ -74,7 +77,35 @@ function initializeWordGame() {
             url: "http://api.wordnik.com:80/v4/words.json/randomWord", 
             data: {
                 hasDictionaryDef: true,
-                includePartOfSpeech: "noun",
+                //includePartOfSpeech: "noun",
+                //noun
+                //adjective
+                //verb
+                //adverb
+                //interjection
+                //pronoun
+                //preposition
+                //abbreviation
+                //affix
+                //article
+                //auxiliary-verb
+                //conjunction
+                //definite-article
+                //family-name
+                //given-name
+                //idiom
+                //imperative
+                //noun-plural
+                //noun-posessive
+                //past-participle
+                //phrasal-prefix
+                //proper-noun
+                //proper-noun-plural
+                //proper-noun-posessive
+                //suffix
+                //verb-intransitive
+                //verb-transitive
+                excludePartOfSpeech: "family-name, given-name, suffix",
                 minCorpusCount: 1000,
                 maxCorpusCount: -1,
                 minDictionaryCount: 3,
@@ -84,6 +115,7 @@ function initializeWordGame() {
                 api_key: "65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a"
             },
             success: function(data) {
+                console.log(data);
                 secretWord = data.word.toLowerCase().replace("é", "e");
             }
         });
@@ -98,14 +130,15 @@ function initializeWordGame() {
             url: "http://api.wordnik.com:80/v4/word.json/" + secretWord + "/definitions",
             data: {
                 limit: 1,
-                partOfSpeech: "noun",
-                includeRelated: true,
-                sourceDictionaries: "all",
+                //partOfSpeech: "noun",
+                includeRelated: false,
+                //sourceDictionaries: "all",
                 useCanonical: true,
                 includeTags: false,
                 api_key: "65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a"
             },
             success: function(data) {
+                console.log(data);
                 definition = data[0].text;
             }
         });
