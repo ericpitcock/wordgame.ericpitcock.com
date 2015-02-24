@@ -3,7 +3,7 @@
 
 @background: #8dced6;
 @border: desaturate(darken(@background, 10%), 10%);
-@type: desaturate(darken(@background, 40%), 20%);
+@type: #555;
 @red: #cc8787;
 
 *, *:before, *:after {
@@ -73,7 +73,7 @@ body {
             font-family: "Open Sans",sans-serif;
             font-size: 80px;
             text-align: center;
-            color: @background;
+            color: transparent;
             cursor: default;
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -134,29 +134,32 @@ body {
         cursor: pointer;
         
         &.letter-selected {
-            color: lighten(@background, 10%);
+            //color: lighten(@background, 10%);
             cursor: default;
+            opacity: 0.3;
             
             &:after {
-                display: block;
                 content: "";
+                display: block;
                 position: absolute;
-                top: 26px;
-                right: 14px;
-                width: 5px;
-                height: 5px;
-                border-radius: 3px;
+                top: 8px;
+                right: 12px;
+                width: 30px;
+                height: 2px;
+                background: #555;
+                -webkit-transform: rotate(-30deg);
+                
             }
             
             &.used:after {
-                background: #4fb526;
+                //background: #4fb526;
             }
             
             &.unused {
                 //top: 10px;
             
                 &:after {
-                    background: @red;
+                    //background: @red;
                 }
             }
         }

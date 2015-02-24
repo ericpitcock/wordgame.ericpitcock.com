@@ -51,8 +51,10 @@ var secretWord = "",
         "raghead",
         "negro",
         "darky",
-        "hooker"
-    ];
+        "hooker",
+        "honky"
+    ],
+    backgroundColors = ["ee9494", "eeaa94", "eec194", "eed794", "eeee94", "c1de9d", "8fcba1", "95bcb1", "9fb2c6", "aea1c2", "b98cb9", "d390a7"];
 
 // set score
 if (wordGameScore === null) {
@@ -69,16 +71,20 @@ function initializeWordGame() {
         $.ajax({
             async: false,
             type: "GET",
-            url: "http://api.wordnik.com:80/v4/words.json/randomWord?hasDictionaryDef=true&includePartOfSpeech=noun&minCorpusCount=1000&maxCorpusCount=-1&minDictionaryCount=3&maxDictionaryCount=-1&minLength=3&maxLength=7&api_key=65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a",
+            url: "http://api.wordnik.com:80/v4/words.json/randomWord", 
+            data: {
+                hasDictionaryDef: true,
+                includePartOfSpeech: "noun",
+                minCorpusCount: 1000,
+                maxCorpusCount: -1,
+                minDictionaryCount: 3,
+                maxDictionaryCount: -1,
+                minLength: 3,
+                maxLength: 7,
+                api_key: "65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a"
+            },
             success: function(data) {
                 secretWord = data.word.toLowerCase().replace("é", "e");
-                /* run through naughty filter
-                if ($.inArray(secretWord, naughtyWords) > -1) {
-                    console.log("the word was naughty, running again");
-                    getSecretWord();
-                } else {
-                    getDefinition();
-                }*/
             }
         });
         return getSecretWord;
@@ -89,17 +95,18 @@ function initializeWordGame() {
         $.ajax({
             async: false,
             type: "GET",
-            url: "http://api.wordnik.com:80/v4/word.json/" + secretWord + "/definitions?limit=1&partOfSpeech=noun&includeRelated=true&sourceDictionaries=all&useCanonical=true&includeTags=false&api_key=65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a",
+            url: "http://api.wordnik.com:80/v4/word.json/" + secretWord + "/definitions",
+            data: {
+                limit: 1,
+                partOfSpeech: "noun",
+                includeRelated: true,
+                sourceDictionaries: "all",
+                useCanonical: true,
+                includeTags: false,
+                api_key: "65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a"
+            },
             success: function(data) {
                 definition = data[0].text;
-                /*console.log(data);
-                if (definition.indexOf(secretWord) != -1) {
-                    console.log("the word was in the definition, running again");
-                    getSecretWord();
-                } else {
-                    $(".definition").append("<p>" + definition + "</p>");
-                    processSecretWord();
-                }*/
             }
         });
         return getDefinition;
@@ -122,14 +129,8 @@ function initializeWordGame() {
 initializeWordGame();
 
 function processSecretWord() {
-    // get secret word from object, make it lowercase, and replace any accented characters
-    //secretWord = data.word.toLowerCase().replace("é", "e");
-    
     // get the character count of secret word
     characterCount = secretWord.length;
-    
-    //console.log(secretWord, characterCount);
-    //console.log(secretWord);
     
     // container width based on character count
     $(".word-palette").css("width", characterCount * 90 - 10);
@@ -175,10 +176,8 @@ $(".alphabet li").click(function(e) {
     if ($(this).hasClass("letter-selected") ) {
         e.preventDefault();
     } else {
-        // convert letter to character code and run letterMatcher
+        // run letterMatcher
         letterMatcher($(this).data("character-code"));
-        // add used class
-        //$(this).addClass("letter-selected");
     }
 });
 
@@ -211,17 +210,8 @@ function letterMatcher(characterCode) {
             $("li[data-character-code=" + characterCode + "]").addClass("unused");
         }
         
-        //console.log("characterCount" + characterCount, "entryArray" + entryArray.length);
-        
         // check for winner or nah
         if (entryArray.length === characterCount) {
-            /*
-            if ($("#auto-proceed").prop("checked")) {
-                setTimeout("proceed()", 1000);
-            } else {
-                alert("OH SNAP! YOU GUESSED THE WORD!");
-            }
-            */
             
             setTimeout("proceed()", 1000);
             
@@ -235,11 +225,9 @@ function letterMatcher(characterCode) {
                 var newScore = parseInt(localStorage.getItem("word-game-score")) + 10;
                 localStorage.setItem("word-game-score", newScore);
             }
-            //$(".surrender").attr("disabled", "disabled");
         }
     
     } else {
-        //return false;
         console.log("match, but already in the array");
     }
 }
@@ -254,7 +242,6 @@ function exposeSecretWord() {
 // clear display and start again
 function proceed() {
     console.clear();
-    //$("body").hide();
     
     // empty all variables
     secretWord = "";
@@ -268,13 +255,14 @@ function proceed() {
     $(".word-palette").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
         function() {
             $(".word-palette, .definition").empty();
+            
+            //var randomColor = '#'+ Math.random(backgroundColors);
+            var randomColor = "#" + backgroundColors[Math.floor(Math.random()*backgroundColors.length)];
+            $("body").animate({ backgroundColor: randomColor }, { duration: 2000 });
+            
             $(".word-palette").removeClass("bounceOutLeft").addClass("bounceInRight");
-            initializeWordGame();;
+            initializeWordGame();
         });
     
     $(".alphabet li").removeClass();
-    //$(".surrender").removeAttr("disabled", "disabled");
-    
-    
-    //$("body").fadeIn(700);
 }

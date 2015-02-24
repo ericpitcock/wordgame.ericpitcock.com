@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "dependencies": {
     "jquery": "latest",
-    "animate.css": "latest"
+    "animate.css": "latest",
+    "jquery-color": "latest"
   },
   "private": true
 }
