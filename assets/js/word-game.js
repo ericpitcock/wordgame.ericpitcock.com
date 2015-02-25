@@ -246,12 +246,6 @@ function letterMatcher(characterCode) {
             console.log(String.fromCharCode(characterCode) + " is NOT a match");
         }
         
-        // check attempts
-        if (correctLetters.length + incorrectLetters.length == characterCount * 2) {
-            alert("You lose, ya bish");
-            proceed();
-        }
-        
         // check for winner or nah
         if (correctLetters.length === characterCount) {
             
@@ -267,6 +261,9 @@ function letterMatcher(characterCode) {
                 var updatedScore = parseInt(localStorage.getItem("word-game-score")) + 10;
                 localStorage.setItem("word-game-score", updatedScore);
             }
+        } else if (correctLetters.length + incorrectLetters.length == characterCount * 2) {
+            alert("You lose, ya bish");
+            proceed();
         }
         
         $(".attempts-left").html(function(i, v) { return +v-1 });
