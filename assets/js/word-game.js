@@ -105,7 +105,7 @@ function initializeWordGame() {
                 //suffix
                 //verb-intransitive
                 //verb-transitive
-                excludePartOfSpeech: "family-name, given-name, suffix",
+                excludePartOfSpeech: "family-name, given-name, noun-plural, proper-noun, proper-noun-plural, proper-noun-posessive, suffix",
                 minCorpusCount: 1000,
                 maxCorpusCount: -1,
                 minDictionaryCount: 3,
@@ -255,8 +255,8 @@ function letterMatcher(characterCode) {
                 localStorage.setItem("word-game-score", 10);
             } else {
                 //var currentScore = localStorage.getItem("word-game-score");
-                var newScore = parseInt(localStorage.getItem("word-game-score")) + 10;
-                localStorage.setItem("word-game-score", newScore);
+                var updatedScore = parseInt(localStorage.getItem("word-game-score")) + 10;
+                localStorage.setItem("word-game-score", updatedScore);
             }
         }
     

@@ -11,10 +11,10 @@ module.exports = function(grunt){
 			},
 			build: {
 				files: {
-					"assets/js/main.min.js": [
+					"assets/js/word-game.min.js": [
 						"bower_components/jquery/dist/jquery.min.js",
 						"bower_components/jquery-color/jquery.color.js",
-						"assets/js/main.js"
+						"assets/js/word-game.js"
 					]
 				}
 			}
@@ -27,19 +27,19 @@ module.exports = function(grunt){
 				compress: true
 			},
 			files: {
-				"assets/css/style.css": "assets/css/style.less"
+				"assets/css/word-game.css": "assets/css/word-game.less"
 			}
 		  }
 		},
 
 		watch: {    
 			less: {
-				files: ["assets/css/style.less"],
+				files: ["assets/css/word-game.less"],
 				tasks: ["less"]
 			},
 			
 			js: {
-				files: ["assets/js/main.js"],
+				files: ["assets/js/word-game.js"],
 				tasks: ["uglify"]
 			}
 		}
