@@ -1,8 +1,9 @@
 var secretWord = "",
-    secretWordCharacterArray = [],
+    secretWordCharacterCodes = [],
     characterCount = "",
     definition = "",
-    entryArray = [],
+    correctLetters = [],
+    incorrectLetters = [],
     wordGameScore = localStorage.getItem("word-game-score"),
     naughtyWords = [
         "skank",
@@ -171,15 +172,16 @@ function processSecretWord() {
     // create character code array and letter holders
     for (var index = 0; index < characterCount; index++) {
         var charCodes = secretWord.charCodeAt(index);
-        secretWordCharacterArray.push(charCodes);
+        secretWordCharacterCodes.push(charCodes);
         
         $(".word-palette")
             .css("width", characterCount * 90 - 10)
-            .append('<input class="letter-holder" readonly type="text" value="' + secretWordCharacterArray[index] + '" />');
+            .append('<input class="letter-holder" readonly type="text" value="' + secretWordCharacterCodes[index] + '" />');
     }
     
     // display chracter count
     $(".character-count").html(characterCount + " letters");
+    $(".attempts-left").html(characterCount * 2);
     // display definition
     $(".definition").append("<p>" + definition + "</p>");
 }
@@ -216,14 +218,14 @@ $(".alphabet li").click(function(e) {
 
 function letterMatcher(characterCode) {
     
-    // if it's not already in the array, run the shiz
-    if ($.inArray(characterCode, entryArray) == -1) {
+    // if it hasn't been tried, run the shiz
+    if ($.inArray(characterCode, correctLetters) == -1 && $.inArray(characterCode, incorrectLetters) == -1) {
         
         // mark the letter as used
         $("li[data-character-code=" + characterCode + "]").addClass("letter-selected");
         
         // now let's decide if it's in the secret word or not
-        if (secretWordCharacterArray.indexOf(characterCode) != -1) {
+        if (secretWordCharacterCodes.indexOf(characterCode) != -1) {
             // it's in the secret word, light up the letter
             $("input.letter-holder[value=" + characterCode + "]").val(String.fromCharCode(characterCode)).addClass("highlight");
             // and give it a class
@@ -231,25 +233,32 @@ function letterMatcher(characterCode) {
             
             // it's there, but how many times does it occur?
             var occurrences = secretWord.split(String.fromCharCode(characterCode)).length - 1;
-            // for each occurence, add it to the entryArray
+            // for each occurence, add it to the correctLetters
             for (var index = 0; index < occurrences; index++) {
-                entryArray.push(characterCode);
+                correctLetters.push(characterCode);
             }
-            
-            console.log("match - that letter appears " + occurrences + " time(s)");
-            console.log(entryArray);
+            console.log(String.fromCharCode(characterCode) + " is a match, and appears " + occurrences + " time(s)");
+            //console.log(correctLetters);
         } else {
-            console.log("NOT match");
+            // it's not in the secret word
             $("li[data-character-code=" + characterCode + "]").addClass("unused");
+            incorrectLetters.push(characterCode);
+            console.log(String.fromCharCode(characterCode) + " is NOT a match");
+        }
+        
+        // check attempts
+        if (correctLetters.length + incorrectLetters.length == characterCount * 2) {
+            alert("You lose, ya bish");
+            proceed();
         }
         
         // check for winner or nah
-        if (entryArray.length === characterCount) {
+        if (correctLetters.length === characterCount) {
             
             setTimeout("proceed()", 1000);
             
             // add points
-            $(".score-value").text(function(i, v){ return +v + 10;});
+            $(".score-value").html(function(i, v) { return +v + 10; });
             // store points
             if (localStorage.getItem("word-game-score") === null) {
                 localStorage.setItem("word-game-score", 10);
@@ -259,9 +268,11 @@ function letterMatcher(characterCode) {
                 localStorage.setItem("word-game-score", updatedScore);
             }
         }
+        
+        $(".attempts-left").html(function(i, v) { return +v-1 });
     
     } else {
-        console.log("match, but already in the array");
+        console.log("letter was already tried");
     }
 }
 
@@ -278,10 +289,11 @@ function proceed() {
     
     // empty all variables
     secretWord = "";
-    secretWordCharacterArray = [];
+    secretWordCharacterCodes = [];
     characterCount = "";
     definition = "";
-    entryArray = [];
+    correctLetters = [];
+    incorrectLetters = [];
     // and reset all stuffs
     $(".word-palette").addClass("animated bounceOutLeft");
     
