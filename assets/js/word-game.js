@@ -56,7 +56,9 @@ var secretWord = "",
         "honky",
         "coolie",
         "bastard",
-        "douche"
+        "douche",
+        "penis",
+        "vagina"
     ],
     backgroundColors = ["ee9494", "eeaa94", "eec194", "eed794", "eeee94", "c1de9d", "8fcba1", "95bcb1", "9fb2c6", "aea1c2", "b98cb9", "d390a7"];
 
@@ -116,7 +118,7 @@ function initializeWordGame() {
                 api_key: "65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a"
             },
             success: function(data) {
-                console.log(data);
+                //console.log(data);
                 secretWord = data.word.toLowerCase().replace("é", "e");
             }
         });
@@ -139,20 +141,22 @@ function initializeWordGame() {
                 api_key: "65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a"
             },
             success: function(data) {
-                console.log(data);
+                //console.log(data);
                 definition = data[0].text;
             }
         });
         return getDefinition;
     }());
     
-    // filter out naughty words and words with definitions that contain the word
+    // if the word is naughty, run it again
     if ($.inArray(secretWord, naughtyWords) > -1) {
         console.log(secretWord + " is naughty, running again");
         initializeWordGame();
+    // if the word is in the defintion, run it again
     } else if (definition.indexOf(secretWord) != -1) {
         console.log(secretWord + " is in '" + definition + "' running again");
         initializeWordGame();
+    // if they pass, play on
     } else {
         console.log(secretWord);
         console.log(definition);
@@ -269,7 +273,7 @@ function letterMatcher(characterCode) {
         $(".attempts-left").html(function(i, v) { return +v-1 });
     
     } else {
-        console.log("letter was already tried");
+        console.log("letter was already tried, doing nothing");
     }
 }
 
