@@ -58,7 +58,8 @@ var secretWord = "",
         "bastard",
         "douche",
         "penis",
-        "vagina"
+        "vagina",
+        "blowjob"
     ],
     backgroundColors = ["ee9494", "eeaa94", "eec194", "eed794", "eeee94", "c1de9d", "8fcba1", "95bcb1", "9fb2c6", "aea1c2", "b98cb9", "d390a7"];
 
@@ -187,6 +188,13 @@ function processSecretWord() {
             .append('<input class="letter-holder" readonly type="text" value="' + secretWordCharacterCodes[index] + '" />');
     }
     
+    // animate in
+    $(".word-palette").addClass("animated bounceInRight");
+    $(".word-palette").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
+        function() {
+            $(".word-palette").removeClass("animated bounceInRight");
+        });
+    
     // display chracter count
     $(".character-count").html(characterCount + " letters");
     $(".attempts-left").html(characterCount * 2);
@@ -247,11 +255,17 @@ function letterMatcher(characterCode) {
             }
             console.log(String.fromCharCode(characterCode) + " is a match, and appears " + occurrences + " time(s)");
             //console.log(correctLetters);
+            
         } else {
             // it's not in the secret word
             $("li[data-character-code=" + characterCode + "]").addClass("unused");
             incorrectLetters.push(characterCode);
             console.log(String.fromCharCode(characterCode) + " is NOT a match");
+            $(".word-palette").addClass("animated shake");
+            $(".word-palette").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
+                function() {
+                $(".word-palette, .definition").removeClass("animated shake");
+            });
         }
         
         // check for winner or nah
@@ -263,7 +277,12 @@ function letterMatcher(characterCode) {
         //console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / letters left: " + lettersLeft);
         if (correctLetters.length === characterCount) {
             console.log("YOU WIN");
-            setTimeout("proceed()", 1000);
+            $(".word-palette").addClass("animated flash");
+            $(".word-palette").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
+                function() {
+                $(".word-palette, .definition").removeClass("animated flash");
+            });
+            setTimeout("proceed()", 1300);
             
             // set the score
             if (localStorage.getItem("word-game-score")) {
@@ -322,7 +341,7 @@ function proceed() {
             var randomColor = "#" + backgroundColors[Math.floor(Math.random()*backgroundColors.length)];
             $("body").animate({ backgroundColor: randomColor }, { duration: 2000 });
             
-            $(".word-palette").removeClass("bounceOutLeft").addClass("bounceInRight");
+            $(".word-palette").removeClass("animated bounceOutLeft");
             initializeWordGame();
         });
     

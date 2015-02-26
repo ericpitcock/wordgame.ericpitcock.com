@@ -53,9 +53,6 @@ body {
     right: 0;
     left: 0;
     bottom: 60px;
-    //background: @background;
-    //border-top: 1px solid desaturate(darken(@background, 10%), 20%);
-    //border-bottom: 1px solid desaturate(darken(@background, 10%), 20%);
 
     .word-palette{
         height: 140px;
@@ -89,6 +86,12 @@ body {
                 border-bottom-color: #fff;
             }
         }
+        
+        &.animated.flash {
+            -webkit-animation-duration: 1s;
+            //-webkit-animation-delay: 2s;
+            -webkit-animation-iteration-count: 1;
+        }
     }
     
     button {
@@ -115,27 +118,19 @@ body {
 }
 
 .alphabet {
-    //position: absolute;
-    //right: 30px;
-    //bottom: 30px;
-    //left: 30px;
-    //display: flex;
     height: 60px;
     padding: 20px 0;
     margin: 60px 30px 0;
-    //border: 1px solid @border;
     
     li {
         position: relative;
         display: inline-block;
         width: 3.3%;
-        //margin: auto;
         text-transform: uppercase;
         font-size: 20px;
         cursor: pointer;
         
         &.letter-selected {
-            //color: lighten(@background, 10%);
             cursor: default;
             opacity: 0.3;
             
@@ -153,14 +148,11 @@ body {
             }
             
             &.used:after {
-                //background: #4fb526;
             }
             
             &.unused {
-                //top: 10px;
-            
+                
                 &:after {
-                    //background: @red;
                 }
             }
         }
