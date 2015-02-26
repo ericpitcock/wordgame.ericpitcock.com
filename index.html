@@ -10,8 +10,10 @@
         <link rel="stylesheet" href="assets/css/word-game.css">
     </head>
     <body>
-        <div class="title">Word Game</div>
-        <div class="score">Score: <span class="score-value">00</span></div>
+        <div class="header">
+            <div class="title">Word Game</div>
+            <div class="score">Score: <span class="score-value">00</span></div>  
+        </div>
         <div class="game-board">
             <div class="definition"></div>
             <div class="word-palette"></div>
@@ -46,11 +48,9 @@
                 <li data-character-code="122">z</li>
             </ul>
         </div>
-        <p class="skip">If there are X letters in the word, you can select X x 2 letters. Press enter at any time to reveal and skip</p>
-        <!--<button class="surrender">I give up</button>
-        <button class="proceed">Next word</button>
-        <label for="auto-proceed"><input type="checkbox" id="auto-proceed" value="auto-proceed">Proceed automatically</label>-->
-        
+        <div class="footer">
+            <p>Press <span class="enter-key">enter</span> at any time to reveal and skip</p>
+        </div>
         <script src="assets/js/word-game.min.js"></script>
     </body>
 </html>

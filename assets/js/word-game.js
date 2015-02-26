@@ -154,7 +154,11 @@ function initializeWordGame() {
         initializeWordGame();
     // if the word is in the defintion, run it again
     } else if (definition.indexOf(secretWord) != -1) {
-        console.log(secretWord + " is in '" + definition + "' running again");
+        console.log(secretWord + " is in '" + definition + "', running again");
+        initializeWordGame();
+    // secret word contains a hypen
+    } else if (secretWord.indexOf('-') != -1) {
+        console.log(secretWord + " has a hypen, running again");
         initializeWordGame();
     // if they pass, play on
     } else {
@@ -294,7 +298,7 @@ function exposeSecretWord() {
 
 // clear display and start again
 function proceed() {
-    //console.clear();
+    console.clear();
     
     // empty all variables
     secretWord = "";

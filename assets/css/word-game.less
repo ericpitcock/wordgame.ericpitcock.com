@@ -27,24 +27,25 @@ body {
     cursor: default;
 }
 
-.title {
+.header {
     position: absolute;
-    top: 30px;
-    left: 30px;
-    font-size: 16px;
-}
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 60px;
 
-.score {
-    position: absolute;
-    top: 30px;
-    right: 30px;
-    width: 180px;
-    height: 40px;
-    padding: 12px 0 0 15px;
-    border: 1px solid @border;
-    text-align: left;
+    .title {
+        float: left;
+        margin: 30px 0 0 30px;
+        font-size: 16px;
+    }
+    
+    .score {
+        float: right;
+        margin: 30px 30px 0 0;
+        text-align: left;
+    }
 }
-
 
 .game-board {
     position: absolute;
@@ -169,4 +170,26 @@ body {
 h3 {
     position: absolute;
     bottom: 20px;
+}
+
+.footer {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 60px;
+    
+    p {
+    
+        span {
+            display: inline-block;
+            padding: 3px 6px 4px 6px;
+            border: 1px solid rgba(85,85,85,0.4);
+            border-radius: 3px;
+            margin: 0 2px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    }
 }
