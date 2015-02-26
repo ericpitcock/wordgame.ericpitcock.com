@@ -269,13 +269,14 @@ function letterMatcher(characterCode) {
             localStorage.setItem("word-game-score", updatedScore);
             $(".score-value").html(updatedScore);
             
-        } else if (lettersLeft != attemptsLeft && lettersLeft > attemptsLeft || attempts == attemptsAllowed) {
+        } else if (correctLetters.length != characterCount && lettersLeft > attemptsLeft || attempts == attemptsAllowed) {
             console.log("YOU LOSE");
-            exposeSecretWord();
-            setTimeout("proceed()", 1000);
+            alert("YOU LOSE");
+            //exposeSecretWord();
+            //setTimeout("proceed()", 1000);
         }
         
-        $(".attempts-left").html(function(i, v) { return +v-1 });
+        $(".attempts-left").html(attemptsLeft);
     
     } else {
         console.log("letter was already tried, doing nothing");
@@ -293,7 +294,7 @@ function exposeSecretWord() {
 
 // clear display and start again
 function proceed() {
-    console.clear();
+    //console.clear();
     
     // empty all variables
     secretWord = "";
