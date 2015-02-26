@@ -251,23 +251,28 @@ function letterMatcher(characterCode) {
         }
         
         // check for winner or nah
+        var currentScore = 0;
+        var attemptsAllowed = characterCount * 2;
+        var attempts = correctLetters.length + incorrectLetters.length;
+        var attemptsLeft = attemptsAllowed - attempts;
+        var lettersLeft = characterCount - correctLetters.length;
+        //console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / letters left: " + lettersLeft);
         if (correctLetters.length === characterCount) {
-            
+            console.log("YOU WIN");
             setTimeout("proceed()", 1000);
             
-            // add points
-            $(".score-value").html(function(i, v) { return +v + 10; });
-            // store points
-            if (localStorage.getItem("word-game-score") === null) {
-                localStorage.setItem("word-game-score", 10);
-            } else {
-                //var currentScore = localStorage.getItem("word-game-score");
-                var updatedScore = parseInt(localStorage.getItem("word-game-score")) + 10;
-                localStorage.setItem("word-game-score", updatedScore);
+            // set the score
+            if (localStorage.getItem("word-game-score")) {
+                currentScore = parseInt(localStorage.getItem("word-game-score"));
             }
-        } else if (correctLetters.length + incorrectLetters.length == characterCount * 2) {
-            alert("You lose, ya bish");
-            proceed();
+            var updatedScore = characterCount * 10 + attemptsLeft * 5 + currentScore;
+            localStorage.setItem("word-game-score", updatedScore);
+            $(".score-value").html(updatedScore);
+            
+        } else if (lettersLeft != attemptsLeft && lettersLeft > attemptsLeft || attempts == attemptsAllowed) {
+            console.log("YOU LOSE");
+            exposeSecretWord();
+            setTimeout("proceed()", 1000);
         }
         
         $(".attempts-left").html(function(i, v) { return +v-1 });
@@ -275,6 +280,8 @@ function letterMatcher(characterCode) {
     } else {
         console.log("letter was already tried, doing nothing");
     }
+    
+    console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / letters left: " + lettersLeft);
 }
 
 // expose the secret word
@@ -295,6 +302,10 @@ function proceed() {
     definition = "";
     correctLetters = [];
     incorrectLetters = [];
+    attemptsAllowed = 0;
+    attempts = 0;
+    attemptsLeft = 0;
+    lettersLeft = 0;
     // and reset all stuffs
     $(".word-palette").addClass("animated bounceOutLeft");
     
