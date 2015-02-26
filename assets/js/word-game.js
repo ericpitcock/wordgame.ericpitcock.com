@@ -272,8 +272,8 @@ function letterMatcher(characterCode) {
         } else if (correctLetters.length != characterCount && lettersLeft > attemptsLeft || attempts == attemptsAllowed) {
             console.log("YOU LOSE");
             alert("YOU LOSE");
-            //exposeSecretWord();
-            //setTimeout("proceed()", 1000);
+            exposeSecretWord();
+            setTimeout("proceed()", 1000);
         }
         
         $(".attempts-left").html(attemptsLeft);
