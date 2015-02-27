@@ -10,6 +10,13 @@
         <link rel="stylesheet" href="assets/css/word-game.css">
     </head>
     <body>
+        <div class="hello-overlay">
+            <div class="hello">
+                <h1>Word Game is simple:<br>Guess the word from its definition.</h1>
+                <p><span class="rules">HOW IT WORKS</span><br>If the word is 7 letters long, you will have 14 chances. If the word is 3 letters long, 6 chances. You get it.<br><br>You can use your keyboard or click letters.</p>
+                <button class="close-hello">Go play!</button>
+            </div>
+        </div>
         <div class="header">
             <div class="title">Word Game</div>
             <div class="score">Score: <span class="score-value">00</span></div>  
@@ -17,8 +24,7 @@
         <div class="game-board">
             <div class="definition"></div>
             <div class="word-palette"></div>
-            <div class="character-count"></div>
-            <div class="attempts">Attempts left: <span class="attempts-left"></div></span>
+            <!--<div class="character-count"></div> -->
             <ul class="alphabet">
                 <li data-character-code="97">a</li>
                 <li data-character-code="98">b</li>
@@ -47,6 +53,7 @@
                 <li data-character-code="121">y</li>
                 <li data-character-code="122">z</li>
             </ul>
+            <div class="attempts">Attempts left: <span class="attempts-left"></div></span>
         </div>
         <div class="footer">
             <p>Press <span class="enter-key">enter</span> at any time to reveal and skip</p>

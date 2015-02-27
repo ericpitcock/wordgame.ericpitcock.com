@@ -196,7 +196,7 @@ function processSecretWord() {
         });
     
     // display chracter count
-    $(".character-count").html(characterCount + " letters");
+    //$(".character-count").html(characterCount + " letters");
     $(".attempts-left").html(characterCount * 2);
     // display definition
     $(".definition").append("<p>" + definition + "</p>");
@@ -347,3 +347,13 @@ function proceed() {
     
     $(".alphabet li").removeClass();
 }
+
+$(".hello-overlay").show();
+$(".close-hello").click(function() {
+    $(".hello-overlay").hide();
+})
+
+$(".enter-key").click(function() {
+    exposeSecretWord();
+    setTimeout("proceed()", 1000);
+})
