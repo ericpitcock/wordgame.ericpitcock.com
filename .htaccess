@@ -1,5 +1,0 @@
-AuthType Basic
-AuthName "Word Game Demo"
-AuthUserFile /home/ericpitc/public_html/wordgame.ericpitcock.com/.htpasswd
-#AuthUserFile /Volumes/Fatty/Sites/www/wordgame.ericpitcock.com/.htpasswd
-Require valid-user
