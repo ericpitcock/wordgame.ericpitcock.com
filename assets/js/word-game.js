@@ -66,6 +66,9 @@ var secretWord = "",
 // set score
 if (wordGameScore === null) {
     scoreValue = "0";
+    // only nag the first timers with the intro
+    $(".hello-overlay").show();
+    localStorage.setItem("word-game-score", 0);
 } else {
     scoreValue = localStorage.getItem("word-game-score");
 }
@@ -348,7 +351,6 @@ function proceed() {
     $(".alphabet li").removeClass();
 }
 
-$(".hello-overlay").show();
 $(".close-hello").click(function() {
     $(".hello-overlay").hide();
 })
