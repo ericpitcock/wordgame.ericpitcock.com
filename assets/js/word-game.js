@@ -2,6 +2,7 @@ var secretWord = "",
     secretWordCharacterCodes = [],
     characterCount = "",
     definition = "",
+    alternateDefinition = "";
     correctLetters = [],
     incorrectLetters = [],
     wordGameScore = localStorage.getItem("word-game-score"),
@@ -156,6 +157,9 @@ function initializeWordGame() {
                 if (data.length > 1) {
                     console.log(data[1].text);
                     alternateDefinition = data[1].text;
+                } else {
+                    //alternateDefinition = undefined;
+                    console.log(alternateDefinition);
                 }
             }
         });
@@ -222,8 +226,9 @@ function processSecretWord() {
     $(".definition").append("<p>" + definition + "</p>");
     
     // display alternate definition button
-    if (typeof alternateDefinition != "undefined") {
-    //if (alternateDefinition) {
+    if (typeof alternateDefinition === "undefined") {
+        $(".show-alternate-definition").css("visibility", "hidden");
+    } else {
         $(".show-alternate-definition").css("visibility", "visible");
     }
 }
