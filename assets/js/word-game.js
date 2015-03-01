@@ -65,21 +65,22 @@ var secretWord = "",
 
 // display intro, get and set score
 if (wordGameScore === null) {
+    
     scoreValue = "0";
+    localStorage.setItem("word-game-score", 0);
+    
     // only nag the first timers with the intro
     $(".hello-overlay").show();
-    localStorage.setItem("word-game-score", 0);
+    
 } else {
+    // set their previous score
     scoreValue = localStorage.getItem("word-game-score");
 }
+// display score
 $(".score-value").text(scoreValue);
 
 function initializeWordGame() {
     
-    // set background color
-    var randomColor = "#" + backgroundColors[Math.floor(Math.random()*backgroundColors.length)];
-    $("body").animate({ backgroundColor: randomColor }, { duration: 2000 });
-
     // a reusable, self-executing function to get the secret word
     var getSecretWord = (function getSecretWord() {
         $.ajax({
@@ -160,19 +161,26 @@ function initializeWordGame() {
     if ($.inArray(secretWord, naughtyWords) > -1) {
         console.log(secretWord + " is naughty, running again");
         initializeWordGame();
+    
     // if the word is in the defintion, run it again
     } else if (definition.indexOf(secretWord) != -1) {
         console.log(secretWord + " is in '" + definition + "', running again");
         initializeWordGame();
+    
     // secret word contains a hypen
     } else if (secretWord.indexOf('-') != -1) {
         console.log(secretWord + " has a hypen, running again");
         initializeWordGame();
+    
     // if they pass, play on
     } else {
         console.log(secretWord);
         console.log(definition);
         processSecretWord();
+        
+        // set background color
+        var randomColor = "#" + backgroundColors[Math.floor(Math.random()*backgroundColors.length)];
+        $("body").animate({ backgroundColor: randomColor }, { duration: 2000 });
     }
 }
 
@@ -297,6 +305,7 @@ function letterMatcher(characterCode) {
             }
             var updatedScore = characterCount * 10 + attemptsLeft * 5 + currentScore;
             localStorage.setItem("word-game-score", updatedScore);
+            
             $(".score-value").html(updatedScore);
             
         } else if (correctLetters.length != characterCount && lettersLeft > attemptsLeft || attempts == attemptsAllowed) {
@@ -349,13 +358,26 @@ function proceed() {
         });
     
     $(".alphabet li").removeClass();
+    $(".hint.animated.bounce").remove();
 }
 
+// close the hello modal
 $(".close-hello").click(function() {
     $(".hello-overlay").hide();
 })
 
+// clicking the enter icon
 $(".enter-key").click(function() {
     exposeSecretWord();
     setTimeout("proceed()", 1000);
+})
+
+// hint function
+$(".hint").click(function() {
+    // find the unused letters
+    var unusedLetters = $(secretWordCharacterCodes).not(correctLetters).get();
+    // get a random one
+    var randomUnusedLetter = unusedLetters[Math.floor(Math.random()*unusedLetters.length)];
+    // slap the arrow above it
+    $("li[data-character-code=" + randomUnusedLetter + "]").prepend('<span class="hint animated bounce">↓</span>');
 })
