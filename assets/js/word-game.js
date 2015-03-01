@@ -154,12 +154,11 @@ function initializeWordGame() {
             success: function(data) {
                 console.log(data);
                 definition = data[0].text;
-                if (data.length > 1) {
+                if (data[1]) {
                     console.log(data[1].text);
                     alternateDefinition = data[1].text;
                 } else {
-                    //alternateDefinition = undefined;
-                    console.log(alternateDefinition);
+                    console.log("No alternate definition available");
                 }
             }
         });
@@ -173,7 +172,12 @@ function initializeWordGame() {
     
     // if the word is in the defintion, run it again
     } else if (definition.indexOf(secretWord) != -1) {
-        console.log(secretWord + " is in '" + definition + "', running again");
+        console.log(secretWord + " is in '" + definition + "'(main def), running again");
+        initializeWordGame();
+    
+    // if the word is in the alternate defintion, run it again
+    } else if (alternateDefinition != "" && alternateDefinition.indexOf(secretWord) != -1) {
+        console.log(secretWord + " is in '" + alternateDefinition + "'(alt def), running again");
         initializeWordGame();
     
     // secret word contains a hypen
@@ -226,7 +230,7 @@ function processSecretWord() {
     $(".definition").append("<p>" + definition + "</p>");
     
     // display alternate definition button
-    if (typeof alternateDefinition === "undefined") {
+    if (alternateDefinition === "") {
         $(".show-alternate-definition").css("visibility", "hidden");
     } else {
         $(".show-alternate-definition").css("visibility", "visible");
@@ -360,7 +364,7 @@ function proceed() {
     secretWordCharacterCodes = [];
     characterCount = "";
     definition = "";
-    alternateDefinition = undefined;
+    alternateDefinition = "";
     correctLetters = [];
     incorrectLetters = [];
     attemptsAllowed = 0;
@@ -387,7 +391,7 @@ function proceed() {
 
 // close the hello modal
 $(".close-hello").click(function() {
-    $(".hello-overlay").hide();
+    $(".hello-overlay").fadeOut(300);
 });
 
 // clicking the enter icon
