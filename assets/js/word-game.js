@@ -142,7 +142,7 @@ function initializeWordGame() {
             type: "GET",
             url: "http://api.wordnik.com:80/v4/word.json/" + secretWord + "/definitions",
             data: {
-                limit: 1,
+                limit: 2,
                 //partOfSpeech: "noun",
                 includeRelated: false,
                 //sourceDictionaries: "all",
@@ -151,8 +151,12 @@ function initializeWordGame() {
                 api_key: "65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a"
             },
             success: function(data) {
-                //console.log(data);
+                console.log(data);
                 definition = data[0].text;
+                if (data.length > 1) {
+                    console.log(data[1].text);
+                    alternateDefinition = data[1].text;
+                }
             }
         });
         return getDefinition;
@@ -212,10 +216,16 @@ function processSecretWord() {
         });
     
     // display chracter count
-    //$(".character-count").html(characterCount + " letters");
     $(".attempts-left").html(characterCount * 2);
+    
     // display definition
     $(".definition").append("<p>" + definition + "</p>");
+    
+    // display alternate definition button
+    if (typeof alternateDefinition != "undefined") {
+    //if (alternateDefinition) {
+        $(".show-alternate-definition").css("visibility", "visible");
+    }
 }
 
 // when a key is pressed
@@ -345,6 +355,7 @@ function proceed() {
     secretWordCharacterCodes = [];
     characterCount = "";
     definition = "";
+    alternateDefinition = undefined;
     correctLetters = [];
     incorrectLetters = [];
     attemptsAllowed = 0;
@@ -372,13 +383,13 @@ function proceed() {
 // close the hello modal
 $(".close-hello").click(function() {
     $(".hello-overlay").hide();
-})
+});
 
 // clicking the enter icon
 $(".enter-key").click(function() {
     exposeSecretWord();
     setTimeout("proceed()", 1000);
-})
+});
 
 // hint function
 $(".hint").click(function() {
@@ -389,4 +400,10 @@ $(".hint").click(function() {
     // slap the arrow above it
     $("li[data-character-code=" + randomUnusedLetter + "]").prepend('<span class="hint animated bounce">↓</span>');
     $(this).attr("disabled", "disabled");
-})
+});
+
+// alternate definition
+$(".show-alternate-definition").click(function() {
+    $(this).css("visibility", "hidden");
+    $(".definition p").html(alternateDefinition);
+});
