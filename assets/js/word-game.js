@@ -63,7 +63,7 @@ var secretWord = "",
     ],
     backgroundColors = ["ee9494", "eeaa94", "eec194", "eed794", "eeee94", "c1de9d", "8fcba1", "95bcb1", "9fb2c6", "aea1c2", "b98cb9", "d390a7"];
 
-// set score
+// display intro, get and set score
 if (wordGameScore === null) {
     scoreValue = "0";
     // only nag the first timers with the intro
@@ -75,6 +75,10 @@ if (wordGameScore === null) {
 $(".score-value").text(scoreValue);
 
 function initializeWordGame() {
+    
+    // set background color
+    var randomColor = "#" + backgroundColors[Math.floor(Math.random()*backgroundColors.length)];
+    $("body").animate({ backgroundColor: randomColor }, { duration: 2000 });
 
     // a reusable, self-executing function to get the secret word
     var getSecretWord = (function getSecretWord() {
@@ -339,10 +343,6 @@ function proceed() {
     $(".word-palette").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
         function() {
             $(".word-palette, .definition").empty();
-            
-            //var randomColor = '#'+ Math.random(backgroundColors);
-            var randomColor = "#" + backgroundColors[Math.floor(Math.random()*backgroundColors.length)];
-            $("body").animate({ backgroundColor: randomColor }, { duration: 2000 });
             
             $(".word-palette").removeClass("animated bounceOutLeft");
             initializeWordGame();
