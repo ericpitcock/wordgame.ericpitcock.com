@@ -59,7 +59,8 @@ var secretWord = "",
         "douche",
         "penis",
         "vagina",
-        "blowjob"
+        "blowjob",
+        "popery"
     ],
     backgroundColors = ["ee9494", "eeaa94", "eec194", "eed794", "eeee94", "c1de9d", "8fcba1", "95bcb1", "9fb2c6", "aea1c2", "b98cb9", "d390a7"];
 
@@ -259,8 +260,12 @@ function letterMatcher(characterCode) {
         if (secretWordCharacterCodes.indexOf(characterCode) != -1) {
             // it's in the secret word, light up the letter
             $("input.letter-holder[value=" + characterCode + "]").val(String.fromCharCode(characterCode)).addClass("highlight");
+            
             // and give it a class
             $("li[data-character-code=" + characterCode + "]").addClass("used");
+            
+            // if it's hinted and used, remove hint
+            $("li[data-character-code=" + characterCode + "]").children("span.hint").remove();
             
             // it's there, but how many times does it occur?
             var occurrences = secretWord.split(String.fromCharCode(characterCode)).length - 1;
@@ -357,8 +362,11 @@ function proceed() {
             initializeWordGame();
         });
     
-    $(".alphabet li").removeClass();
-    $(".hint.animated.bounce").remove();
+    // remove classes from alphabet and hint
+    $(".alphabet li").removeClass().children("span.hint").remove();
+    
+    // reenable hint button
+    $(".hint").removeAttr("disabled");
 }
 
 // close the hello modal
@@ -380,4 +388,5 @@ $(".hint").click(function() {
     var randomUnusedLetter = unusedLetters[Math.floor(Math.random()*unusedLetters.length)];
     // slap the arrow above it
     $("li[data-character-code=" + randomUnusedLetter + "]").prepend('<span class="hint animated bounce">↓</span>');
+    $(this).attr("disabled", "disabled");
 })
