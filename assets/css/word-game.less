@@ -9,11 +9,14 @@
     box-sizing: border-box;
 }
 
+body, input, button {
+    font-family: "Open Sans",sans-serif;
+    font-weight: 400;
+}
+
 body {
     background: #fff;
     text-align: center;
-    font-family: "Open Sans", sans-serif;
-    font-weight: 400;
     font-size: 14px;
     color: @type;
     overflow: hidden;
@@ -75,7 +78,6 @@ body {
             background: #8fcba1;
             border-radius: 3px;
             border: 0;
-            font-family: "Open Sans",sans-serif;
             font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -128,7 +130,6 @@ body {
             background: transparent;
             border-bottom: 5px solid @type;
             border-radius: 0;
-            font-family: "Open Sans",sans-serif;
             font-size: 80px;
             text-align: center;
             color: transparent;
@@ -184,7 +185,7 @@ body {
         position: relative;
         display: inline-block;
         width: 3.3%;
-        text-transform: uppercase;
+        //text-transform: uppercase;
         font-size: 20px;
         cursor: pointer;
         
@@ -225,6 +226,24 @@ body {
     }
 }
 
+.attempts {
+    display: inline-block;
+    padding: 3px 8px 4px 8px;
+    border: 1px solid rgba(85,85,85,0.4);
+    border-radius: 3px;
+    margin: 0 2px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    
+    .attempts-left {
+        display: inline-block;
+        width: 15px;
+        letter-spacing: 0;
+    }
+}
+
 h3 {
     position: absolute;
     bottom: 20px;
@@ -246,6 +265,7 @@ h3 {
             border-radius: 3px;
             margin: 0 2px;
             font-size: 11px;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1px;
             cursor: pointer;
