@@ -2,7 +2,7 @@ var secretWord = "",
     secretWordCharacterCodes = [],
     characterCount = "",
     definition = "",
-    alternateDefinition = "";
+    alternateDefinition = "",
     correctLetters = [],
     incorrectLetters = [],
     wordGameScore = localStorage.getItem("word-game-score"),
@@ -65,7 +65,7 @@ var secretWord = "",
     ],
     backgroundColors = ["ee9494", "eeaa94", "eec194", "eed794", "eeee94", "c1de9d", "8fcba1", "95bcb1", "9fb2c6", "aea1c2", "b98cb9", "d390a7"];
 
-// display intro, get and set score
+// determine score
 if (wordGameScore === null) {
     
     scoreValue = "0";
@@ -78,93 +78,117 @@ if (wordGameScore === null) {
     // set their previous score
     scoreValue = localStorage.getItem("word-game-score");
 }
+
 // display score
 $(".score-value").text(scoreValue);
 
+// close the hello modal
+$(".close-hello").click(function() {
+    $(".hello-overlay").fadeOut(300);
+});
+
+// click the enter icon
+$(".enter-key").click(function() {
+    exposeSecretWord();
+    setTimeout("proceed()", 1000);
+});
+
+// hint function
+$(".hint").click(function() {
+    // find the unused letters
+    var unusedLetters = $(secretWordCharacterCodes).not(correctLetters).get();
+    // get a random one
+    var randomUnusedLetter = unusedLetters[Math.floor(Math.random()*unusedLetters.length)];
+    // slap the arrow above it
+    $("li[data-character-code=" + randomUnusedLetter + "]").prepend('<span class="hint animated bounce">↓</span>');
+    $(this).attr("disabled", "disabled");
+});
+
+// alternate definition
+$(".show-alternate-definition").click(function() {
+    $(this).css("visibility", "hidden");
+    $(".definition p").html(alternateDefinition);
+});
+
 function initializeWordGame() {
     
-    // a reusable, self-executing function to get the secret word
-    var getSecretWord = (function getSecretWord() {
-        $.ajax({
-            async: false,
-            type: "GET",
-            url: "http://api.wordnik.com:80/v4/words.json/randomWord", 
-            data: {
-                hasDictionaryDef: true,
-                //includePartOfSpeech: "noun",
-                //noun
-                //adjective
-                //verb
-                //adverb
-                //interjection
-                //pronoun
-                //preposition
-                //abbreviation
-                //affix
-                //article
-                //auxiliary-verb
-                //conjunction
-                //definite-article
-                //family-name
-                //given-name
-                //idiom
-                //imperative
-                //noun-plural
-                //noun-posessive
-                //past-participle
-                //phrasal-prefix
-                //proper-noun
-                //proper-noun-plural
-                //proper-noun-posessive
-                //suffix
-                //verb-intransitive
-                //verb-transitive
-                excludePartOfSpeech: "family-name, given-name, noun-plural, proper-noun, proper-noun-plural, proper-noun-posessive, suffix",
-                minCorpusCount: 1000,
-                maxCorpusCount: -1,
-                minDictionaryCount: 3,
-                maxDictionaryCount: -1,
-                minLength: 3,
-                maxLength: 7,
-                api_key: "65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a"
-            },
-            success: function(data) {
-                //console.log(data);
-                secretWord = data.word.toLowerCase().replace("é", "e");
-            }
-        });
-        return getSecretWord;
-    }());
+    // get the secret word
+    $.ajax({
+        async: false,
+        type: "GET",
+        url: "http://api.wordnik.com:80/v4/words.json/randomWord", 
+        data: {
+            hasDictionaryDef: true,
+            //includePartOfSpeech: "noun",
+            //noun
+            //adjective
+            //verb
+            //adverb
+            //interjection
+            //pronoun
+            //preposition
+            //abbreviation
+            //affix
+            //article
+            //auxiliary-verb
+            //conjunction
+            //definite-article
+            //family-name
+            //given-name
+            //idiom
+            //imperative
+            //noun-plural
+            //noun-posessive
+            //past-participle
+            //phrasal-prefix
+            //proper-noun
+            //proper-noun-plural
+            //proper-noun-posessive
+            //suffix
+            //verb-intransitive
+            //verb-transitive
+            excludePartOfSpeech: "family-name, given-name, noun-plural, proper-noun, proper-noun-plural, proper-noun-posessive, suffix",
+            minCorpusCount: 1000,
+            maxCorpusCount: -1,
+            minDictionaryCount: 3,
+            maxDictionaryCount: -1,
+            minLength: 3,
+            maxLength: 7,
+            api_key: "65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a"
+        },
+        success: function(data) {
+            //console.log(data);
+            secretWord = data.word.toLowerCase().replace("é", "e");
+        }
+    });
     
-    // get and display definition
-    var getDefinition = (function getDefinition() {
-        $.ajax({
-            async: false,
-            type: "GET",
-            url: "http://api.wordnik.com:80/v4/word.json/" + secretWord + "/definitions",
-            data: {
-                limit: 2,
-                //partOfSpeech: "noun",
-                includeRelated: false,
-                //sourceDictionaries: "all",
-                useCanonical: true,
-                includeTags: false,
-                api_key: "65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a"
-            },
-            success: function(data) {
-                console.log(data);
-                definition = data[0].text;
-                if (data[1]) {
-                    console.log(data[1].text);
-                    alternateDefinition = data[1].text;
-                } else {
-                    console.log("No alternate definition available");
-                }
+    // get definition(s)
+    $.ajax({
+        async: false,
+        type: "GET",
+        url: "http://api.wordnik.com:80/v4/word.json/" + secretWord + "/definitions",
+        data: {
+            limit: 2,
+            //partOfSpeech: "noun",
+            includeRelated: false,
+            //sourceDictionaries: "all",
+            useCanonical: true,
+            includeTags: false,
+            api_key: "65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a"
+        },
+        success: function(data) {
+            console.log(data);
+            definition = data[0].text;
+            if (data[1]) {
+                console.log(data[1].text);
+                alternateDefinition = data[1].text;
+            } else {
+                console.log("No alternate definition available");
             }
-        });
-        return getDefinition;
-    }());
+        }
+    });
     
+    // FILTER THE WORD
     // if the word is naughty, run it again
     if ($.inArray(secretWord, naughtyWords) > -1) {
         console.log(secretWord + " is naughty, running again");
@@ -223,7 +247,7 @@ function processSecretWord() {
             $(".word-palette").removeClass("animated bounceInRight");
         });
     
-    // display chracter count
+    // display attempts count
     $(".attempts-left").html(characterCount * 2);
     
     // display definition
@@ -307,7 +331,7 @@ function letterMatcher(characterCode) {
             });
         }
         
-        // check for winner or nah
+        // check for winner or nah and score
         var currentScore = 0;
         var attemptsAllowed = characterCount * 2;
         var attempts = correctLetters.length + incorrectLetters.length;
@@ -315,7 +339,7 @@ function letterMatcher(characterCode) {
         var lettersLeft = characterCount - correctLetters.length;
         //console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / letters left: " + lettersLeft);
         if (correctLetters.length === characterCount) {
-            console.log("YOU WIN");
+            
             $(".word-palette").addClass("animated flash");
             $(".word-palette").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
                 function() {
@@ -327,16 +351,29 @@ function letterMatcher(characterCode) {
             if (localStorage.getItem("word-game-score")) {
                 currentScore = parseInt(localStorage.getItem("word-game-score"));
             }
-            var updatedScore = characterCount * 10 + attemptsLeft * 5 + currentScore;
+            
+            // if the hint was used, don't add bonus points
+            if ($(".hint").is("[disabled=disabled]")) {
+                var updatedScore = characterCount * 10 + attemptsLeft * 5 + currentScore;
+            } else {
+            // if the hint wasn't used, add 5 boner points
+                var updatedScore = characterCount * 10 + attemptsLeft * 5 + 5 + currentScore;
+            }
+            
+            // store score
             localStorage.setItem("word-game-score", updatedScore);
             
+            // update score display
             $(".score-value").html(updatedScore);
             
+            console.log("YOU WIN");
+            
         } else if (correctLetters.length != characterCount && lettersLeft > attemptsLeft || attempts == attemptsAllowed) {
-            console.log("YOU LOSE");
-            alert("YOU LOSE");
             exposeSecretWord();
             setTimeout("proceed()", 1000);
+            
+            console.log("YOU LOSE");
+            alert("YOU LOSE");
         }
         
         $(".attempts-left").html(attemptsLeft);
@@ -388,31 +425,3 @@ function proceed() {
     // reenable hint button
     $(".hint").removeAttr("disabled");
 }
-
-// close the hello modal
-$(".close-hello").click(function() {
-    $(".hello-overlay").fadeOut(300);
-});
-
-// clicking the enter icon
-$(".enter-key").click(function() {
-    exposeSecretWord();
-    setTimeout("proceed()", 1000);
-});
-
-// hint function
-$(".hint").click(function() {
-    // find the unused letters
-    var unusedLetters = $(secretWordCharacterCodes).not(correctLetters).get();
-    // get a random one
-    var randomUnusedLetter = unusedLetters[Math.floor(Math.random()*unusedLetters.length)];
-    // slap the arrow above it
-    $("li[data-character-code=" + randomUnusedLetter + "]").prepend('<span class="hint animated bounce">↓</span>');
-    $(this).attr("disabled", "disabled");
-});
-
-// alternate definition
-$(".show-alternate-definition").click(function() {
-    $(this).css("visibility", "hidden");
-    $(".definition p").html(alternateDefinition);
-});
