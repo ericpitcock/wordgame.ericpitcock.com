@@ -94,11 +94,11 @@ $(".enter-key").click(function() {
 });
 
 // hint function
-$(".hint").click(function() {
+$(".hint-button").click(function() {
     // find the unused letters
     var unusedLetters = $(secretWordCharacterCodes).not(correctLetters).get();
     // get a random one
-    var randomUnusedLetter = unusedLetters[Math.floor(Math.random()*unusedLetters.length)];
+    var randomUnusedLetter = unusedLetters[Math.floor(Math.random() * unusedLetters.length)];
     // slap the arrow above it
     $("li[data-character-code=" + randomUnusedLetter + "]").prepend('<span class="hint animated bounce">↓</span>');
     $(this).attr("disabled", "disabled");
@@ -216,7 +216,7 @@ function initializeWordGame() {
         processSecretWord();
         
         // set background color
-        var randomColor = "#" + backgroundColors[Math.floor(Math.random()*backgroundColors.length)];
+        var randomColor = "#" + backgroundColors[Math.floor(Math.random() * backgroundColors.length)];
         $("body").animate({ backgroundColor: randomColor }, { duration: 2000 });
     }
 }
@@ -332,12 +332,13 @@ function letterMatcher(characterCode) {
         }
         
         // check for winner or nah and score
-        var currentScore = 0;
-        var attemptsAllowed = characterCount * 2;
-        var attempts = correctLetters.length + incorrectLetters.length;
-        var attemptsLeft = attemptsAllowed - attempts;
-        var lettersLeft = characterCount - correctLetters.length;
+        var currentScore = 0,
+            attemptsAllowed = characterCount * 2,
+            attempts = correctLetters.length + incorrectLetters.length,
+            attemptsLeft = attemptsAllowed - attempts,
+            lettersLeft = characterCount - correctLetters.length;
         //console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / letters left: " + lettersLeft);
+        
         if (correctLetters.length === characterCount) {
             
             $(".word-palette").addClass("animated flash");
@@ -353,7 +354,7 @@ function letterMatcher(characterCode) {
             }
             
             // if the hint was used, don't add bonus points
-            if ($(".hint").is("[disabled=disabled]")) {
+            if ($(".hint-button").is("[disabled=disabled]")) {
                 var updatedScore = characterCount * 10 + attemptsLeft * 5 + currentScore;
             } else {
             // if the hint wasn't used, add 5 boner points
@@ -423,5 +424,5 @@ function proceed() {
     $(".alphabet li").removeClass().children("span.hint").remove();
     
     // reenable hint button
-    $(".hint").removeAttr("disabled");
+    $(".hint-button").removeAttr("disabled");
 }

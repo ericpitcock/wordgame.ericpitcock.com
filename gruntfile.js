@@ -14,7 +14,7 @@ module.exports = function(grunt){
 					"assets/js/word-game.min.js": [
 						"bower_components/jquery/dist/jquery.min.js",
 						"bower_components/jquery-color/jquery.color.js",
-						"assets/js/word-game.js"
+						"assets/js/word-game-new.js"
 					]
 				}
 			}
@@ -39,7 +39,7 @@ module.exports = function(grunt){
 			},
 			
 			js: {
-				files: ["assets/js/word-game.js"],
+				files: ["assets/js/word-game-new.js"],
 				tasks: ["uglify"]
 			}
 		}
