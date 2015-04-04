@@ -94,7 +94,7 @@ $(".enter-key").click(function() {
 });
 
 // hint function
-$(".hint-button").click(function() {
+$(".freebie-button").click(function() {
     // find the unused letters
     var unusedLetters = $(secretWordCharacterCodes).not(correctLetters).get();
     // get a random one
@@ -354,7 +354,7 @@ function letterMatcher(characterCode) {
             }
             
             // if the hint was used, don't add bonus points
-            if ($(".hint-button").is("[disabled=disabled]")) {
+            if ($(".freebie-button").is("[disabled=disabled]")) {
                 var updatedScore = characterCount * 10 + attemptsLeft * 5 + currentScore;
             } else {
             // if the hint wasn't used, add 5 boner points
@@ -424,5 +424,5 @@ function proceed() {
     $(".alphabet li").removeClass().children("span.hint").remove();
     
     // reenable hint button
-    $(".hint-button").removeAttr("disabled");
+    $(".freebie-button").removeAttr("disabled");
 }

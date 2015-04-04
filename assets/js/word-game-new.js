@@ -65,7 +65,8 @@ var secretWord = "",
         "penis",
         "vagina",
         "blowjob",
-        "popery"
+        "popery",
+        "fuck"
     ],
     backgroundColors = ["ee9494", "eeaa94", "eec194", "eed794", "eeee94", "c1de9d", "8fcba1", "95bcb1", "9fb2c6", "aea1c2", "b98cb9", "d390a7"];
 
@@ -289,7 +290,7 @@ var secretWord = "",
                     }
                     
                     // if the hint was used, don't add bonus points
-                    if ($(".hint-button").is("[disabled=disabled]")) {
+                    if ($(".freebie-button").is("[disabled=disabled]")) {
                         var updatedScore = characterCount * 10 + attemptsLeft * 5 + currentScore;
                     } else {
                     // if the hint wasn't used, add 5 boner points
@@ -305,7 +306,7 @@ var secretWord = "",
                     console.log("YOU WIN");
                     
                 } else if (correctLetters.length != characterCount && lettersLeft > attemptsLeft || attempts == attemptsAllowed) {
-                    exposeSecretWord();
+                    WordGame.exposeSecretWord();
                     setTimeout(function() {
                         WordGame.proceed();
                     }, 1000);
@@ -359,7 +360,7 @@ var secretWord = "",
             $(".alphabet li").removeClass().children("span.hint").remove();
             
             // reenable hint button
-            $(".hint-button").removeAttr("disabled");
+            $(".freebie-button").removeAttr("disabled");
         }
     }
     
@@ -400,19 +401,25 @@ var secretWord = "",
     });
     
     // hint function
-    $(".hint-button").click(function() {
+    $(".freebie-button").click(function() {
         // find the unused letters
         var unusedLetters = $(secretWordCharacterCodes).not(correctLetters).get();
         // get a random one
         var randomUnusedLetter = unusedLetters[Math.floor(Math.random() * unusedLetters.length)];
+        // show freebie
+        WordGame.letterMatcher(randomUnusedLetter);
+        
+        // REMOVED to just show the damn letter
         // slap the arrow above it
-        $("li[data-character-code=" + randomUnusedLetter + "]").prepend('<span class="hint animated bounce">↓</span>');
+        // $("li[data-character-code=" + randomUnusedLetter + "]").prepend('<span class="hint animated bounce">↓</span>');
+        
+        // disable freebie button
         $(this).attr("disabled", "disabled");
     });
     
-    // alternate definition
+    /// alternate definition
     $(".show-alternate-definition").click(function() {
-        $(this).css("visibility", "hidden");
+        $(this).html($(this).text() == "ALTERNATE DEFINITION" ? "MAIN DEFINITION" : "ALTERNATE DEFINITION");
         $(".definition p").html(alternateDefinition);
     });
     

@@ -26,6 +26,48 @@ body {
     cursor: default;
 }
 
+button {
+    height: 22px;
+    display: inline-block;
+    padding: 0 10px 1px 10px;
+    border: 1px solid rgba(85,85,85,0.7);
+    background: none;
+    color: @type;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    letter-spacing: 1px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    box-shadow: 1px 1px 0px rgba(85,85,85,0.7);
+    -webkit-transition: background .2s ease-in-out;
+    transition: background .2s ease-in-out;
+    
+    &:focus, &:active {
+        outline: 0;
+    }
+    
+    &[disabled] {
+        opacity: 0.5;
+        cursor: default;
+        
+        &:hover {
+            background: transparent;
+        }
+    }
+}
+
+html.no-touch button:hover {
+    background: rgba(255,255,255,0.2);
+}
+
 .hello-overlay {
     display: none;
     position: absolute;
@@ -74,6 +116,7 @@ body {
         }
         
         button {
+/*
             width: 200px;
             height: 40px;
             background: #8fcba1;
@@ -84,6 +127,7 @@ body {
             letter-spacing: 1px;
             color: #555;
             cursor: pointer;
+*/
         }
         
     }
@@ -180,8 +224,11 @@ body {
 
 .alphabet {
     height: 60px;
-    padding: 20px 0;
-    margin: 60px 30px 0;
+    max-width: 1480px;
+    padding-top: 18px;
+    border: 1px solid rgba(85,85,85,0.15);
+    border-radius: 3px;
+    margin: 40px;
     
     li {
         position: relative;
@@ -218,17 +265,18 @@ body {
             }
         }
         
-        span.hint {
+        /*span.hint {
             position: absolute;
             top: -22px;
             left: 50%;
             width: 12px;
             margin-left: -6px;
-        }
+        }*/
     }
 }
 
 .attempts {
+/*
     display: inline-block;
     padding: 3px 8px 4px 8px;
     border: 1px solid rgba(85,85,85,0.4);
@@ -238,6 +286,7 @@ body {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
+*/
     
     .attempts-left {
         display: inline-block;
@@ -261,6 +310,7 @@ h3 {
     p {
     
         span.enter-key {
+/*
             display: inline-block;
             padding: 3px 6px 4px 6px;
             border: 1px solid rgba(85,85,85,0.4);
@@ -271,6 +321,7 @@ h3 {
             text-transform: uppercase;
             letter-spacing: 1px;
             cursor: pointer;
+*/
         }
     }
 }
