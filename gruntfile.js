@@ -14,6 +14,7 @@ module.exports = function(grunt){
 					"assets/js/word-game.min.js": [
 						"bower_components/jquery/dist/jquery.min.js",
 						"bower_components/jquery-color/jquery.color.js",
+						"assets/js/modernizr.custom.20270.js",
 						"assets/js/word-game-new.js"
 					]
 				}
