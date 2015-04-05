@@ -323,10 +323,6 @@ var secretWord = "",
                     
                     // update score display
                     $(".score-value").html(updatedScore);
-                    
-                    // update attempts value
-                    $(".attempts-left").html(attemptsLeft);
-                    
                     console.log("YOU WIN");
                 
                 // LOSE
@@ -338,9 +334,6 @@ var secretWord = "",
                         WordGame.proceed();
                     }, 1000);
                     
-                    // update attempts value
-                    $(".attempts-left").html(attemptsLeft);
-                    
                     console.log("YOU LOSE");
                     alert("YOU LOSE");
                 
@@ -350,6 +343,9 @@ var secretWord = "",
             } else {
                 console.log("letter was already tried, doing nothing");
             }
+            
+            // update attempts value
+            $(".attempts-left").html(attemptsLeft);
             
             // log a bunch of shit
             console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / letters left: " + lettersLeft);
