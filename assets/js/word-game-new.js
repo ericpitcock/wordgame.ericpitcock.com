@@ -66,7 +66,8 @@ var secretWord = "",
         "vagina",
         "blowjob",
         "popery",
-        "fuck"
+        "fuck",
+        "mulatto"
     ],
     backgroundColors = ["ee9494", "eeaa94", "eec194", "eed794", "eeee94", "c1de9d", "8fcba1", "95bcb1", "9fb2c6", "aea1c2", "b98cb9", "d390a7"];
 
@@ -124,6 +125,7 @@ var secretWord = "",
                 },
                 success: function(data) {
                     //console.log(data);
+                    // NEED TO FILTER THE CHARACTERS ELSEWHERE
                     secretWord = data.word.toLowerCase().replace("é", "e");
                 }
             });
@@ -143,43 +145,51 @@ var secretWord = "",
                     api_key: "65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a"
                 },
                 success: function(data) {
-                    console.log(data);
+                    //console.log(data);
                     definition = data[0].text;
                     if (data[1]) {
-                        console.log(data[1].text);
+                        //console.log(data[1].text);
                         alternateDefinition = data[1].text;
-                    } else {
-                        console.log("No alternate definition available");
                     }
                 }
             });
             
             // FILTER THE WORD
+            
             // if the word is naughty, run it again
             if ($.inArray(secretWord, naughtyWords) > -1) {
                 console.log(secretWord + " is naughty, running again");
-                this.init();
+                WordGame.init();
             
             // if the word is in the defintion, run it again
-            } else if (definition.indexOf(secretWord) != -1) {
+            } else if (definition.toUpperCase().indexOf(secretWord.toUpperCase()) != -1) {
                 console.log(secretWord + " is in '" + definition + "'(main def), running again");
-                this.init();
+                WordGame.init();
             
             // if the word is in the alternate defintion, run it again
-            } else if (alternateDefinition != "" && alternateDefinition.indexOf(secretWord) != -1) {
+            } else if (alternateDefinition != "" && alternateDefinition.toUpperCase().indexOf(secretWord.toUpperCase()) != -1) {
                 console.log(secretWord + " is in '" + alternateDefinition + "'(alt def), running again");
-                this.init();
+                WordGame.init();
             
             // secret word contains a hypen
             } else if (secretWord.indexOf("-") != -1) {
                 console.log(secretWord + " has a hypen, running again");
-                this.init();
+                WordGame.init();
+            
+            // NEED TO ADD AN ARRAY OF SPECIAL CHARACTERS AND FILTER BASED ON THAT, LIKE "ne'er"
             
             // if they pass, play on
             } else {
-                console.log(secretWord);
-                console.log(definition);
-                this.processSecretWord();
+                // log secret word and definition(s)
+                console.log("secret word: " + secretWord);
+                console.log("main definition: " + definition);
+                if (alternateDefinition) {
+                    console.log("alt definition: " + alternateDefinition);
+                } else {
+                    console.log("alt definition: UNAVAILABLE");
+                }
+                // process the secret word
+                WordGame.processSecretWord();
                 
                 // set background color
                 var randomColor = "#" + backgroundColors[Math.floor(Math.random() * backgroundColors.length)];
@@ -187,6 +197,7 @@ var secretWord = "",
             }
         },
         
+        // this might need to be renamed. this is more like initialize the UI type shit
         processSecretWord: function() {
             // get the character count of secret word
             characterCount = secretWord.length;
@@ -227,22 +238,25 @@ var secretWord = "",
         
         letterMatcher: function(characterCode) {
     
-            // if it hasn't been tried, run the shiz
+            // letter hasn't been tried, run the shiz
             if ($.inArray(characterCode, correctLetters) == -1 && $.inArray(characterCode, incorrectLetters) == -1) {
                 
                 // mark the letter as used
                 $("li[data-character-code=" + characterCode + "]").addClass("letter-selected");
                 
                 // now let's decide if it's in the secret word or not
+                
+                // it's in the secret word
                 if (secretWordCharacterCodes.indexOf(characterCode) != -1) {
-                    // it's in the secret word, light up the letter
+                    
+                    //light up the letter
                     $("input.letter-holder[value=" + characterCode + "]").val(String.fromCharCode(characterCode)).addClass("highlight");
                     
                     // and give it a class
-                    $("li[data-character-code=" + characterCode + "]").addClass("used");
+                    //$("li[data-character-code=" + characterCode + "]").addClass("used");
                     
                     // if it's hinted and used, remove hint
-                    $("li[data-character-code=" + characterCode + "]").children("span.hint").remove();
+                    //$("li[data-character-code=" + characterCode + "]").children("span.hint").remove();
                     
                     // it's there, but how many times does it occur?
                     var occurrences = secretWord.split(String.fromCharCode(characterCode)).length - 1;
@@ -250,12 +264,15 @@ var secretWord = "",
                     for (var index = 0; index < occurrences; index++) {
                         correctLetters.push(characterCode);
                     }
+                    
                     console.log(String.fromCharCode(characterCode) + " is a match, and appears " + occurrences + " time(s)");
                     //console.log(correctLetters);
-                    
+                
+                // it's not in the secret word   
                 } else {
-                    // it's not in the secret word
-                    $("li[data-character-code=" + characterCode + "]").addClass("unused");
+                    
+                    //$("li[data-character-code=" + characterCode + "]").addClass("unused");
+                    
                     incorrectLetters.push(characterCode);
                     console.log(String.fromCharCode(characterCode) + " is NOT a match");
                     $(".word-palette").addClass("animated shake");
@@ -263,16 +280,20 @@ var secretWord = "",
                         function() {
                         $(".word-palette, .definition").removeClass("animated shake");
                     });
+                
                 }
                 
                 // check for winner or nah and score
                 var currentScore = 0,
                     attemptsAllowed = characterCount * 2,
+                    // need logic that incorporates var occurrences, if > 1, still mark as 1 attempt
+                    // or maybe i just decrement every time this runs??
                     attempts = correctLetters.length + incorrectLetters.length,
                     attemptsLeft = attemptsAllowed - attempts,
                     lettersLeft = characterCount - correctLetters.length;
                 //console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / letters left: " + lettersLeft);
                 
+                // WIN
                 if (correctLetters.length === characterCount) {
                     
                     $(".word-palette").addClass("animated flash");
@@ -289,11 +310,11 @@ var secretWord = "",
                         currentScore = parseInt(localStorage.getItem("word-game-score"));
                     }
                     
-                    // if the hint was used, don't add bonus points
+                    // if the freebie was used, don't add bonus points
                     if ($(".freebie-button").is("[disabled=disabled]")) {
                         var updatedScore = characterCount * 10 + attemptsLeft * 5 + currentScore;
                     } else {
-                    // if the hint wasn't used, add 5 boner points
+                    // if the freebie wasn't used, add 5 boner points
                         var updatedScore = characterCount * 10 + attemptsLeft * 5 + 5 + currentScore;
                     }
                     
@@ -303,24 +324,34 @@ var secretWord = "",
                     // update score display
                     $(".score-value").html(updatedScore);
                     
-                    console.log("YOU WIN");
+                    // update attempts value
+                    $(".attempts-left").html(attemptsLeft);
                     
+                    console.log("YOU WIN");
+                
+                // LOSE
                 } else if (correctLetters.length != characterCount && lettersLeft > attemptsLeft || attempts == attemptsAllowed) {
+                    
                     WordGame.exposeSecretWord();
+                    
                     setTimeout(function() {
                         WordGame.proceed();
                     }, 1000);
                     
+                    // update attempts value
+                    $(".attempts-left").html(attemptsLeft);
+                    
                     console.log("YOU LOSE");
                     alert("YOU LOSE");
-                }
                 
-                $(".attempts-left").html(attemptsLeft);
+                }
             
+            // letter's been tried, do nothing    
             } else {
                 console.log("letter was already tried, doing nothing");
             }
             
+            // log a bunch of shit
             console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / letters left: " + lettersLeft);
         },
         
@@ -357,9 +388,10 @@ var secretWord = "",
                 });
             
             // remove classes from alphabet and hint
-            $(".alphabet li").removeClass().children("span.hint").remove();
+            //$(".alphabet li").removeClass().children("span.hint").remove();
+            $(".alphabet li").removeClass();
             
-            // reenable hint button
+            // reenable freebie button
             $(".freebie-button").removeAttr("disabled");
         }
     }
@@ -400,7 +432,7 @@ var secretWord = "",
         }, 1000);
     });
     
-    // hint function
+    // freebie function
     $(".freebie-button").click(function() {
         // find the unused letters
         var unusedLetters = $(secretWordCharacterCodes).not(correctLetters).get();
