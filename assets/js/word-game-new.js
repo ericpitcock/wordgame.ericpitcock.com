@@ -78,58 +78,102 @@ var secretWord = "",
 (function() {
     var WordGame = {
         
-        init: function() {
-            // get the secret word
-            $.ajax({
-                async: false,
-                type: "GET",
-                url: "http://api.wordnik.com:80/v4/words.json/randomWord", 
-                data: {
-                    hasDictionaryDef: true,
-                    /*includePartOfSpeech: "noun",
-                    noun
-                    adjective
-                    verb
-                    adverb
-                    interjection
-                    pronoun
-                    preposition
-                    abbreviation
-                    affix
-                    article
-                    auxiliary-verb
-                    conjunction
-                    definite-article
-                    family-name
-                    given-name
-                    idiom
-                    imperative
-                    noun-plural
-                    noun-posessive
-                    past-participle
-                    phrasal-prefix
-                    proper-noun
-                    proper-noun-plural
-                    proper-noun-posessive
-                    suffix
-                    verb-intransitive
-                    verb-transitive*/
-                    excludePartOfSpeech: "family-name, given-name, noun-plural, proper-noun, proper-noun-plural, proper-noun-posessive, suffix",
-                    minCorpusCount: 1000,
-                    maxCorpusCount: -1,
-                    minDictionaryCount: 3,
-                    maxDictionaryCount: -1,
-                    minLength: 3,
-                    maxLength: 7,
-                    api_key: "65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a"
-                },
-                success: function(data) {
-                    //console.log(data);
-                    // NEED TO FILTER THE CHARACTERS ELSEWHERE
-                    secretWord = data.word.toLowerCase().replace("é", "e");
-                }
-            });
+        getSecretWord: function() {
             
+            // if debug word present
+            if (window.location.search) {
+            
+                debugWord = window.location.search;
+                secretWord = debugWord.replace("?", "");
+                WordGame.filterSecretWord();
+                console.log("DEBUG: " + secretWord);
+            
+            } else {
+            
+                // get the secret word
+                $.ajax({
+                    async: false,
+                    type: "GET",
+                    url: "http://api.wordnik.com:80/v4/words.json/randomWord", 
+                    data: {
+                        hasDictionaryDef: true,
+                        /*includePartOfSpeech: "noun",
+                        noun
+                        adjective
+                        verb
+                        adverb
+                        interjection
+                        pronoun
+                        preposition
+                        abbreviation
+                        affix
+                        article
+                        auxiliary-verb
+                        conjunction
+                        definite-article
+                        family-name
+                        given-name
+                        idiom
+                        imperative
+                        noun-plural
+                        noun-posessive
+                        past-participle
+                        phrasal-prefix
+                        proper-noun
+                        proper-noun-plural
+                        proper-noun-posessive
+                        suffix
+                        verb-intransitive
+                        verb-transitive*/
+                        excludePartOfSpeech: "family-name, given-name, noun-plural, proper-noun, proper-noun-plural, proper-noun-posessive, suffix",
+                        minCorpusCount: 1000,
+                        maxCorpusCount: -1,
+                        minDictionaryCount: 3,
+                        maxDictionaryCount: -1,
+                        minLength: 3,
+                        maxLength: 7,
+                        api_key: "65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a"
+                    },
+                    success: function(data) {
+                        //console.log(data);
+                        // FILTER WORD FOR CHARACTERS AT THIS POINT
+                        // IF IT PASSES, THEN GET THE DEF
+                        secretWord = data.word.toLowerCase().replace("é", "e");
+                        WordGame.filterSecretWord();
+                    }
+                });
+            
+            }
+        },
+        
+        filterSecretWord: function() {
+            //PUT ALL FILTERING IN HERE
+            // FILTER THE WORD
+            
+            // if the word is naughty, run it again
+            if ($.inArray(secretWord, naughtyWords) > -1) {
+                
+                console.log(secretWord + " is naughty, running again");
+                WordGame.getSecretWord();
+            
+            // secret word contains a hypen
+            } else if (secretWord.indexOf("-") != -1) {
+                
+                console.log(secretWord + " has a hypen, running again");
+                WordGame.getSecretWord();
+            
+            // they pass, get definition
+            } else {
+                
+                WordGame.getDefinition();
+            
+            }
+            // NEED TO ADD AN ARRAY OF SPECIAL CHARACTERS AND FILTER BASED ON THAT, LIKE "ne'er"
+            
+            
+        },
+        
+        getDefinition: function() {
             // get definition(s)
             $.ajax({
                 async: false,
@@ -151,35 +195,29 @@ var secretWord = "",
                         //console.log(data[1].text);
                         alternateDefinition = data[1].text;
                     }
+                    // filter the secret word
+                    WordGame.filterDefinition();
                 }
             });
-            
-            // FILTER THE WORD
-            
-            // if the word is naughty, run it again
-            if ($.inArray(secretWord, naughtyWords) > -1) {
-                console.log(secretWord + " is naughty, running again");
-                WordGame.init();
+        },
+        
+        filterDefinition: function() {
             
             // if the word is in the defintion, run it again
-            } else if (definition.toUpperCase().indexOf(secretWord.toUpperCase()) != -1) {
+            if (definition.toUpperCase().indexOf(secretWord.toUpperCase()) != -1) {
+                
                 console.log(secretWord + " is in '" + definition + "'(main def), running again");
-                WordGame.init();
+                WordGame.getSecretWord();
             
             // if the word is in the alternate defintion, run it again
-            } else if (alternateDefinition != "" && alternateDefinition.toUpperCase().indexOf(secretWord.toUpperCase()) != -1) {
+            } else if (alternateDefinition !== "" && alternateDefinition.toUpperCase().indexOf(secretWord.toUpperCase()) != -1) {
+                
                 console.log(secretWord + " is in '" + alternateDefinition + "'(alt def), running again");
-                WordGame.init();
-            
-            // secret word contains a hypen
-            } else if (secretWord.indexOf("-") != -1) {
-                console.log(secretWord + " has a hypen, running again");
-                WordGame.init();
-            
-            // NEED TO ADD AN ARRAY OF SPECIAL CHARACTERS AND FILTER BASED ON THAT, LIKE "ne'er"
+                WordGame.getSecretWord();
             
             // if they pass, play on
             } else {
+                
                 // log secret word and definition(s)
                 console.log("secret word: " + secretWord);
                 console.log("main definition: " + definition);
@@ -194,6 +232,7 @@ var secretWord = "",
                 // set background color
                 var randomColor = "#" + backgroundColors[Math.floor(Math.random() * backgroundColors.length)];
                 $("body").animate({ backgroundColor: randomColor }, { duration: 2000 });
+            
             }
         },
         
@@ -201,6 +240,8 @@ var secretWord = "",
         processSecretWord: function() {
             // get the character count of secret word
             characterCount = secretWord.length;
+            
+            // determine duplicate characters here
             
             // container width based on character count
             $(".word-palette").css("width", characterCount * 90 - 10);
@@ -380,7 +421,7 @@ var secretWord = "",
                     $(".word-palette, .definition").empty();
                     
                     $(".word-palette").removeClass("animated bounceOutLeft");
-                    WordGame.init();
+                    WordGame.getSecretWord();
                 });
             
             // remove classes from alphabet and hint
@@ -390,13 +431,18 @@ var secretWord = "",
             // reenable freebie button
             $(".freebie-button").removeAttr("disabled");
         }
-    }
+    };
     
-    WordGame.init();
+    WordGame.getSecretWord();
     
     //=============================================================================
     // ALL THE OTHER SHIZ
     //=============================================================================
+    
+    // disable iOS safari's freakout rubber band stupid shit
+    document.ontouchmove = function(e){
+        e.preventDefault();
+    };
     
     // determine score
     if (wordGameScore === null) {
@@ -405,7 +451,7 @@ var secretWord = "",
         localStorage.setItem("word-game-score", 0);
         
         // only nag the first timers with the intro
-        $(".hello-overlay").show();
+        //$(".hello-overlay").show();
         
     } else {
         // set their previous score
@@ -416,9 +462,9 @@ var secretWord = "",
     $(".score-value").text(scoreValue);
     
     // close the hello modal
-    $(".close-hello").click(function() {
+    /*$(".close-hello").click(function() {
         $(".hello-overlay").fadeOut(300);
-    });
+    });*/
     
     // click the enter icon
     $(".enter-key").click(function() {
