@@ -4,10 +4,12 @@
 
 var secretWord = "",
     secretWordCharacterCodes = [],
-    characterCount = "",
+    characterCount = 0,
     definition = "",
     alternateDefinition = "",
+    attemptsAllowed = 0,
     correctLetters = [],
+    correctLetterCount = 0,
     incorrectLetters = [],
     wordGameScore = localStorage.getItem("word-game-score"),
     naughtyWords = [
@@ -243,6 +245,9 @@ var secretWord = "",
             // get the character count of secret word
             characterCount = secretWord.length;
             
+            // set attempts allowed
+            attemptsAllowed = characterCount * 2
+            
             // determine duplicate characters here
             
             function getFrequency(string) {
@@ -287,7 +292,7 @@ var secretWord = "",
                 });
             
             // display attempts count
-            $(".attempts-left").html(characterCount * 2);
+            $(".attempts-left").html(attemptsAllowed);
             
             // display definition
             $(".definition").append("<p>" + definition + "</p>");
@@ -324,13 +329,17 @@ var secretWord = "",
                     
                     // it's there, but how many times does it occur?
                     var occurrences = secretWord.split(String.fromCharCode(characterCode)).length - 1;
-                    // for each occurence, add it to the correctLetters
+                    
+                    // add to array of correct letters
+                    correctLetters.push(characterCode);
+                    
+                    // for each occurence, up the correct letter count
                     for (var index = 0; index < occurrences; index++) {
-                        correctLetters.push(characterCode);
+                        correctLetterCount++;
                     }
                     
                     console.log(String.fromCharCode(characterCode) + " is a match, and appears " + occurrences + " time(s)");
-                    //console.log(correctLetters);
+                    console.log("correct letters: " + correctLetters);
                 
                 // it's not in the secret word   
                 } else {
@@ -349,16 +358,16 @@ var secretWord = "",
                 
                 // check for winner or nah and score
                 var currentScore = 0,
-                    attemptsAllowed = characterCount * 2,
+                    //attemptsAllowed = characterCount * 2,
                     // need logic that incorporates var occurrences, if > 1, still mark as 1 attempt
                     // or maybe i just decrement every time this runs??
                     attempts = correctLetters.length + incorrectLetters.length,
                     attemptsLeft = attemptsAllowed - attempts,
-                    lettersLeft = characterCount - correctLetters.length;
+                    lettersLeft = characterCount - correctLetterCount;
                 //console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / letters left: " + lettersLeft);
                 
                 // WIN
-                if (correctLetters.length === characterCount) {
+                if (correctLetterCount === characterCount) {
                     
                     $(".word-palette").addClass("animated flash");
                     $(".word-palette").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
@@ -404,6 +413,9 @@ var secretWord = "",
                     alert("YOU LOSE");
                 
                 }
+                
+            // log a bunch of shit
+            console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / letters left: " + lettersLeft);
             
             // letter's been tried, do nothing    
             } else {
@@ -413,8 +425,6 @@ var secretWord = "",
             // update attempts value
             $(".attempts-left").html(attemptsLeft);
             
-            // log a bunch of shit
-            console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / letters left: " + lettersLeft);
         },
         
         exposeSecretWord: function() {
@@ -429,10 +439,11 @@ var secretWord = "",
             // empty all variables
             secretWord = "";
             secretWordCharacterCodes = [];
-            characterCount = "";
+            characterCount = 0;
             definition = "";
             alternateDefinition = "";
             correctLetters = [];
+            correctLetterCount = 0;
             incorrectLetters = [];
             attemptsAllowed = 0;
             attempts = 0;
