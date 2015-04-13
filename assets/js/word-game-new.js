@@ -82,7 +82,8 @@ var secretWord = "",
             
             // if debug word present
             if (window.location.search) {
-            
+                
+                // GOOD TEST WORDS: wattage
                 debugWord = window.location.search;
                 secretWord = debugWord.replace("?", "");
                 WordGame.filterSecretWord();
@@ -238,10 +239,33 @@ var secretWord = "",
         
         // this might need to be renamed. this is more like initialize the UI type shit
         processSecretWord: function() {
+            
             // get the character count of secret word
             characterCount = secretWord.length;
             
             // determine duplicate characters here
+            
+            function getFrequency(string) {
+                var freq = {};
+                for (var index = 0; index < string.length; index++) {
+                    var character = string.charAt(index);
+                    if (freq[character]) {
+                       freq[character]++;
+                    } else {
+                       freq[character] = 1;
+                    }
+                }
+            
+                return freq;
+            };
+            
+            console.log(getFrequency(secretWord));
+            
+            WordGame.renderUI();
+            
+        },
+        
+        renderUI: function() {
             
             // container width based on character count
             $(".word-palette").css("width", characterCount * 90 - 10);
@@ -252,7 +276,6 @@ var secretWord = "",
                 secretWordCharacterCodes.push(charCodes);
                 
                 $(".word-palette")
-                    .css("width", characterCount * 90 - 10)
                     .append('<input class="letter-holder" readonly type="text" value="' + secretWordCharacterCodes[index] + '" />');
             }
             
@@ -283,7 +306,7 @@ var secretWord = "",
             if ($.inArray(characterCode, correctLetters) == -1 && $.inArray(characterCode, incorrectLetters) == -1) {
                 
                 // mark the letter as used
-                $("li[data-character-code=" + characterCode + "]").addClass("letter-selected");
+                $("div[data-character-code=" + characterCode + "]").addClass("letter-selected");
                 
                 // now let's decide if it's in the secret word or not
                 
@@ -351,12 +374,14 @@ var secretWord = "",
                         currentScore = parseInt(localStorage.getItem("word-game-score"));
                     }
                     
+                    var updatedScore;
+                    
                     // if the freebie was used, don't add bonus points
                     if ($(".freebie-button").is("[disabled=disabled]")) {
-                        var updatedScore = characterCount * 10 + attemptsLeft * 5 + currentScore;
-                    } else {
+                        updatedScore = characterCount * 10 + attemptsLeft * 5 + currentScore;
                     // if the freebie wasn't used, add 5 boner points
-                        var updatedScore = characterCount * 10 + attemptsLeft * 5 + 5 + currentScore;
+                    } else if (!$(".freebie-button").is("[disabled=disabled]")) {
+                        updatedScore = characterCount * 10 + attemptsLeft * 5 + 5 + currentScore;
                     }
                     
                     // store score
@@ -425,8 +450,8 @@ var secretWord = "",
                 });
             
             // remove classes from alphabet and hint
-            //$(".alphabet li").removeClass().children("span.hint").remove();
-            $(".alphabet li").removeClass();
+            //$(".desktop-keys li").removeClass().children("span.hint").remove();
+            $(".keys div").removeClass();
             
             // reenable freebie button
             $(".freebie-button").removeAttr("disabled");
@@ -440,9 +465,14 @@ var secretWord = "",
     //=============================================================================
     
     // disable iOS safari's freakout rubber band stupid shit
-    document.ontouchmove = function(e){
+//     document.ontouchmove = function(e){
+//         e.preventDefault();
+//     };
+    
+    document.body.addEventListener("touchmove", function(e) {
+        // This prevents native scrolling from happening.
         e.preventDefault();
-    };
+    }, false);
     
     // determine score
     if (wordGameScore === null) {
@@ -520,7 +550,7 @@ var secretWord = "",
     });
     
     // when a letter is clicked
-    $(".alphabet li").click(function(e) {
+    $(".keys div").click(function(e) {
         // if it's aleady been used, do nah
         if ($(this).hasClass("letter-selected") ) {
             e.preventDefault();
