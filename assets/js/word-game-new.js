@@ -5,6 +5,7 @@
 var secretWord = "",
     secretWordCharacterCodes = [],
     characterCount = 0,
+    characterFrequency = {},
     definition = "",
     alternateDefinition = "",
     attemptsAllowed = 0,
@@ -246,7 +247,7 @@ var secretWord = "",
             characterCount = secretWord.length;
             
             // set attempts allowed
-            attemptsAllowed = characterCount * 2
+            attemptsAllowed = characterCount * 2;
             
             // determine duplicate characters here
             
@@ -262,9 +263,10 @@ var secretWord = "",
                 }
             
                 return freq;
-            };
+            }
             
-            console.log(getFrequency(secretWord));
+            characterFrequency = getFrequency(secretWord);
+            console.log(characterFrequency);
             
             WordGame.renderUI();
             
@@ -338,6 +340,11 @@ var secretWord = "",
                         correctLetterCount++;
                     }
                     
+                    // remove it from frequency object
+                    //var theCharacter = String.fromCharCode(characterCode);
+                    delete characterFrequency[String.fromCharCode(characterCode)];
+                    
+                    console.log(characterFrequency);
                     console.log(String.fromCharCode(characterCode) + " is a match, and appears " + occurrences + " time(s)");
                     console.log("correct letters: " + correctLetters);
                 
