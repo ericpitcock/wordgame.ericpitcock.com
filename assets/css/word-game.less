@@ -1,7 +1,7 @@
 @import "../../../common/reset.less";
 @import (less) "../../bower_components/animate.css/animate.min.css";
 
-@type: #555;
+@black: #555;
 
 *, *:before, *:after {
     -webkit-box-sizing: border-box;
@@ -18,7 +18,7 @@ body {
     background: #fff;
     text-align: center;
     font-size: 14px;
-    color: @type;
+    color: @black;
     overflow: hidden;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -31,8 +31,8 @@ button {
     display: inline-block;
     padding: 0 10px 1px 10px;
     border: 1px solid rgba(85,85,85,0.7);
-    background: none;
-    color: @type;
+    background: transparent;
+    color: @black;
     border-radius: 3px;
     font-size: 11px;
     font-weight: 600;
@@ -61,6 +61,18 @@ button {
         &:hover {
             background: transparent;
         }
+    }
+}
+
+button.freebie-button {
+    display: block;
+    margin: 10px auto 0 auto;
+}
+
+@media (min-width: 1290px) {
+    button.freebie-button {
+        display: inline-block;
+        margin: -8px 0 0 16px;
     }
 }
 
@@ -174,7 +186,7 @@ html.no-touch button:hover {
             padding: 16px 0 0 0;
             border: 0;
             background: transparent;
-            border-bottom: 5px solid @type;
+            border-bottom: 5px solid @black;
             border-radius: 0;
             font-size: 80px;
             text-align: center;
@@ -222,56 +234,89 @@ html.no-touch button:hover {
     }
 }
 
-.alphabet {
-    height: 60px;
-    max-width: 1480px;
-    padding-top: 18px;
-    border: 1px solid rgba(85,85,85,0.15);
-    border-radius: 3px;
-    margin: 40px;
-    
-    li {
-        position: relative;
-        display: inline-block;
-        width: 3.3%;
-        //text-transform: uppercase;
-        font-size: 20px;
-        cursor: pointer;
+.desktop-keys {
+    display: none;
+}
+
+.mobile-keys {
+    div {
+        margin: 15px 0;
+        text-align: center;
         
-        &.letter-selected {
-            cursor: default;
-            opacity: 0.3;
+        div {
+            height: 2em;
+            line-height: 2em;
+            font-size: 2em;
+            border-radius: 3px;
+            width: 1.4em;
+            text-align: center;
+            display: inline-block;
+            margin: 0 2px;
+            text-transform: uppercase;
+            border: 1px solid rgba(85,85,85,0.15);
+            border-radius: 3px;
+            box-shadow: 1px 1px 0px rgba(85,85,85,0.7);
+        }
+    }
+}
+
+@media (min-width: 768px) {
+    .mobile-keys {
+        display: none;
+    }
+    
+    .desktop-keys {
+        display: block;
+        height: 60px;
+        max-width: 1480px;
+        padding-top: 19px;
+        border: 1px solid rgba(85,85,85,0.15);
+        border-radius: 3px;
+        margin: 40px auto;
+        
+        div {
+            position: relative;
+            display: inline-block;
+            width: 3.3%;
+            text-transform: uppercase;
+            font-size: 20px;
+            cursor: pointer;
             
-            &:after {
-                content: "";
-                display: block;
-                position: absolute;
-                top: 8px;
-                //right: 12px;
-                width: 100%;
-                height: 2px;
-                background: #555;
-                -webkit-transform: rotate(-30deg);
-                
-            }
-            
-            /*&.used:after {
-            }
-            
-            &.unused {
+            &.letter-selected {
+                cursor: default;
+                opacity: 0.3;
                 
                 &:after {
+                    content: "";
+                    display: block;
+                    position: absolute;
+                    top: 8px;
+                    //right: 12px;
+                    width: 100%;
+                    height: 2px;
+                    background: #555;
+                    -webkit-transform: rotate(-30deg);
+                    
                 }
+                
+                /*&.used:after {
+                }
+                
+                &.unused {
+                    
+                    &:after {
+                    }
+                }*/
+            }
+            
+            /*span.hint {
+                position: absolute;
+                top: -22px;
+                left: 50%;
+                width: 12px;
+                margin-left: -6px;
             }*/
         }
-        
-        /*span.hint {
-            position: absolute;
-            top: -22px;
-            left: 50%;
-            width: 12px;
-            margin-left: -6px;
-        }*/
     }
 }
 
