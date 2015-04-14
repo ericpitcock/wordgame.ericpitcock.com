@@ -307,13 +307,16 @@ var secretWord = "",
             }
         },
         
-        letterMatcher: function(characterCode) {
+        letterMatcher: function(characterCode, attempt) {
     
             // letter hasn't been tried, run the shiz
             if ($.inArray(characterCode, incorrectLetters) == -1) {
             
                 // chalk up an attempt
-                attempts++;
+                if (attempt === true) { attempts++; }
+                
+                // add it to incorrect letters, which will need to be renamed
+                incorrectLetters.push(characterCode);
                 
                 // letter in secret word
                 if (characterCode in secretWordObject) {
@@ -343,7 +346,7 @@ var secretWord = "",
                     console.log(String.fromCharCode(characterCode) + " is NOT a match");
                     
                     // add letter to incorrect
-                    incorrectLetters.push(characterCode);
+                    //incorrectLetters.push(characterCode);
                     console.log("incorrect letters: " + incorrectLetters);
                     
                     // animate shake
@@ -543,7 +546,7 @@ var secretWord = "",
         var randomUnusedLetter = unusedLetters[Math.floor(Math.random() * unusedLetters.length)];
         
         // show freebie
-        WordGame.letterMatcher(randomUnusedLetter);
+        WordGame.letterMatcher(randomUnusedLetter, false);
         
         // disable freebie button
         $(this).attr("disabled", "disabled");
@@ -570,7 +573,7 @@ var secretWord = "",
         // if it's a-z
         } else if (characterCode >= 97 && characterCode <= 122) {
             // run letterMatcher
-            WordGame.letterMatcher(characterCode);
+            WordGame.letterMatcher(characterCode, true);
         } else {
             // do nah
             e.preventDefault();
@@ -584,7 +587,7 @@ var secretWord = "",
             e.preventDefault();
         } else {
             // run letterMatcher
-            WordGame.letterMatcher($(this).data("character-code"));
+            WordGame.letterMatcher($(this).data("character-code"), true);
         }
     });
 
