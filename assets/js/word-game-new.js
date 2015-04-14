@@ -1,5 +1,5 @@
 //=============================================================================
-/// VARIABLES
+// VARIABLES
 //=============================================================================
 
 var secretWord = "",
@@ -500,13 +500,8 @@ var secretWord = "",
     // ALL THE OTHER SHIZ
     //=============================================================================
     
-    // disable iOS safari's freakout rubber band stupid shit
-//     document.ontouchmove = function(e){
-//         e.preventDefault();
-//     };
-    
+    // prevent native scrolling
     document.body.addEventListener("touchmove", function(e) {
-        // This prevents native scrolling from happening.
         e.preventDefault();
     }, false);
     
@@ -533,7 +528,7 @@ var secretWord = "",
     });*/
     
     // click the enter icon
-    $(".enter-key").click(function() {
+    $(".enter-key").fastClick(function() {
         WordGame.exposeSecretWord();
         setTimeout(function() {
             WordGame.proceed();
@@ -541,7 +536,7 @@ var secretWord = "",
     });
     
     // freebie function
-    $(".freebie-button").click(function() {
+    $(".freebie-button").fastClick(function() {
         // find the unused letters
         var unusedLetters = Object.keys(secretWordObject);
         // get a random one
@@ -555,7 +550,7 @@ var secretWord = "",
     });
     
     /// alternate definition
-    $(".show-alternate-definition").click(function() {
+    $(".show-alternate-definition").fastClick(function() {
         $(this).html($(this).text() == "ALTERNATE DEFINITION" ? "MAIN DEFINITION" : "ALTERNATE DEFINITION");
         $(".definition p").html(alternateDefinition);
     });
@@ -583,7 +578,7 @@ var secretWord = "",
     });
     
     // when a letter is clicked
-    $(".keys div").click(function(e) {
+    $(".keys div").fastClick(function(e) {
         // if it's aleady been used, do nah
         if ($(this).hasClass("letter-selected") ) {
             e.preventDefault();
