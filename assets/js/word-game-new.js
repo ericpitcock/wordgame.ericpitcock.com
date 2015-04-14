@@ -380,6 +380,9 @@ var secretWord = "",
             
             //console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / letters left: " + lettersLeft);
             
+            // update attempts value
+            $(".attempts-left").html(attemptsLeft);
+            
             // determine if there's one letter left with multiple slots open
             if (Object.keys(secretWordObject).length === 1 && lettersLeft > 1 && attemptsLeft === 1) {
                 // set a flag that the last letter occurs twice
@@ -430,9 +433,7 @@ var secretWord = "",
             
             // LOSE
             //moreOccurancesThanAttempts = true
-            } else if ((!$.isEmptyObject(secretWordObject)) && lettersLeft > attemptsLeft && moreOccurancesThanAttempts === false || attempts == attemptsAllowed && moreOccurancesThanAttempts === false) {
-                
-                WordGame.exposeSecretWord();
+            } else if (moreOccurancesThanAttempts === false && lettersLeft > attemptsLeft || attempts == attemptsAllowed) {
                 
                 setTimeout(function() {
                     WordGame.proceed();
@@ -440,15 +441,13 @@ var secretWord = "",
                 
                 console.log("YOU LOSE");
                 alert("YOU LOSE");
+                
+                WordGame.exposeSecretWord();
             
             }
                 
             // log a bunch of shit
             console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / letters left: " + lettersLeft);
-            
-            // update attempts value
-            $(".attempts-left").html(attemptsLeft);
-            
         },
         
         exposeSecretWord: function() {
@@ -474,6 +473,7 @@ var secretWord = "",
             attemptsLeft = 0;
             lettersLeft = 0;
             moreOccurancesThanAttempts = false;
+            secretWordObject = {};
             // and reset all stuffs
             $(".word-palette").addClass("animated bounceOutLeft");
             
