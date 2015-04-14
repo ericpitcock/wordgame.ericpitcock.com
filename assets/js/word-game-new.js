@@ -543,15 +543,12 @@ var secretWord = "",
     // freebie function
     $(".freebie-button").click(function() {
         // find the unused letters
-        var unusedLetters = $(secretWordCharacterCodes).not(correctLetters).get();
+        var unusedLetters = Object.keys(secretWordObject);
         // get a random one
         var randomUnusedLetter = unusedLetters[Math.floor(Math.random() * unusedLetters.length)];
+        
         // show freebie
         WordGame.letterMatcher(randomUnusedLetter);
-        
-        // REMOVED to just show the damn letter
-        // slap the arrow above it
-        // $("li[data-character-code=" + randomUnusedLetter + "]").prepend('<span class="hint animated bounce">↓</span>');
         
         // disable freebie button
         $(this).attr("disabled", "disabled");
