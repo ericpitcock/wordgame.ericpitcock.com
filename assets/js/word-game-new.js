@@ -3,15 +3,22 @@
 //=============================================================================
 
 var secretWord = "",
+    secretWordObject = {},
+    attemptsAllowed = 0,
+    attempts = 0,
+    incorrectLetters = [],
+    moreOccurancesThanAttempts = false,
+    
+    //old
     secretWordCharacterCodes = [],
     characterCount = 0,
     characterFrequency = {},
     definition = "",
     alternateDefinition = "",
-    attemptsAllowed = 0,
-    correctLetters = [],
+    
+    //correctLetters = [],
     correctLetterCount = 0,
-    incorrectLetters = [],
+    
     wordGameScore = localStorage.getItem("word-game-score"),
     naughtyWords = [
         "skank",
@@ -249,24 +256,17 @@ var secretWord = "",
             // set attempts allowed
             attemptsAllowed = characterCount * 2;
             
-            // determine duplicate characters here
-            
-            function getFrequency(string) {
-                var freq = {};
-                for (var index = 0; index < string.length; index++) {
-                    var character = string.charAt(index);
-                    if (freq[character]) {
-                       freq[character]++;
-                    } else {
-                       freq[character] = 1;
-                    }
+            // populate secret word object: {97: 2, 101: 1, 103: 1, 116: 2, 119: 1} (wattage)
+            for (var index = 0; index < characterCount; index++) {
+                var character = secretWord.charCodeAt(index);
+                if (secretWordObject[character]) {
+                   secretWordObject[character]++;
+                } else {
+                   secretWordObject[character] = 1;
                 }
-            
-                return freq;
             }
-            
-            characterFrequency = getFrequency(secretWord);
-            console.log(characterFrequency);
+        
+            console.log(secretWordObject);
             
             WordGame.renderUI();
             
@@ -310,124 +310,141 @@ var secretWord = "",
         letterMatcher: function(characterCode) {
     
             // letter hasn't been tried, run the shiz
-            if ($.inArray(characterCode, correctLetters) == -1 && $.inArray(characterCode, incorrectLetters) == -1) {
+            if ($.inArray(characterCode, incorrectLetters) == -1) {
+            
+                // chalk up an attempt
+                attempts++;
                 
-                // mark the letter as used
-                $("div[data-character-code=" + characterCode + "]").addClass("letter-selected");
-                
-                // now let's decide if it's in the secret word or not
-                
-                // it's in the secret word
-                if (secretWordCharacterCodes.indexOf(characterCode) != -1) {
+                // letter in secret word
+                if (characterCode in secretWordObject) {
+                    
+                    // how many times does the letter occur?
+                    if (secretWordObject[characterCode] > 1) {
+                        // run code for multiple occurances
+                        console.log("this letter occurs multiple times");
+                    } else {
+                        // run code for single occurances
+                        console.log("this letter occurs once");
+                    }
                     
                     //light up the letter
                     $("input.letter-holder[value=" + characterCode + "]").val(String.fromCharCode(characterCode)).addClass("highlight");
                     
-                    // and give it a class
-                    //$("li[data-character-code=" + characterCode + "]").addClass("used");
+                    console.log(String.fromCharCode(characterCode) + " is a match, and appears " + secretWordObject[characterCode] + " time(s)");
                     
-                    // if it's hinted and used, remove hint
-                    //$("li[data-character-code=" + characterCode + "]").children("span.hint").remove();
+                    // delete the letter from the object
+                    delete secretWordObject[characterCode];
                     
-                    // it's there, but how many times does it occur?
-                    var occurrences = secretWord.split(String.fromCharCode(characterCode)).length - 1;
+                    console.log(secretWordObject);
                     
-                    // add to array of correct letters
-                    correctLetters.push(characterCode);
-                    
-                    // for each occurence, up the correct letter count
-                    for (var index = 0; index < occurrences; index++) {
-                        correctLetterCount++;
-                    }
-                    
-                    // remove it from frequency object
-                    //var theCharacter = String.fromCharCode(characterCode);
-                    delete characterFrequency[String.fromCharCode(characterCode)];
-                    
-                    console.log(characterFrequency);
-                    console.log(String.fromCharCode(characterCode) + " is a match, and appears " + occurrences + " time(s)");
-                    console.log("correct letters: " + correctLetters);
-                
-                // it's not in the secret word   
+                // letter is NOT in secret word  
                 } else {
                     
-                    //$("li[data-character-code=" + characterCode + "]").addClass("unused");
-                    
-                    incorrectLetters.push(characterCode);
                     console.log(String.fromCharCode(characterCode) + " is NOT a match");
+                    
+                    // add letter to incorrect
+                    incorrectLetters.push(characterCode);
+                    console.log("incorrect letters: " + incorrectLetters);
+                    
+                    // animate shake
                     $(".word-palette").addClass("animated shake");
                     $(".word-palette").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
                         function() {
                         $(".word-palette, .definition").removeClass("animated shake");
                     });
-                
+    
                 }
-                
-                // check for winner or nah and score
-                var currentScore = 0,
-                    //attemptsAllowed = characterCount * 2,
-                    // need logic that incorporates var occurrences, if > 1, still mark as 1 attempt
-                    // or maybe i just decrement every time this runs??
-                    attempts = correctLetters.length + incorrectLetters.length,
-                    attemptsLeft = attemptsAllowed - attempts,
-                    lettersLeft = characterCount - correctLetterCount;
-                //console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / letters left: " + lettersLeft);
-                
-                // WIN
-                if (correctLetterCount === characterCount) {
-                    
-                    $(".word-palette").addClass("animated flash");
-                    $(".word-palette").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
-                        function() {
-                        $(".word-palette, .definition").removeClass("animated flash");
-                    });
-                    setTimeout(function() {
-                        WordGame.proceed();
-                    }, 1000);
-                    
-                    // set the score
-                    if (localStorage.getItem("word-game-score")) {
-                        currentScore = parseInt(localStorage.getItem("word-game-score"));
-                    }
-                    
-                    var updatedScore;
-                    
-                    // if the freebie was used, don't add bonus points
-                    if ($(".freebie-button").is("[disabled=disabled]")) {
-                        updatedScore = characterCount * 10 + attemptsLeft * 5 + currentScore;
-                    // if the freebie wasn't used, add 5 boner points
-                    } else if (!$(".freebie-button").is("[disabled=disabled]")) {
-                        updatedScore = characterCount * 10 + attemptsLeft * 5 + 5 + currentScore;
-                    }
-                    
-                    // store score
-                    localStorage.setItem("word-game-score", updatedScore);
-                    
-                    // update score display
-                    $(".score-value").html(updatedScore);
-                    console.log("YOU WIN");
-                
-                // LOSE
-                } else if (correctLetters.length != characterCount && lettersLeft > attemptsLeft || attempts == attemptsAllowed) {
-                    
-                    WordGame.exposeSecretWord();
-                    
-                    setTimeout(function() {
-                        WordGame.proceed();
-                    }, 1000);
-                    
-                    console.log("YOU LOSE");
-                    alert("YOU LOSE");
-                
-                }
-                
-            // log a bunch of shit
-            console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / letters left: " + lettersLeft);
             
-            // letter's been tried, do nothing    
+            // letter was already tried, doing nothing
             } else {
                 console.log("letter was already tried, doing nothing");
             }
+            
+            // mark the letter as used
+            $("div[data-character-code=" + characterCode + "]").addClass("letter-selected");
+                
+            function sum(obj) {
+                var sum = 0;
+                for(var el in obj) {
+                    if(obj.hasOwnProperty(el)) {
+                        sum += parseFloat(obj[el]);
+                    }
+                }
+                return sum;
+            }
+            
+            // check for winner or nah and score
+                //attempts = correctLetters.length + incorrectLetters.length,
+            var attemptsLeft = attemptsAllowed - attempts,
+                lettersLeft = sum(secretWordObject);
+            
+            //console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / letters left: " + lettersLeft);
+            
+            // determine if there's one letter left with multiple slots open
+            if (Object.keys(secretWordObject).length === 1 && lettersLeft > 1 && attemptsLeft === 1) {
+                // set a flag that the last letter occurs twice
+                console.log("the last letter occurs more than once and this is the last attempt");
+                moreOccurancesThanAttempts = true;
+            }
+            
+            // WIN
+            //if (correctLetterCount === characterCount) {
+            if ($.isEmptyObject(secretWordObject)) {
+                
+                // animate and proceed
+                $(".word-palette").addClass("animated flash");
+                $(".word-palette").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
+                    function() {
+                    $(".word-palette, .definition").removeClass("animated flash");
+                });
+                setTimeout(function() {
+                    WordGame.proceed();
+                }, 1000);
+                
+                // get current score
+                var currentScore;
+                // if a score exists in local storage, use it
+                if (localStorage.getItem("word-game-score")) {
+                    currentScore = parseInt(localStorage.getItem("word-game-score"));
+                } else {
+                    currentScore = 0;
+                }
+                
+                // determine new score
+                var updatedScore;
+                // if the freebie was used, don't add bonus points
+                if ($(".freebie-button").is("[disabled=disabled]")) {
+                    updatedScore = characterCount * 10 + attemptsLeft * 5 + currentScore;
+                // if the freebie wasn't used, add 5 boner points
+                } else if (!$(".freebie-button").is("[disabled=disabled]")) {
+                    updatedScore = characterCount * 10 + attemptsLeft * 5 + 5 + currentScore;
+                }
+                
+                // store score value
+                localStorage.setItem("word-game-score", updatedScore);
+                
+                // update score display
+                $(".score-value").html(updatedScore);
+                
+                console.log("YOU WIN");
+            
+            // LOSE
+            //moreOccurancesThanAttempts = true
+            } else if ((!$.isEmptyObject(secretWordObject)) && lettersLeft > attemptsLeft && moreOccurancesThanAttempts === false || attempts == attemptsAllowed && moreOccurancesThanAttempts === false) {
+                
+                WordGame.exposeSecretWord();
+                
+                setTimeout(function() {
+                    WordGame.proceed();
+                }, 1000);
+                
+                console.log("YOU LOSE");
+                alert("YOU LOSE");
+            
+            }
+                
+            // log a bunch of shit
+            console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / letters left: " + lettersLeft);
             
             // update attempts value
             $(".attempts-left").html(attemptsLeft);
@@ -456,6 +473,7 @@ var secretWord = "",
             attempts = 0;
             attemptsLeft = 0;
             lettersLeft = 0;
+            moreOccurancesThanAttempts = false;
             // and reset all stuffs
             $(".word-palette").addClass("animated bounceOutLeft");
             
