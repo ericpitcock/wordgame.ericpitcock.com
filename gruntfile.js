@@ -6,6 +6,9 @@ module.exports = function(grunt){
         
         uglify: {
 			options: {
+    			compress: {
+                    drop_console: true
+                },
 				mangle: false,
                 sourceMap: true
 			},
