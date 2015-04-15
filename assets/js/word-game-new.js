@@ -7,7 +7,7 @@ var secretWord = "",
     uniqueLetters = 0,
     attemptsAllowed = 0,
     attempts = 0,
-    incorrectLetters = [],
+    attemptedLetters = [],
     moreOccurancesThanAttempts = false,
     
     //old
@@ -348,24 +348,25 @@ function sum(obj) {
         letterMatcher: function(characterCode, attempt) {
     
             // letter hasn't been tried, run the shiz
-            if ($.inArray(characterCode, incorrectLetters) == -1) {
+            if ($.inArray(characterCode, attemptedLetters) == -1) {
             
                 // chalk up an attempt
                 if (attempt === true) { attempts++; }
                 
-                // add it to incorrect letters, which will need to be renamed
-                incorrectLetters.push(characterCode);
+                // add it to attempted letters, which will need to be renamed
+                attemptedLetters.push(characterCode);
                 
                 // letter in secret word
                 if (characterCode in secretWordObject) {
                     
+                    // I GUESS I DONT NEED THIS?
                     // how many times does the letter occur?
                     if (secretWordObject[characterCode] > 1) {
                         // run code for multiple occurances
-                        console.log("this letter occurs multiple times");
+                        //console.log("this letter occurs multiple times");
                     } else {
                         // run code for single occurances
-                        console.log("this letter occurs once");
+                        //console.log("this letter occurs once");
                     }
                     
                     //light up the letter
@@ -383,9 +384,7 @@ function sum(obj) {
                     
                     console.log(String.fromCharCode(characterCode) + " is NOT a match");
                     
-                    // add letter to incorrect
-                    //incorrectLetters.push(characterCode);
-                    console.log("incorrect letters: " + incorrectLetters);
+                    
                     
                     // animate shake
                     $(".secret-word").addClass("animated shake");
@@ -395,6 +394,10 @@ function sum(obj) {
                     });
     
                 }
+                
+                // add letter to attempted
+                //attemptedLetters.push(characterCode);
+                console.log("attempted letters: " + attemptedLetters);
             
             // letter was already tried, doing nothing
             } else {
@@ -405,7 +408,7 @@ function sum(obj) {
             $("div[data-character-code=" + characterCode + "]").addClass("letter-selected");
                 
             // check for winner or nah and score
-            //attempts = correctLetters.length + incorrectLetters.length,
+            //attempts = correctLetters.length + attemptedLetters.length,
             var attemptsLeft = attemptsAllowed - attempts,
                 lettersLeft = Object.keys(secretWordObject).length;
             
@@ -501,7 +504,7 @@ function sum(obj) {
             alternateDefinition = "";
             correctLetters = [];
             correctLetterCount = 0;
-            incorrectLetters = [];
+            attemptedLetters = [];
             attemptsAllowed = 0;
             attempts = 0;
             attemptsLeft = 0;
