@@ -13,8 +13,8 @@
         <link rel="stylesheet" href="assets/css/word-game.css">
     </head>
     <body>
-        <div class="hello-overlay">
-            <div class="hello">
+        <div class="info-overlay">
+            <div class="info-content">
                 <h1>Word Game is simple:<br>Guess the word from its definition.</h1>
                 <p><span class="rules">HOW IT WORKS</span><br>If the word is 7 letters long, you will have 14 chances. If the word is 3 letters long, 6 chances. You get it.<br><br>You can use your keyboard or click letters.</p>
                 <button class="close-hello">GO PLAY!</button>
@@ -25,77 +25,80 @@
             <div class="score">Score: <span class="score-value">00</span></div>  
         </div>
         <div class="game-board">
-            <button class="show-alternate-definition">ALTERNATE DEFINITION</button>
-            <div class="definition"></div>
-            <div class="word-palette"></div>
-            <div class="keys desktop-keys">
-                <div data-character-code="97">a</div>
-                <div data-character-code="98">b</div>
-                <div data-character-code="99">c</div>
-                <div data-character-code="100">d</div>
-                <div data-character-code="101">e</div>
-                <div data-character-code="102">f</div>
-                <div data-character-code="103">g</div>
-                <div data-character-code="104">h</div>
-                <div data-character-code="105">i</div>
-                <div data-character-code="106">j</div>
-                <div data-character-code="107">k</div>
-                <div data-character-code="108">l</div>
-                <div data-character-code="109">m</div>
-                <div data-character-code="110">n</div>
-                <div data-character-code="111">o</div>
-                <div data-character-code="112">p</div>
-                <div data-character-code="113">q</div>
-                <div data-character-code="114">r</div>
-                <div data-character-code="115">s</div>
-                <div data-character-code="116">t</div>
-                <div data-character-code="117">u</div>
-                <div data-character-code="118">v</div>
-                <div data-character-code="119">w</div>
-                <div data-character-code="120">x</div>
-                <div data-character-code="121">y</div>
-                <div data-character-code="122">z</div>
-                <button class="freebie-button">FREEBIE</button>
+            <!--<button class="show-alternate-definition">ALTERNATE DEFINITION</button>-->
+            <div class="definition-container">
+                <div class="definition"><p></p></div>
             </div>
-            <div class="mobile-keys">
-                <div class="keys">
-                    <div data-character-code="113">q</div>
-                    <div data-character-code="119">w</div>
-                    <div data-character-code="101">e</div>
-                    <div data-character-code="114">r</div>
-                    <div data-character-code="116">t</div>
-                    <div data-character-code="121">y</div>
-                    <div data-character-code="117">u</div>
-                    <div data-character-code="105">i</div>
-                    <div data-character-code="111">o</div>
-                    <div data-character-code="112">p</div>
-                </div>
-                <div class="keys">
+            <div class="controls">
+                <div class="secret-word"></div>
+                <div class="attempts">Attempts left: <span class="attempts-left"></div></span>
+                <div class="keys desktop-keys">
                     <div data-character-code="97">a</div>
-                    <div data-character-code="115">s</div>
+                    <div data-character-code="98">b</div>
+                    <div data-character-code="99">c</div>
                     <div data-character-code="100">d</div>
+                    <div data-character-code="101">e</div>
                     <div data-character-code="102">f</div>
                     <div data-character-code="103">g</div>
                     <div data-character-code="104">h</div>
+                    <div data-character-code="105">i</div>
                     <div data-character-code="106">j</div>
                     <div data-character-code="107">k</div>
                     <div data-character-code="108">l</div>
-                </div>
-                <div class="keys">
-                    <div data-character-code="122">z</div>
-                    <div data-character-code="120">x</div>
-                    <div data-character-code="99">c</div>
-                    <div data-character-code="118">v</div>
-                    <div data-character-code="98">b</div>
-                    <div data-character-code="110">n</div>
                     <div data-character-code="109">m</div>
+                    <div data-character-code="110">n</div>
+                    <div data-character-code="111">o</div>
+                    <div data-character-code="112">p</div>
+                    <div data-character-code="113">q</div>
+                    <div data-character-code="114">r</div>
+                    <div data-character-code="115">s</div>
+                    <div data-character-code="116">t</div>
+                    <div data-character-code="117">u</div>
+                    <div data-character-code="118">v</div>
+                    <div data-character-code="119">w</div>
+                    <div data-character-code="120">x</div>
+                    <div data-character-code="121">y</div>
+                    <div data-character-code="122">z</div>
+                </div>
+                <div class="mobile-keys">
+                    <div class="keys">
+                        <div data-character-code="113">q</div>
+                        <div data-character-code="119">w</div>
+                        <div data-character-code="101">e</div>
+                        <div data-character-code="114">r</div>
+                        <div data-character-code="116">t</div>
+                        <div data-character-code="121">y</div>
+                        <div data-character-code="117">u</div>
+                        <div data-character-code="105">i</div>
+                        <div data-character-code="111">o</div>
+                        <div data-character-code="112">p</div>
+                    </div>
+                    <div class="keys">
+                        <div data-character-code="97">a</div>
+                        <div data-character-code="115">s</div>
+                        <div data-character-code="100">d</div>
+                        <div data-character-code="102">f</div>
+                        <div data-character-code="103">g</div>
+                        <div data-character-code="104">h</div>
+                        <div data-character-code="106">j</div>
+                        <div data-character-code="107">k</div>
+                        <div data-character-code="108">l</div>
+                    </div>
+                    <div class="keys">
+                        <div data-character-code="122">z</div>
+                        <div data-character-code="120">x</div>
+                        <div data-character-code="99">c</div>
+                        <div data-character-code="118">v</div>
+                        <div data-character-code="98">b</div>
+                        <div data-character-code="110">n</div>
+                        <div data-character-code="109">m</div>
+                    </div>
+                </div>
+                <div>
                     <button class="freebie-button">FREEBIE</button>
+                    <button class="skip-button">SKIP</button> 
                 </div>
             </div>
-            <div class="attempts">Attempts left: <span class="attempts-left"></div></span>
-        </div>
-        <div class="footer">
-            <button class="enter-key">SKIP</button>
         </div>
         <script src="assets/js/word-game.min.js"></script>
     </body>

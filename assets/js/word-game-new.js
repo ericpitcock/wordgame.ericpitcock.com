@@ -243,7 +243,7 @@ var secretWord = "",
                 // set background color
                 var randomColor = "#" + backgroundColors[Math.floor(Math.random() * backgroundColors.length)];
                 $("body").animate({ backgroundColor: randomColor }, { duration: 2000 });
-            
+                
             }
         },
         
@@ -275,29 +275,29 @@ var secretWord = "",
         renderUI: function() {
             
             // container width based on character count
-            $(".word-palette").css("width", characterCount * 90 - 10);
+            //$(".secret-word").css("width", characterCount * 90 - 10);
             
             // create character code array and letter holders
             for (var index = 0; index < characterCount; index++) {
                 var charCodes = secretWord.charCodeAt(index);
                 secretWordCharacterCodes.push(charCodes);
                 
-                $(".word-palette")
+                $(".secret-word")
                     .append('<input class="letter-holder" readonly type="text" value="' + secretWordCharacterCodes[index] + '" />');
             }
             
             // animate in
-            $(".word-palette").addClass("animated bounceInRight");
-            $(".word-palette").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
+            $(".secret-word").addClass("animated bounceInRight");
+            $(".secret-word").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
                 function() {
-                    $(".word-palette").removeClass("animated bounceInRight");
+                    $(".secret-word").removeClass("animated bounceInRight");
                 });
             
             // display attempts count
             $(".attempts-left").html(attemptsAllowed);
             
             // display definition
-            $(".definition").append("<p>" + definition + "</p>");
+            $(".definition p").html(definition);
             
             // display alternate definition button
             if (alternateDefinition === "") {
@@ -305,6 +305,27 @@ var secretWord = "",
             } else {
                 $(".show-alternate-definition").css("visibility", "visible");
             }
+            
+            // set defintion font-size based on word count - http://stackoverflow.com/questions/14885452/set-font-size-based-on-word-count-jquery
+            /*$(".question p").css('font-size',function(){
+                var $numWords = $(this).text().length; // get length of text for current p element
+                if (($numWords >= 1) && ($numWords < 20)) {
+                    return "2.2em";
+                }
+                else if (($numWords >= 20) && ($numWords < 60)) {
+                    return "1.8em";
+                }
+                else if (($numWords >= 60) && ($numWords < 100)) {
+                    return "1.2em";
+                }
+                else if (($numWords >= 100) && ($numWords < 140)) {
+                    return "0.9em";
+                }
+                else {
+                    return "0.8em";
+                }           
+            });*/
+            
         },
         
         letterMatcher: function(characterCode, attempt) {
@@ -350,10 +371,10 @@ var secretWord = "",
                     console.log("incorrect letters: " + incorrectLetters);
                     
                     // animate shake
-                    $(".word-palette").addClass("animated shake");
-                    $(".word-palette").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
+                    $(".secret-word").addClass("animated shake");
+                    $(".secret-word").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
                         function() {
-                        $(".word-palette, .definition").removeClass("animated shake");
+                        $(".secret-word").removeClass("animated shake");
                     });
     
                 }
@@ -398,10 +419,10 @@ var secretWord = "",
             if ($.isEmptyObject(secretWordObject)) {
                 
                 // animate and proceed
-                $(".word-palette").addClass("animated flash");
-                $(".word-palette").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
+                $(".secret-word").addClass("animated flash");
+                $(".secret-word").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
                     function() {
-                    $(".word-palette, .definition").removeClass("animated flash");
+                    $(".secret-word").removeClass("animated flash");
                 });
                 setTimeout(function() {
                     WordGame.proceed();
@@ -478,13 +499,13 @@ var secretWord = "",
             moreOccurancesThanAttempts = false;
             secretWordObject = {};
             // and reset all stuffs
-            $(".word-palette").addClass("animated bounceOutLeft");
+            $(".secret-word").addClass("animated bounceOutLeft");
             
-            $(".word-palette").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
+            $(".secret-word").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
                 function() {
-                    $(".word-palette, .definition").empty();
+                    $(".secret-word, .definition p").empty();
                     
-                    $(".word-palette").removeClass("animated bounceOutLeft");
+                    $(".secret-word").removeClass("animated bounceOutLeft");
                     WordGame.getSecretWord();
                 });
             
@@ -531,7 +552,7 @@ var secretWord = "",
     });*/
     
     // click the enter icon
-    $(".enter-key").fastClick(function() {
+    $(".skip-button").fastClick(function() {
         WordGame.exposeSecretWord();
         setTimeout(function() {
             WordGame.proceed();
