@@ -103,7 +103,7 @@ var secretWord = "",
             
                 // get the secret word
                 $.ajax({
-                    async: false,
+                    //async: false,
                     type: "GET",
                     url: "http://api.wordnik.com:80/v4/words.json/randomWord", 
                     data: {
@@ -187,7 +187,7 @@ var secretWord = "",
         getDefinition: function() {
             // get definition(s)
             $.ajax({
-                async: false,
+                //async: false,
                 type: "GET",
                 url: "http://api.wordnik.com:80/v4/word.json/" + secretWord + "/definitions",
                 data: {
