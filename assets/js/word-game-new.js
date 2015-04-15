@@ -4,6 +4,7 @@
 
 var secretWord = "",
     secretWordObject = {},
+    uniqueLetters = 0,
     attemptsAllowed = 0,
     attempts = 0,
     incorrectLetters = [],
@@ -80,6 +81,20 @@ var secretWord = "",
         "mulatto"
     ],
     backgroundColors = ["ee9494", "eeaa94", "eec194", "eed794", "eeee94", "c1de9d", "8fcba1", "95bcb1", "9fb2c6", "aea1c2", "b98cb9", "d390a7"];
+
+//=============================================================================
+// HELPER FUNCTIONS
+//=============================================================================
+
+function sum(obj) {
+    var sum = 0;
+    for(var el in obj) {
+        if(obj.hasOwnProperty(el)) {
+            sum += parseFloat(obj[el]);
+        }
+    }
+    return sum;
+}
 
 //=============================================================================
 // GAME
@@ -253,9 +268,6 @@ var secretWord = "",
             // get the character count of secret word
             characterCount = secretWord.length;
             
-            // set attempts allowed
-            attemptsAllowed = characterCount * 2;
-            
             // populate secret word object: {97: 2, 101: 1, 103: 1, 116: 2, 119: 1} (wattage)
             for (var index = 0; index < characterCount; index++) {
                 var character = secretWord.charCodeAt(index);
@@ -267,6 +279,11 @@ var secretWord = "",
             }
         
             console.log(secretWordObject);
+            
+            // set attempts allowed based on keys (unique letters) in the secretWordObject
+            //attemptsAllowed = characterCount * 2;
+            uniqueLetters = Object.keys(secretWordObject).length;
+            attemptsAllowed = uniqueLetters * 2;
             
             WordGame.renderUI();
             
@@ -387,20 +404,10 @@ var secretWord = "",
             // mark the letter as used
             $("div[data-character-code=" + characterCode + "]").addClass("letter-selected");
                 
-            function sum(obj) {
-                var sum = 0;
-                for(var el in obj) {
-                    if(obj.hasOwnProperty(el)) {
-                        sum += parseFloat(obj[el]);
-                    }
-                }
-                return sum;
-            }
-            
             // check for winner or nah and score
-                //attempts = correctLetters.length + incorrectLetters.length,
+            //attempts = correctLetters.length + incorrectLetters.length,
             var attemptsLeft = attemptsAllowed - attempts,
-                lettersLeft = sum(secretWordObject);
+                lettersLeft = Object.keys(secretWordObject).length;
             
             //console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / letters left: " + lettersLeft);
             
@@ -413,6 +420,9 @@ var secretWord = "",
                 console.log("the last letter occurs more than once and this is the last attempt");
                 moreOccurancesThanAttempts = true;
             }
+            
+            // need to set a flag if any remaining letters occur more than once.
+            
             
             // WIN
             //if (correctLetterCount === characterCount) {
@@ -471,7 +481,7 @@ var secretWord = "",
             }
                 
             // log a bunch of shit
-            console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / letters left: " + lettersLeft);
+            console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / unique letters left: " + lettersLeft);
         },
         
         exposeSecretWord: function() {

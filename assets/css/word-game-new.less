@@ -167,7 +167,7 @@ html.no-touch button:hover {
                 padding: 16px 0 0 0;
                 border: 0;
                 background: transparent;
-                border-bottom: 5px solid @black;
+                border-bottom: 3px solid @black;
                 border-radius: 0;
                 font-size: 40px;
                 text-align: center;
@@ -194,6 +194,12 @@ html.no-touch button:hover {
         
         .attempts {
             margin: 20px 0;
+            
+            .attempts-left {
+                display: inline-block;
+                width: 15px;
+                letter-spacing: 0;
+            }
         }
         
         .keys {
@@ -400,13 +406,7 @@ button.freebie-button {
 
 }
 
-.attempts {
-    .attempts-left {
-        display: inline-block;
-        width: 15px;
-        letter-spacing: 0;
-    }
-}
+
 
 h3 {
     position: absolute;
