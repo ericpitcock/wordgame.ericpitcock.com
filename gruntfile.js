@@ -33,14 +33,14 @@ module.exports = function(grunt){
 				compress: true
 			},
 			files: {
-				"assets/css/word-game.css": "assets/css/word-game.less"
+				"assets/css/word-game.css": "assets/css/word-game-new.less"
 			}
 		  }
 		},
 
 		watch: {    
 			less: {
-				files: ["assets/css/word-game.less"],
+				files: ["assets/css/word-game-new.less"],
 				tasks: ["less"]
 			},
 			
