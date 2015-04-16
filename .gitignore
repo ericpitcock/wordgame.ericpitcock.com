@@ -2,3 +2,6 @@ _Password-Protection/*
 api-key.txt
 bower_components/*
 node_modules/*
+bower.json
+gruntfile.js
+package.json
