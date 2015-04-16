@@ -512,7 +512,7 @@ function isLettersOnly(str) {
                     });
                 
                 // remove classes from letters
-                $(".keys div").removeClass();
+                $(".keys div").removeClass().removeAttr("class");
                 
                 // reenable freebie button
                 $(".freebie-button").removeAttr("disabled");
@@ -525,6 +525,11 @@ function isLettersOnly(str) {
     //=============================================================================
     // ALL THE OTHER SHIZ
     //=============================================================================
+    
+    // fast button action
+    $(function() {
+        FastClick.attach(document.body);
+    });
     
     // prevent native scrolling
     document.body.addEventListener("touchmove", function(e) {
@@ -549,13 +554,13 @@ function isLettersOnly(str) {
     $(".score-value").text(scoreValue);
     
     // click the enter icon
-    $(".skip-button").fastClick(function() {
+    $(".skip-button").click(function() {
         WordGame.exposeSecretWord();
         WordGame.proceed();
     });
     
     // freebie function
-    $(".freebie-button").fastClick(function() {
+    $(".freebie-button").click(function() {
         // find the unused letters
         var unusedLetters = Object.keys(secretWordObject);
         
@@ -570,7 +575,7 @@ function isLettersOnly(str) {
     });
     
     // alternate definition
-    /*$(".show-alternate-definition").fastClick(function() {
+    /*$(".show-alternate-definition").click(function() {
         $(this).html($(this).text() == "ALTERNATE DEFINITION" ? "MAIN DEFINITION" : "ALTERNATE DEFINITION");
         $(".definition p").html(alternateDefinition);
     });*/
@@ -596,7 +601,7 @@ function isLettersOnly(str) {
     });
     
     // when a letter is clicked
-    $(".keys div").fastClick(function(e) {
+    $(".keys div").click(function(e) {
         // if it's aleady been used, do nah
         if ($(this).hasClass("letter-selected") ) {
             e.preventDefault();

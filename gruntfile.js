@@ -18,8 +18,9 @@ module.exports = function(grunt){
 						"bower_components/jquery/dist/jquery.min.js",
 						"bower_components/jquery-color/jquery.color.js",
 						"assets/js/modernizr.custom.20270.js",
-						"assets/js/google.fastbutton.js",
-						"assets/js/jquery.google.fastbutton.js",
+						//"assets/js/google.fastbutton.js",
+						//"assets/js/jquery.google.fastbutton.js",
+						"assets/js/fastclick.js",
 						"assets/js/word-game.js"
 					]
 				}
