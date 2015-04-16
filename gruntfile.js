@@ -20,7 +20,7 @@ module.exports = function(grunt){
 						"assets/js/modernizr.custom.20270.js",
 						"assets/js/google.fastbutton.js",
 						"assets/js/jquery.google.fastbutton.js",
-						"assets/js/word-game-new.js"
+						"assets/js/word-game.js"
 					]
 				}
 			}
@@ -33,19 +33,19 @@ module.exports = function(grunt){
 				compress: true
 			},
 			files: {
-				"assets/css/word-game.css": "assets/css/word-game-new.less"
+				"assets/css/word-game.css": "assets/css/word-game.less"
 			}
 		  }
 		},
 
 		watch: {    
 			less: {
-				files: ["assets/css/word-game-new.less"],
+				files: ["assets/css/word-game.less"],
 				tasks: ["less"]
 			},
 			
 			js: {
-				files: ["assets/js/word-game-new.js"],
+				files: ["assets/js/word-game.js"],
 				tasks: ["uglify"]
 			}
 		}
