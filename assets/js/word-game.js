@@ -81,7 +81,7 @@ var secretWord = "",
         "mulatto",
         "faggot"
     ],
-    backgroundColors = ["ee9494", "eeaa94", "eec194", "eed794", "eeee94", "c1de9d", "8fcba1", "95bcb1", "9fb2c6", "aea1c2", "b98cb9", "d390a7"];
+    backgroundColors = ["#9CC0CF", "#9ABCC5", "#98B8BB", "#9AB8B4", "#9EBAB0", "#A3BDAD", "#A7BFA8", "#ABC1A4", "#B0C4A1", "#B4C69C"];
 
 //=============================================================================
 // HELPER FUNCTIONS
@@ -257,8 +257,11 @@ function isLettersOnly(str) {
                 WordGame.processSecretWord();
                 
                 // set background color
-                var randomColor = "#" + backgroundColors[Math.floor(Math.random() * backgroundColors.length)];
+                var randomColor = backgroundColors[Math.floor(Math.random() * backgroundColors.length)];
                 $("body").animate({ backgroundColor: randomColor }, { duration: 2000 });
+                
+                //backgroundColorsIndex = 0;
+                //$("body").animate({ backgroundColor: backgroundColors[backgroundColorsIndex++ % backgroundColors.length] }, { duration: 2000 });
                 
             }
         },
