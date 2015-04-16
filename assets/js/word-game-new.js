@@ -86,14 +86,20 @@ var secretWord = "",
 // HELPER FUNCTIONS
 //=============================================================================
 
+// count something that I forgot
 function sum(obj) {
-    var sum = 0;
+    var summ = 0;
     for(var el in obj) {
         if(obj.hasOwnProperty(el)) {
-            sum += parseFloat(obj[el]);
+            summ += parseFloat(obj[el]);
         }
     }
-    return sum;
+    return summ;
+}
+
+// test for letters only
+function isLettersOnly(str) {
+    return (/^[a-z]+$/).test(str);
 }
 
 //=============================================================================
@@ -173,30 +179,24 @@ function sum(obj) {
         },
         
         filterSecretWord: function() {
-            //PUT ALL FILTERING IN HERE
-            // FILTER THE WORD
-            
-            // if the word is naughty, run it again
+            // secret word is naughty, run it again
             if ($.inArray(secretWord, naughtyWords) > -1) {
                 
                 console.log(secretWord + " is naughty, running again");
                 WordGame.getSecretWord();
             
-            // secret word contains a hypen
-            } else if (secretWord.indexOf("-") != -1) {
+            // secret word has bad characters, run it again
+            } else if (isLettersOnly(secretWord) === false) {       
                 
-                console.log(secretWord + " has a hypen, running again");
+                console.log(secretWord + " has bad characters, running again");
                 WordGame.getSecretWord();
             
-            // they pass, get definition
+            // secret word is good to go, get definition
             } else {
                 
                 WordGame.getDefinition();
             
             }
-            // NEED TO ADD AN ARRAY OF SPECIAL CHARACTERS AND FILTER BASED ON THAT, LIKE "ne'er"
-            
-            
         },
         
         getDefinition: function() {
@@ -221,7 +221,7 @@ function sum(obj) {
                         //console.log(data[1].text);
                         alternateDefinition = data[1].text;
                     }
-                    // filter the secret word
+                    // filter the definition
                     WordGame.filterDefinition();
                 }
             });
@@ -229,19 +229,19 @@ function sum(obj) {
         
         filterDefinition: function() {
             
-            // if the word is in the defintion, run it again
+            // the word is in the defintion, run it again
             if (definition.toUpperCase().indexOf(secretWord.toUpperCase()) != -1) {
                 
                 console.log(secretWord + " is in '" + definition + "'(main def), running again");
                 WordGame.getSecretWord();
             
-            // if the word is in the alternate defintion, run it again
+            // the word is in the alternate defintion, run it again
             } else if (alternateDefinition !== "" && alternateDefinition.toUpperCase().indexOf(secretWord.toUpperCase()) != -1) {
                 
                 console.log(secretWord + " is in '" + alternateDefinition + "'(alt def), running again");
                 WordGame.getSecretWord();
             
-            // if they pass, play on
+            // they passed, play on
             } else {
                 
                 // log secret word and definition(s)
@@ -262,7 +262,7 @@ function sum(obj) {
             }
         },
         
-        // this might need to be renamed. this is more like initialize the UI type shit
+        // process the secret word into a pulp
         processSecretWord: function() {
             
             // get the character count of secret word
@@ -384,8 +384,6 @@ function sum(obj) {
                     
                     console.log(String.fromCharCode(characterCode) + " is NOT a match");
                     
-                    
-                    
                     // animate shake
                     $(".secret-word").addClass("animated shake");
                     $(".secret-word").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
@@ -395,8 +393,6 @@ function sum(obj) {
     
                 }
                 
-                // add letter to attempted
-                //attemptedLetters.push(characterCode);
                 console.log("attempted letters: " + attemptedLetters);
             
             // letter was already tried, doing nothing
@@ -407,12 +403,8 @@ function sum(obj) {
             // mark the letter as used
             $("div[data-character-code=" + characterCode + "]").addClass("letter-selected");
                 
-            // check for winner or nah and score
-            //attempts = correctLetters.length + attemptedLetters.length,
             var attemptsLeft = attemptsAllowed - attempts,
                 lettersLeft = Object.keys(secretWordObject).length;
-            
-            //console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / letters left: " + lettersLeft);
             
             // update attempts value
             $(".attempts-left").html(attemptsLeft);
@@ -426,9 +418,8 @@ function sum(obj) {
             
             // need to set a flag if any remaining letters occur more than once.
             
-            
+            // check for winner or nah and score
             // WIN
-            //if (correctLetterCount === characterCount) {
             if ($.isEmptyObject(secretWordObject)) {
                 
                 // animate and proceed
@@ -437,9 +428,7 @@ function sum(obj) {
                     function() {
                     $(".secret-word").removeClass("animated flash");
                 });
-                setTimeout(function() {
-                    WordGame.proceed();
-                }, 1000);
+                WordGame.proceed();
                 
                 // get current score
                 var currentScore;
@@ -472,15 +461,12 @@ function sum(obj) {
             //moreOccurancesThanAttempts = true
             } else if (moreOccurancesThanAttempts === false && lettersLeft > attemptsLeft || attempts == attemptsAllowed) {
                 
-                setTimeout(function() {
-                    WordGame.proceed();
-                }, 1000);
+                WordGame.exposeSecretWord();
+                WordGame.proceed();
                 
                 console.log("YOU LOSE");
                 alert("YOU LOSE");
                 
-                WordGame.exposeSecretWord();
-            
             }
                 
             // log a bunch of shit
@@ -494,40 +480,42 @@ function sum(obj) {
         },
         
         proceed: function() {
-            console.clear();
-            
-            // empty all variables
-            secretWord = "";
-            secretWordCharacterCodes = [];
-            characterCount = 0;
-            definition = "";
-            alternateDefinition = "";
-            correctLetters = [];
-            correctLetterCount = 0;
-            attemptedLetters = [];
-            attemptsAllowed = 0;
-            attempts = 0;
-            attemptsLeft = 0;
-            lettersLeft = 0;
-            moreOccurancesThanAttempts = false;
-            secretWordObject = {};
-            // and reset all stuffs
-            $(".secret-word").addClass("animated bounceOutLeft");
-            
-            $(".secret-word").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
-                function() {
-                    $(".secret-word, .definition p").empty();
-                    
-                    $(".secret-word").removeClass("animated bounceOutLeft");
-                    WordGame.getSecretWord();
-                });
-            
-            // remove classes from alphabet and hint
-            //$(".desktop-keys li").removeClass().children("span.hint").remove();
-            $(".keys div").removeClass();
-            
-            // reenable freebie button
-            $(".freebie-button").removeAttr("disabled");
+            setTimeout(function() {
+                console.clear();
+                
+                // empty all variables
+                secretWord = "";
+                secretWordCharacterCodes = [];
+                characterCount = 0;
+                definition = "";
+                alternateDefinition = "";
+                correctLetters = [];
+                correctLetterCount = 0;
+                attemptedLetters = [];
+                attemptsAllowed = 0;
+                attempts = 0;
+                attemptsLeft = 0;
+                lettersLeft = 0;
+                moreOccurancesThanAttempts = false;
+                secretWordObject = {};
+                
+                // animate out
+                $(".secret-word").addClass("animated bounceOutLeft");
+                
+                // empty and reload
+                $(".secret-word").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
+                    function() {
+                        $(".secret-word, .definition p").empty();
+                        $(".secret-word").removeClass("animated bounceOutLeft");
+                        WordGame.getSecretWord();
+                    });
+                
+                // remove classes from letters
+                $(".keys div").removeClass();
+                
+                // reenable freebie button
+                $(".freebie-button").removeAttr("disabled");
+            }, 1000);
         }
     };
     
@@ -559,23 +547,17 @@ function sum(obj) {
     // display score
     $(".score-value").text(scoreValue);
     
-    // close the hello modal
-    /*$(".close-hello").click(function() {
-        $(".hello-overlay").fadeOut(300);
-    });*/
-    
     // click the enter icon
     $(".skip-button").fastClick(function() {
         WordGame.exposeSecretWord();
-        setTimeout(function() {
-            WordGame.proceed();
-        }, 1000);
+        WordGame.proceed();
     });
     
     // freebie function
     $(".freebie-button").fastClick(function() {
         // find the unused letters
         var unusedLetters = Object.keys(secretWordObject);
+        
         // get a random one
         var randomUnusedLetter = unusedLetters[Math.floor(Math.random() * unusedLetters.length)];
         
@@ -586,11 +568,11 @@ function sum(obj) {
         $(this).attr("disabled", "disabled");
     });
     
-    /// alternate definition
-    $(".show-alternate-definition").fastClick(function() {
+    // alternate definition
+    /*$(".show-alternate-definition").fastClick(function() {
         $(this).html($(this).text() == "ALTERNATE DEFINITION" ? "MAIN DEFINITION" : "ALTERNATE DEFINITION");
         $(".definition p").html(alternateDefinition);
-    });
+    });*/
     
     
     // when a key is pressed
@@ -601,9 +583,7 @@ function sum(obj) {
         // if it's return
         if (characterCode == 13) {
             WordGame.exposeSecretWord();
-            setTimeout(function() {
-                WordGame.proceed();
-            }, 1000);    
+            WordGame.proceed();   
         // if it's a-z
         } else if (characterCode >= 97 && characterCode <= 122) {
             // run letterMatcher
