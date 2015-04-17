@@ -3,23 +3,15 @@
 //=============================================================================
 
 var secretWord = "",
+    characterCount = 0,
+    secretWordCharacterCodes = [],
     secretWordObject = {},
     uniqueLetters = 0,
+    definition = "",
+    alternateDefinition = "",
     attemptsAllowed = 0,
     attempts = 0,
     attemptedLetters = [],
-    moreOccurancesThanAttempts = false,
-    
-    //old
-    secretWordCharacterCodes = [],
-    characterCount = 0,
-    characterFrequency = {},
-    definition = "",
-    alternateDefinition = "",
-    
-    //correctLetters = [],
-    correctLetterCount = 0,
-    
     wordGameScore = localStorage.getItem("word-game-score"),
     naughtyWords = [
         "skank",
@@ -86,17 +78,6 @@ var secretWord = "",
 //=============================================================================
 // HELPER FUNCTIONS
 //=============================================================================
-
-// count something that I forgot
-function sum(obj) {
-    var summ = 0;
-    for(var el in obj) {
-        if(obj.hasOwnProperty(el)) {
-            summ += parseFloat(obj[el]);
-        }
-    }
-    return summ;
-}
 
 // test for letters only
 function isLettersOnly(str) {
@@ -168,11 +149,12 @@ function isLettersOnly(str) {
                         api_key: "65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a"
                     },
                     success: function(data) {
-                        //console.log(data);
-                        // FILTER WORD FOR CHARACTERS AT THIS POINT
-                        // IF IT PASSES, THEN GET THE DEF
-                        secretWord = data.word;
-                        WordGame.filterSecretWord();
+                        if (data.word === undefined) {
+                            WordGame.getSecretWord();
+                        } else {
+                           secretWord = data.word;
+                           WordGame.filterSecretWord(); 
+                        }
                     }
                 });
             
@@ -260,9 +242,6 @@ function isLettersOnly(str) {
                 var randomColor = backgroundColors[Math.floor(Math.random() * backgroundColors.length)];
                 $("body").animate({ backgroundColor: randomColor }, { duration: 2000 });
                 
-                //backgroundColorsIndex = 0;
-                //$("body").animate({ backgroundColor: backgroundColors[backgroundColorsIndex++ % backgroundColors.length] }, { duration: 2000 });
-                
             }
         },
         
@@ -285,7 +264,6 @@ function isLettersOnly(str) {
             console.log(secretWordObject);
             
             // set attempts allowed based on keys (unique letters) in the secretWordObject
-            //attemptsAllowed = characterCount * 2;
             uniqueLetters = Object.keys(secretWordObject).length;
             attemptsAllowed = uniqueLetters * 2;
             
@@ -294,9 +272,6 @@ function isLettersOnly(str) {
         },
         
         renderUI: function() {
-            
-            // container width based on character count
-            //$(".secret-word").css("width", characterCount * 90 - 10);
             
             // create character code array and letter holders
             for (var index = 0; index < characterCount; index++) {
@@ -327,26 +302,6 @@ function isLettersOnly(str) {
                 $(".show-alternate-definition").css("visibility", "visible");
             }
             
-            // set defintion font-size based on word count - http://stackoverflow.com/questions/14885452/set-font-size-based-on-word-count-jquery
-            /*$(".question p").css('font-size',function(){
-                var $numWords = $(this).text().length; // get length of text for current p element
-                if (($numWords >= 1) && ($numWords < 20)) {
-                    return "2.2em";
-                }
-                else if (($numWords >= 20) && ($numWords < 60)) {
-                    return "1.8em";
-                }
-                else if (($numWords >= 60) && ($numWords < 100)) {
-                    return "1.2em";
-                }
-                else if (($numWords >= 100) && ($numWords < 140)) {
-                    return "0.9em";
-                }
-                else {
-                    return "0.8em";
-                }           
-            });*/
-            
         },
         
         letterMatcher: function(characterCode, attempt) {
@@ -362,16 +317,6 @@ function isLettersOnly(str) {
                 
                 // letter in secret word
                 if (characterCode in secretWordObject) {
-                    
-                    // I GUESS I DONT NEED THIS?
-                    // how many times does the letter occur?
-                    if (secretWordObject[characterCode] > 1) {
-                        // run code for multiple occurances
-                        //console.log("this letter occurs multiple times");
-                    } else {
-                        // run code for single occurances
-                        //console.log("this letter occurs once");
-                    }
                     
                     //light up the letter
                     $("input.letter-holder[value=" + characterCode + "]").val(String.fromCharCode(characterCode)).addClass("highlight");
@@ -413,15 +358,6 @@ function isLettersOnly(str) {
             // update attempts value
             $(".attempts-left").html(attemptsLeft);
             
-            // determine if there's one letter left with multiple slots open
-            if (Object.keys(secretWordObject).length === 1 && lettersLeft > 1 && attemptsLeft === 1) {
-                // set a flag that the last letter occurs twice
-                console.log("the last letter occurs more than once and this is the last attempt");
-                moreOccurancesThanAttempts = true;
-            }
-            
-            // need to set a flag if any remaining letters occur more than once.
-            
             // check for winner or nah and score
             // WIN
             if ($.isEmptyObject(secretWordObject)) {
@@ -432,7 +368,11 @@ function isLettersOnly(str) {
                     function() {
                     $(".secret-word").removeClass("animated flash");
                 });
-                WordGame.proceed();
+                
+                // was it dude perfect?
+                if (attempts == uniqueLetters) {
+                    console.log("DUDE PERFECT!");
+                }
                 
                 // get current score
                 var currentScore;
@@ -457,13 +397,16 @@ function isLettersOnly(str) {
                 localStorage.setItem("word-game-score", updatedScore);
                 
                 // update score display
-                $(".score-value").html(updatedScore);
+                //$(".score-value").html(updatedScore);
+                $(".score-value").animateNumbers(updatedScore, false, 2000, "linear");
+                
+                WordGame.proceed();
                 
                 console.log("YOU WIN");
             
             // LOSE
             //moreOccurancesThanAttempts = true
-            } else if (moreOccurancesThanAttempts === false && lettersLeft > attemptsLeft || attempts == attemptsAllowed) {
+            } else if (lettersLeft > attemptsLeft || attempts == attemptsAllowed) {
                 
                 WordGame.exposeSecretWord();
                 WordGame.proceed();
@@ -487,22 +430,19 @@ function isLettersOnly(str) {
             setTimeout(function() {
                 console.clear();
                 
-                // empty all variables
                 secretWord = "";
-                secretWordCharacterCodes = [];
                 characterCount = 0;
+                secretWordCharacterCodes = [];
+                secretWordObject = {};
+                uniqueLetters = 0;
                 definition = "";
                 alternateDefinition = "";
-                correctLetters = [];
-                correctLetterCount = 0;
-                attemptedLetters = [];
                 attemptsAllowed = 0;
                 attempts = 0;
+                attemptedLetters = [];
                 attemptsLeft = 0;
                 lettersLeft = 0;
-                moreOccurancesThanAttempts = false;
-                secretWordObject = {};
-                
+
                 // animate out
                 $(".secret-word").addClass("animated bounceOutLeft");
                 
@@ -545,9 +485,6 @@ function isLettersOnly(str) {
         scoreValue = "0";
         localStorage.setItem("word-game-score", 0);
         
-        // only nag the first timers with the intro
-        //$(".hello-overlay").show();
-        
     } else {
         // set their previous score
         scoreValue = localStorage.getItem("word-game-score");
@@ -582,7 +519,6 @@ function isLettersOnly(str) {
         $(this).html($(this).text() == "ALTERNATE DEFINITION" ? "MAIN DEFINITION" : "ALTERNATE DEFINITION");
         $(".definition p").html(alternateDefinition);
     });*/
-    
     
     // when a key is pressed
     $(document).keypress(function(e) {
