@@ -171,7 +171,7 @@ function isLettersOnly(str) {
                         //console.log(data);
                         // FILTER WORD FOR CHARACTERS AT THIS POINT
                         // IF IT PASSES, THEN GET THE DEF
-                        secretWord = data.word.toLowerCase().replace("é", "e");
+                        secretWord = data.word;
                         WordGame.filterSecretWord();
                     }
                 });
