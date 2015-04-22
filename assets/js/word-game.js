@@ -84,6 +84,14 @@ function isLettersOnly(str) {
     return (/^[a-z]+$/).test(str);
 }
 
+//resize mobile keys
+var resizeMobileKeys = (function resizeMobileKeys() {
+    $(".mobile-keys .keys div").each(function() { 
+        $(this).css({"line-height": $(this).height() + "px"});
+    });
+    return resizeMobileKeys;
+}());
+
 //=============================================================================
 // GAME
 //=============================================================================
@@ -245,7 +253,7 @@ function isLettersOnly(str) {
             }
         },
         
-        // process the secret word into a pulp
+        // process the secret word in to a pulp
         processSecretWord: function() {
             
             // get the character count of secret word
@@ -472,6 +480,11 @@ function isLettersOnly(str) {
     // fast button action
     $(function() {
         FastClick.attach(document.body);
+    });
+    
+    // change mobile keys line-height with container
+    $(window).resize(function(){
+        resizeMobileKeys();
     });
     
     // prevent native scrolling
