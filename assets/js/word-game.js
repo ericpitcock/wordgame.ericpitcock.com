@@ -84,13 +84,59 @@ function isLettersOnly(str) {
     return (/^[a-z]+$/).test(str);
 }
 
+var mobileKeys = false;
+var desktopKeys = false;
+
+// keys magic
+var renderKeys = (function renderKeys() {
+    
+    // sort function
+    function performSort(order) {
+        var keysContainer = $(".keys");
+        keysContainer.find("div").sort(function(a, b) {
+            return +a.getAttribute(order) - +b.getAttribute(order);
+        })
+        .appendTo(keysContainer);
+    }
+    
+    if (Modernizr.mq("(max-width: 768px)")) {
+       
+        if (mobileKeys === false) {
+            
+            performSort("data-qwerty-order");
+            
+            //if ($(".keys").not(":has(span)")) 
+            if ($("div[data-qwerty-order='10'] > span.break").length === 0) {
+                console.log("no spans");
+                $("div[data-qwerty-order='10'], div[data-qwerty-order='19']").after('<span class="break"></span>');
+            }
+            
+            mobileKeys = true;
+            desktopKeys = false;
+        
+        }
+        
+    } else if (Modernizr.mq("(min-width: 769px)")) {
+        if (desktopKeys === false) { performSort("data-character-code"); }
+        mobileKeys = false;
+        desktopKeys = true;
+    }
+    return renderKeys;
+}());
+
 //resize mobile keys
 var resizeMobileKeys = (function resizeMobileKeys() {
-    $(".mobile-keys .keys div").each(function() { 
+    $(".keys div").each(function() { 
         $(this).css({"line-height": $(this).height() + "px"});
     });
     return resizeMobileKeys;
 }());
+
+// call again after window resize
+$(window).resize(function() {
+    renderKeys();
+    resizeMobileKeys();
+});
 
 //=============================================================================
 // GAME
@@ -480,11 +526,6 @@ var resizeMobileKeys = (function resizeMobileKeys() {
     // fast button action
     $(function() {
         FastClick.attach(document.body);
-    });
-    
-    // change mobile keys line-height with container
-    $(window).resize(function(){
-        resizeMobileKeys();
     });
     
     // prevent native scrolling
