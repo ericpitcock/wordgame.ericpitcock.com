@@ -90,9 +90,11 @@ var desktopKeys = false;
 // keys magic
 var renderKeys = (function renderKeys() {
     
+    var keysContainer = $(".keys");
+    
     // sort function
     function performSort(order) {
-        var keysContainer = $(".keys");
+        
         keysContainer.find("div").sort(function(a, b) {
             return +a.getAttribute(order) - +b.getAttribute(order);
         })
@@ -101,7 +103,7 @@ var renderKeys = (function renderKeys() {
     
     if (Modernizr.mq("(max-width: 768px)")) {
        
-        if (mobileKeys === false) {
+        if (desktopKeys === true) {
             
             performSort("data-qwerty-order");
             
@@ -117,7 +119,11 @@ var renderKeys = (function renderKeys() {
         }
         
     } else if (Modernizr.mq("(min-width: 769px)")) {
-        if (desktopKeys === false) { performSort("data-character-code"); }
+        if (desktopKeys === false) {
+            performSort("data-character-code");
+            // remove break spans
+            keysContainer.find("span.break").remove();
+        }
         mobileKeys = false;
         desktopKeys = true;
     }
@@ -194,7 +200,7 @@ $(window).resize(function() {
                         verb-intransitive
                         verb-transitive*/
                         excludePartOfSpeech: "family-name, given-name, noun-plural, proper-noun, proper-noun-plural, proper-noun-posessive, suffix",
-                        minCorpusCount: 1000,
+                        minCorpusCount: 2000,
                         maxCorpusCount: -1,
                         minDictionaryCount: 3,
                         maxDictionaryCount: -1,
@@ -416,7 +422,7 @@ $(window).resize(function() {
             // WIN
             if ($.isEmptyObject(secretWordObject)) {
                 
-                // animate and proceed
+                // animate
                 $(".secret-word").addClass("animated flash");
                 $(".secret-word").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
                     function() {
@@ -466,7 +472,6 @@ $(window).resize(function() {
                 WordGame.proceed();
                 
                 console.log("YOU LOSE");
-                alert("YOU LOSE");
                 
             }
                 
