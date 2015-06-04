@@ -194,41 +194,44 @@ html.no-touch button:hover {
         }
         
         .keys {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            //height: 37%;
+            height: auto;
+            
             div {
+                display: inline-block;
+                width: 8.125%;
+                height: 36px;
+                border-radius: 3px;
+                //float: left;
+                //padding-top: 1.5%;
+                border: 1px solid rgba(85,85,85,0.7);
+                border-radius: 3px;
+                margin: 0 2px 12px 0;
+                -webkit-tap-highlight-color: rgba(0,0,0,0);
+                font-size: 20px;
+                text-transform: uppercase;
+                
+                &[data-qwerty-order="10"], &[data-qwerty-order="19"],  {
+                    margin-right: 0;
+                }
+                
                 &.letter-selected {
                     opacity: 0.3;
                 }
+                
+                &.special {
+                    span {
+                        display: none;
+                    }
+                }
             }
-        }
-    }
-    
-    .keys {
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        height: 37%;
-        
-        div {
-            display: inline-block;
-            width: 8.125%;
-            height: 30px;
-            border-radius: 3px;
-            //float: left;
-            //padding-top: 1.5%;
-            border: 1px solid rgba(85,85,85,0.7);
-            border-radius: 3px;
-            margin-right: 2px;
-            -webkit-tap-highlight-color: rgba(0,0,0,0);
-            font-size: 20px;
-            text-transform: uppercase;
             
-            &:last-child {
-                margin-right: 0;
+            span:not(.special) {
+                display: block;
             }
-        }
-        
-        span {
-            display: block;
         }
     }
 }
@@ -250,7 +253,6 @@ html.no-touch button:hover {
     }
     
     .game-board {
-        
         .controls {
             .secret-word {
                 height: 120px;
@@ -262,49 +264,37 @@ html.no-touch button:hover {
                     margin-right: 1%;
                 }
             }
-        }
         
-        .keys {
-            position: relative;
-            display: block;
-            height: 60px;
-            max-width: 1140px;
-            padding-top: 15px;
-            border: 1px solid rgba(85,85,85,0.15);
-            border-radius: 3px;
-            margin: 40px auto;
-            
-            div {
+            .keys {
                 position: relative;
-                display: inline-block;
-                width: 3.3%;
-                text-transform: uppercase;
-                font-size: 20px;
-                border: none;
-                margin: 0;
-                cursor: pointer;
-                -webkit-tap-highlight-color: rgba(0,0,0,0);
+                display: block;
+                height: 60px;
+                max-width: 1140px;
+                padding-top: 15px;
+                border: 1px solid rgba(85,85,85,0.15);
+                border-radius: 3px;
+                margin: 40px auto;
                 
-                &.letter-selected {
-                    cursor: default;
-                    opacity: 0.3;
+                div {
+                    position: relative;
+                    display: inline-block;
+                    width: 3.3%;
+                    text-transform: uppercase;
+                    font-size: 20px;
+                    border: none;
+                    margin: 0;
+                    cursor: pointer;
+                    -webkit-tap-highlight-color: rgba(0,0,0,0);
+                    
+                    &.letter-selected {
+                        cursor: default;
+                        opacity: 0.3;
+                    }
                 }
-            }
-            
-            span {
-                display: none;
-            }
-        }
-        
-        .desktop-freebie-skip-buttons {
-            display: block;
-            position: absolute;
-            bottom: 5%;
-            right: 0;
-            left: 0;
-            
-            .freebie-button {
-                margin-right: 10px;
+                
+                span {
+                    display: none;
+                }
             }
         }
     }
