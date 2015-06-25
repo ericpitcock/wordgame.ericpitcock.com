@@ -152,11 +152,6 @@ html.no-touch button:hover {
             max-width: 1020px;
             margin: 0 auto 10px auto;
             
-            &.animated.flash {
-                -webkit-animation-duration: 1s;
-                -webkit-animation-iteration-count: 1;
-            }
-            
             input {
                 display: inline-block;
                 margin-right: 2%;
@@ -179,21 +174,14 @@ html.no-touch button:hover {
                     margin-right: 0;
                 }
                 
-                &.expose {
+                &.highlight {
                     color: #555;
                 }
             }
             
-            &.win {
-                input {
-                    color: green;
-                }
-            }
-            
-            &.lose {
-                input {
-                    color: red; 
-                }
+            &.animated.flash {
+                -webkit-animation-duration: 1s;
+                -webkit-animation-iteration-count: 1;
             }
         }
         

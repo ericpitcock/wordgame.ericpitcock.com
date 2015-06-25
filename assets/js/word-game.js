@@ -2,7 +2,8 @@
 // VARIABLES
 //=============================================================================
 
-var timeout = 0,
+var alertSound = new Audio("bleep.wav"),
+    timeout = 0,
     secretWord = "",
     characterCount = 0,
     secretWordCharacterCodes = [],
@@ -73,7 +74,7 @@ var timeout = 0,
         "fuck",
         "mulatto",
         "faggot"
-    ]
+    ];
 
 //=============================================================================
 // HELPER FUNCTIONS
@@ -114,7 +115,7 @@ var renderKeys = (function renderKeys() {
             
             if (desktopKeys === true) {
                 $(".freebie-button").insertBefore("div[data-qwerty-order='20']");
-                $(".skip-button").insertAfter("div[data-qwerty-order='26']")
+                $(".skip-button").insertAfter("div[data-qwerty-order='26']");
             }
             
             mobileKeys = true;
@@ -157,6 +158,10 @@ $(window).resize(function() {
 
 (function() {
     var WordGame = {
+        
+        settings: {
+            sound: false,
+        },
         
         getSecretWord: function() {
             
@@ -373,16 +378,74 @@ $(window).resize(function() {
                 // add it to attempted letters, which will need to be renamed
                 attemptedLetters.push(characterCode);
                 
+                // mark the letter as used
+                $("div[data-character-code=" + characterCode + "]").addClass("letter-selected");
+                    
+                var attemptsLeft = attemptsAllowed - attempts,
+                    lettersLeft = Object.keys(secretWordObject).length;
+                
+                // update attempts value
+                $(".attempts-left").html(attemptsLeft);
+                
                 // letter in secret word
                 if (characterCode in secretWordObject) {
                     
-                    //light up the letter
+                    // light up the letter
                     $("input.letter-holder[value=" + characterCode + "]").val(String.fromCharCode(characterCode)).addClass("highlight");
                     
                     console.log(String.fromCharCode(characterCode) + " is a match, and appears " + secretWordObject[characterCode] + " time(s)");
                     
                     // delete the letter from the object
                     delete secretWordObject[characterCode];
+                    
+                    // is that object now empty? if so, win and score
+                    if ($.isEmptyObject(secretWordObject)) {
+                        
+                        // animate
+                        $(".secret-word").addClass("animated flash");
+                        $(".secret-word").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
+                            function() {
+                            $(".secret-word").removeClass("animated flash");
+                        });
+                        
+                        // was it dude perfect?
+                        if (attempts == uniqueLetters) {
+                            console.log("DUDE PERFECT!");
+                        }
+                        
+                        // get current score
+                        var currentScore;
+                        // if a score exists in local storage, use it
+                        if (localStorage.getItem("word-game-score")) {
+                            currentScore = parseInt(localStorage.getItem("word-game-score"));
+                        } else {
+                            currentScore = 0;
+                        }
+                        
+                        // determine new score
+                        var updatedScore;
+                        // if the freebie was used, don't add bonus points
+                        if ($(".freebie-button").is("[disabled=disabled]")) {
+                            updatedScore = characterCount * 10 + attemptsLeft * 5 + currentScore;
+                        // if the freebie wasn't used, add 5 boner points
+                        } else if (!$(".freebie-button").is("[disabled=disabled]")) {
+                            updatedScore = characterCount * 10 + attemptsLeft * 5 + 5 + currentScore;
+                        }
+                        
+                        // store score value
+                        localStorage.setItem("word-game-score", updatedScore);
+                        
+                        // update score display
+                        //$(".score-value").html(updatedScore);
+                        $(".score-value").animateNumbers(updatedScore, false, 2000, "linear");
+                        
+                        WordGame.proceed();
+                        
+                        console.log("YOU WIN");
+                    } else if (!$.isEmptyObject(secretWordObject) && this.settings.sound === true) {
+                        // just play sound if sound setting is on
+                        alertSound.play();
+                    }
                     
                     console.log(secretWordObject);
                     
@@ -397,84 +460,27 @@ $(window).resize(function() {
                         function() {
                         $(".secret-word").removeClass("animated shake");
                     });
-    
+                    
+                    // did ya lose?
+                    if (lettersLeft > attemptsLeft || attempts == attemptsAllowed) {
+                        
+                        WordGame.exposeSecretWord();
+                        WordGame.proceed();
+                        
+                        console.log("YOU LOSE");
+                    }
                 }
                 
+                // log a bunch of shit
                 console.log("attempted letters: " + attemptedLetters);
+                console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / unique letters left: " + lettersLeft);
             
             // letter was already tried, doing nothing
             } else {
                 console.log("letter was already tried, doing nothing");
             }
+                
             
-            // mark the letter as used
-            $("div[data-character-code=" + characterCode + "]").addClass("letter-selected");
-                
-            var attemptsLeft = attemptsAllowed - attempts,
-                lettersLeft = Object.keys(secretWordObject).length;
-            
-            // update attempts value
-            $(".attempts-left").html(attemptsLeft);
-            
-            // check for winner or nah and score
-            // WIN
-            if ($.isEmptyObject(secretWordObject)) {
-                
-                // animate
-                $(".secret-word").addClass("animated flash");
-                $(".secret-word").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
-                    function() {
-                    $(".secret-word").removeClass("animated flash");
-                });
-                
-                // was it dude perfect?
-                if (attempts == uniqueLetters) {
-                    console.log("DUDE PERFECT!");
-                }
-                
-                // get current score
-                var currentScore;
-                // if a score exists in local storage, use it
-                if (localStorage.getItem("word-game-score")) {
-                    currentScore = parseInt(localStorage.getItem("word-game-score"));
-                } else {
-                    currentScore = 0;
-                }
-                
-                // determine new score
-                var updatedScore;
-                // if the freebie was used, don't add bonus points
-                if ($(".freebie-button").is("[disabled=disabled]")) {
-                    updatedScore = characterCount * 10 + attemptsLeft * 5 + currentScore;
-                // if the freebie wasn't used, add 5 boner points
-                } else if (!$(".freebie-button").is("[disabled=disabled]")) {
-                    updatedScore = characterCount * 10 + attemptsLeft * 5 + 5 + currentScore;
-                }
-                
-                // store score value
-                localStorage.setItem("word-game-score", updatedScore);
-                
-                // update score display
-                //$(".score-value").html(updatedScore);
-                $(".score-value").animateNumbers(updatedScore, false, 2000, "linear");
-                
-                WordGame.proceed();
-                
-                console.log("YOU WIN");
-            
-            // LOSE
-            //moreOccurancesThanAttempts = true
-            } else if (lettersLeft > attemptsLeft || attempts == attemptsAllowed) {
-                
-                WordGame.exposeSecretWord();
-                WordGame.proceed();
-                
-                console.log("YOU LOSE");
-                
-            }
-                
-            // log a bunch of shit
-            console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / unique letters left: " + lettersLeft);
         },
         
         exposeSecretWord: function() {
@@ -614,6 +620,15 @@ $(window).resize(function() {
         } else {
             // run letterMatcher
             WordGame.letterMatcher($(this).data("character-code"), true);
+        }
+    });
+    
+    // sound control
+    $("input[name=sound]:radio").change(function () {
+        if (this.value == 'on') {
+            WordGame.settings.sound = true;
+        } else if (this.value == 'off') {
+            WordGame.settings.sound = false;
         }
     });
 
