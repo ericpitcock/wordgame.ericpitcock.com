@@ -73,8 +73,7 @@ var timeout = 0,
         "fuck",
         "mulatto",
         "faggot"
-    ],
-    backgroundColors = ["#9CC0CF", "#9ABCC5", "#98B8BB", "#9AB8B4", "#9EBAB0", "#A3BDAD", "#A7BFA8", "#ABC1A4", "#B0C4A1", "#B4C69C"];
+    ]
 
 //=============================================================================
 // HELPER FUNCTIONS
@@ -110,8 +109,12 @@ var renderKeys = (function renderKeys() {
             
             //if ($(".keys").not(":has(span)")) 
             if ($("div[data-qwerty-order='10'] > span.break").length === 0) {
-                console.log("no spans");
                 $("div[data-qwerty-order='10'], div[data-qwerty-order='19']").after('<span class="break"></span>');
+            }
+            
+            if (desktopKeys === true) {
+                $(".freebie-button").insertBefore("div[data-qwerty-order='20']");
+                $(".skip-button").insertAfter("div[data-qwerty-order='26']")
             }
             
             mobileKeys = true;
@@ -124,6 +127,9 @@ var renderKeys = (function renderKeys() {
             keySort("data-character-code");
             // remove break spans
             keysContainer.find("span.break").remove();
+            
+            $(".freebie-button").appendTo(".keys");
+            $(".skip-button").appendTo(".keys");
         }
         mobileKeys = false;
         desktopKeys = true;
@@ -133,7 +139,7 @@ var renderKeys = (function renderKeys() {
 
 //resize mobile keys
 var resizeMobileKeys = (function resizeMobileKeys() {
-    $(".keys div").each(function() { 
+    $(".keys div:not(.special)").each(function() { 
         $(this).css({"line-height": $(this).height() + "px"});
     });
     return resizeMobileKeys;
@@ -296,10 +302,6 @@ $(window).resize(function() {
                 // process the secret word
                 WordGame.processSecretWord();
                 
-                // set background color
-                var randomColor = backgroundColors[Math.floor(Math.random() * backgroundColors.length)];
-                $("body").animate({ backgroundColor: randomColor }, { duration: 2000 });
-                
             }
         },
         
@@ -336,8 +338,7 @@ $(window).resize(function() {
                 var charCodes = secretWord.charCodeAt(index);
                 secretWordCharacterCodes.push(charCodes);
                 
-                $(".secret-word")
-                    .append('<input class="letter-holder" readonly type="text" value="' + secretWordCharacterCodes[index] + '" />');
+                $(".secret-word").append('<input class="letter-holder" readonly type="text" value="' + secretWordCharacterCodes[index] + '" />');
             }
             
             // animate in

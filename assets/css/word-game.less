@@ -5,7 +5,8 @@
 // VARIABLE
 //=============================================================================
 
-@black: #555;
+@black: #444;
+@subtle-black: rgba(85,85,85,0.2);
 
 //=============================================================================
 // BASE STYLES
@@ -23,7 +24,7 @@ body, input, button {
 }
 
 body {
-    background: #fff;
+    background: #f9f9f9;
     text-align: center;
     font-size: 14px;
     color: @black;
@@ -97,6 +98,7 @@ html.no-touch button:hover {
         margin: 30px 0 0 10px;
         font-size: 20px;
         font-family: "Pacifico", cursive;
+        //color: #4fb8b8;
     }
     
     .score {
@@ -150,6 +152,11 @@ html.no-touch button:hover {
             max-width: 1020px;
             margin: 0 auto 10px auto;
             
+            &.animated.flash {
+                -webkit-animation-duration: 1s;
+                -webkit-animation-iteration-count: 1;
+            }
+            
             input {
                 display: inline-block;
                 margin-right: 2%;
@@ -172,24 +179,38 @@ html.no-touch button:hover {
                     margin-right: 0;
                 }
                 
-                &.highlight {
+                &.expose {
                     color: #555;
                 }
             }
             
-            &.animated.flash {
-                -webkit-animation-duration: 1s;
-                -webkit-animation-iteration-count: 1;
+            &.win {
+                input {
+                    color: green;
+                }
+            }
+            
+            &.lose {
+                input {
+                    color: red; 
+                }
             }
         }
         
         .attempts {
             height: 5%;
             
-            .attempts-left {
-                display: inline-block;
-                width: 15px;
-                letter-spacing: 0;
+            p {
+                text-transform: uppercase;
+                letter-spacing: 2px;
+                font-size: 12px;
+                font-weight: 600;
+            
+                .attempts-left {
+                    display: inline-block;
+                    width: 15px;
+                    letter-spacing: 0;
+                }
             }
         }
         
@@ -207,12 +228,13 @@ html.no-touch button:hover {
                 border-radius: 3px;
                 //float: left;
                 //padding-top: 1.5%;
-                border: 1px solid rgba(85,85,85,0.7);
+                border: 1px solid @subtle-black;
                 border-radius: 3px;
                 margin: 0 2px 12px 0;
                 -webkit-tap-highlight-color: rgba(0,0,0,0);
                 font-size: 20px;
                 text-transform: uppercase;
+                background: #fff;
                 
                 &[data-qwerty-order="10"], &[data-qwerty-order="19"],  {
                     margin-right: 0;
@@ -221,15 +243,9 @@ html.no-touch button:hover {
                 &.letter-selected {
                     opacity: 0.3;
                 }
-                
-                &.special {
-                    span {
-                        display: none;
-                    }
-                }
             }
             
-            span:not(.special) {
+            span {
                 display: block;
             }
         }
@@ -270,10 +286,11 @@ html.no-touch button:hover {
                 display: block;
                 height: 60px;
                 max-width: 1140px;
-                padding-top: 15px;
-                border: 1px solid rgba(85,85,85,0.15);
+                padding-top: 12px;
+                border: 1px solid @subtle-black;
                 border-radius: 3px;
-                margin: 40px auto;
+                margin: 80px auto 20px auto;
+                background: #fff;
                 
                 div {
                     position: relative;
@@ -290,10 +307,21 @@ html.no-touch button:hover {
                         cursor: default;
                         opacity: 0.3;
                     }
-                }
-                
-                span {
-                    display: none;
+                    
+                    &.freebie-button {
+                        height: 58px;
+                        top: -20px;
+                        margin-left: 20px;
+                        border-radius: 0;
+                        border-left: 1px solid @subtle-black;
+                        
+                        span {
+                            display: block;
+                            top: 23px;
+                            margin-left: 11px;
+                            position: relative;
+                        }
+                    }
                 }
             }
         }
