@@ -14,7 +14,7 @@ var alertSound = new Audio('bleep.wav'),
     attemptsAllowed = 0,
     attempts = 0,
     attemptedLetters = [],
-    wordGameScore = localStorage.getItem('word-game-score'),
+    storedScore = localStorage.getItem('word-game-score'),
     naughtyWords = [
         'skank',
         'wetback',
@@ -161,6 +161,25 @@ $(window).resize(function() {
         
         settings: {
             sound: false,
+        },
+        
+        initialize: function() {
+            // is there a stored score to display?
+            // if no, setup local storage at 0
+            if (storedScore === null) {
+                
+                scoreValue = '0';
+                localStorage.setItem('word-game-score', 0);
+            
+            // if yes, set their previous score  
+            } else {
+                scoreValue = localStorage.getItem('word-game-score');
+            }
+            
+            // display score
+            $('.score-value').text(scoreValue);
+            
+            WordGame.getSecretWord();
         },
         
         getSecretWord: function() {
@@ -369,7 +388,7 @@ $(window).resize(function() {
         
         letterMatcher: function(characterCode, attempt) {
     
-            // letter hasn't been tried, run the shiz
+            // if letter hasn't been tried, run the shiz
             if ($.inArray(characterCode, attemptedLetters) == -1) {
             
                 // chalk up an attempt
@@ -379,26 +398,27 @@ $(window).resize(function() {
                 attemptedLetters.push(characterCode);
                 
                 // display the letter as used
-                $('div[data-character-code=" + characterCode + "]').addClass('letter-selected');
+                $('div[data-character-code="' + characterCode + '"]').addClass('letter-selected');
                     
+                // calculate attempts left and letters left
                 var attemptsLeft = attemptsAllowed - attempts,
                     lettersLeft = Object.keys(secretWordObject).length;
                 
-                // update attempts value
+                // update attempts left value
                 $('.attempts-left').html(attemptsLeft);
                 
-                // letter in secret word
+                // if letter's in secret word
                 if (characterCode in secretWordObject) {
                     
-                    // light up the letter
-                    $('input.letter-holder[value=" + characterCode + "]').val(String.fromCharCode(characterCode)).addClass('highlight');
+                    // display the letter
+                    $('input.letter-holder[value="' + characterCode + '"]').val(String.fromCharCode(characterCode)).addClass('highlight');
                     
                     console.log(String.fromCharCode(characterCode) + ' is a match, and appears ' + secretWordObject[characterCode] + ' time(s)');
                     
                     // delete the letter from the object
                     delete secretWordObject[characterCode];
                     
-                    // is that object now empty? if so, win and score
+                    // if the secretWordObject is now empty, that's a win!
                     if ($.isEmptyObject(secretWordObject)) {
                         
                         // animate
@@ -416,8 +436,8 @@ $(window).resize(function() {
                         // get current score
                         var currentScore;
                         // if a score exists in local storage, use it
-                        if (localStorage.getItem('word-game-score')) {
-                            currentScore = parseInt(localStorage.getItem('word-game-score'));
+                        if (storedScore) {
+                            currentScore = parseInt(storedScore);
                         } else {
                             currentScore = 0;
                         }
@@ -527,7 +547,7 @@ $(window).resize(function() {
         }
     };
     
-    WordGame.getSecretWord();
+    WordGame.initialize();
     
     //=============================================================================
     // ALL THE OTHER SHIZ
@@ -542,20 +562,6 @@ $(window).resize(function() {
     document.body.addEventListener('touchmove', function(e) {
         e.preventDefault();
     }, false);
-    
-    // determine score
-    if (wordGameScore === null) {
-        
-        scoreValue = '0';
-        localStorage.setItem('word-game-score', 0);
-        
-    } else {
-        // set their previous score
-        scoreValue = localStorage.getItem('word-game-score');
-    }
-    
-    // display score
-    $('.score-value').text(scoreValue);
     
     // click the enter icon
     $('.skip-button').click(function() {
