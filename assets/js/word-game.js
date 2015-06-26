@@ -2,78 +2,78 @@
 // VARIABLES
 //=============================================================================
 
-var alertSound = new Audio("bleep.wav"),
+var alertSound = new Audio('bleep.wav'),
     timeout = 0,
-    secretWord = "",
+    secretWord = '',
     characterCount = 0,
     secretWordCharacterCodes = [],
     secretWordObject = {},
     uniqueLetters = 0,
-    definition = "",
-    alternateDefinition = "",
+    definition = '',
+    alternateDefinition = '',
     attemptsAllowed = 0,
     attempts = 0,
     attemptedLetters = [],
-    wordGameScore = localStorage.getItem("word-game-score"),
+    wordGameScore = localStorage.getItem('word-game-score'),
     naughtyWords = [
-        "skank",
-        "wetback",
-        "bitch",
-        "cunt",
-        "dick",
-        "douchebag",
-        "dyke",
-        "fag",
-        "nigger",
-        "tranny",
-        "trannies",
-        "paki",
-        "pussy",
-        "retard",
-        "slut",
-        "titt",
-        "tits",
-        "wop",
-        "whore",
-        "chink",
-        "fatass",
-        "shemale",
-        "daygo",
-        "dego",
-        "dago",
-        "gook",
-        "kike",
-        "kraut",
-        "spic",
-        "twat",
-        "lesbo",
-        "homo",
-        "fatso",
-        "lardass",
-        "jap",
-        "biatch",
-        "tard",
-        "gimp",
-        "gyp",
-        "chinaman",
-        "chinamen",
-        "golliwog",
-        "crip",
-        "raghead",
-        "negro",
-        "darky", // ep additions begin here
-        "hooker",
-        "honky",
-        "coolie",
-        "bastard",
-        "douche",
-        "penis",
-        "vagina",
-        "blowjob",
-        "popery",
-        "fuck",
-        "mulatto",
-        "faggot"
+        'skank',
+        'wetback',
+        'bitch',
+        'cunt',
+        'dick',
+        'douchebag',
+        'dyke',
+        'fag',
+        'nigger',
+        'tranny',
+        'trannies',
+        'paki',
+        'pussy',
+        'retard',
+        'slut',
+        'titt',
+        'tits',
+        'wop',
+        'whore',
+        'chink',
+        'fatass',
+        'shemale',
+        'daygo',
+        'dego',
+        'dago',
+        'gook',
+        'kike',
+        'kraut',
+        'spic',
+        'twat',
+        'lesbo',
+        'homo',
+        'fatso',
+        'lardass',
+        'jap',
+        'biatch',
+        'tard',
+        'gimp',
+        'gyp',
+        'chinaman',
+        'chinamen',
+        'golliwog',
+        'crip',
+        'raghead',
+        'negro',
+        'darky', // ep additions begin here
+        'hooker',
+        'honky',
+        'coolie',
+        'bastard',
+        'douche',
+        'penis',
+        'vagina',
+        'blowjob',
+        'popery',
+        'fuck',
+        'mulatto',
+        'faggot'
     ];
 
 //=============================================================================
@@ -91,31 +91,31 @@ var desktopKeys = false;
 // keys magic
 var renderKeys = (function renderKeys() {
     
-    var keysContainer = $(".keys");
+    var keysContainer = $('.keys');
     
     // sort function
     function keySort(order) {
         
-        keysContainer.find("div").sort(function(a, b) {
+        keysContainer.find('div').sort(function(a, b) {
             return +a.getAttribute(order) - +b.getAttribute(order);
         })
         .appendTo(keysContainer);
     }
     
-    if (Modernizr.mq("(max-width: 768px)")) {
+    if (Modernizr.mq('(max-width: 768px)')) {
        
         if (desktopKeys === true) {
             
-            keySort("data-qwerty-order");
+            keySort('data-qwerty-order');
             
-            //if ($(".keys").not(":has(span)")) 
-            if ($("div[data-qwerty-order='10'] > span.break").length === 0) {
-                $("div[data-qwerty-order='10'], div[data-qwerty-order='19']").after('<span class="break"></span>');
+            //if ($('.keys').not(':has(span)')) 
+            if ($('div[data-qwerty-order="10"] > span.break').length === 0) {
+                $('div[data-qwerty-order="10"], div[data-qwerty-order="19"]').after('<span class="break"></span>');
             }
             
             if (desktopKeys === true) {
-                $(".freebie-button").insertBefore("div[data-qwerty-order='20']");
-                $(".skip-button").insertAfter("div[data-qwerty-order='26']");
+                $('.freebie-button').insertBefore('div[data-qwerty-order="20"]');
+                $('.skip-button').insertAfter('div[data-qwerty-order="26"]');
             }
             
             mobileKeys = true;
@@ -123,14 +123,14 @@ var renderKeys = (function renderKeys() {
         
         }
         
-    } else if (Modernizr.mq("(min-width: 769px)")) {
+    } else if (Modernizr.mq('(min-width: 769px)')) {
         if (desktopKeys === false) {
-            keySort("data-character-code");
+            keySort('data-character-code');
             // remove break spans
-            keysContainer.find("span.break").remove();
+            keysContainer.find('span.break').remove();
             
-            $(".freebie-button").appendTo(".keys");
-            $(".skip-button").appendTo(".keys");
+            $('.freebie-button').appendTo('.keys');
+            $('.skip-button').appendTo('.keys');
         }
         mobileKeys = false;
         desktopKeys = true;
@@ -140,8 +140,8 @@ var renderKeys = (function renderKeys() {
 
 //resize mobile keys
 var resizeMobileKeys = (function resizeMobileKeys() {
-    $(".keys div:not(.special)").each(function() { 
-        $(this).css({"line-height": $(this).height() + "px"});
+    $('.keys div:not(.special)').each(function() { 
+        $(this).css({'line-height': $(this).height() + 'px'});
     });
     return resizeMobileKeys;
 }());
@@ -170,20 +170,20 @@ $(window).resize(function() {
                 
                 // GOOD TEST WORDS: wattage
                 debugWord = window.location.search;
-                secretWord = debugWord.replace("?", "");
+                secretWord = debugWord.replace('?', '');
                 WordGame.filterSecretWord();
-                console.log("DEBUG: " + secretWord);
+                console.log('DEBUG: ' + secretWord);
             
             } else {
                 
                 // get the secret word
                 $.ajax({
                     //async: false,
-                    type: "GET",
-                    url: "http://api.wordnik.com:80/v4/words.json/randomWord", 
+                    type: 'GET',
+                    url: 'http://api.wordnik.com:80/v4/words.json/randomWord', 
                     data: {
                         hasDictionaryDef: true,
-                        /*includePartOfSpeech: "noun",
+                        /*includePartOfSpeech: 'noun',
                         noun
                         adjective
                         verb
@@ -211,14 +211,14 @@ $(window).resize(function() {
                         suffix
                         verb-intransitive
                         verb-transitive*/
-                        excludePartOfSpeech: "family-name, given-name, noun-plural, proper-noun, proper-noun-plural, proper-noun-posessive, suffix",
+                        excludePartOfSpeech: 'family-name, given-name, noun-plural, proper-noun, proper-noun-plural, proper-noun-posessive, suffix',
                         minCorpusCount: 2000,
                         maxCorpusCount: -1,
                         minDictionaryCount: 3,
                         maxDictionaryCount: -1,
                         minLength: 3,
                         maxLength: 7,
-                        api_key: "65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a"
+                        api_key: '65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a'
                     },
                     success: function(data) {
                         if (data.word === undefined) {
@@ -236,13 +236,13 @@ $(window).resize(function() {
             // secret word is naughty, run it again
             if ($.inArray(secretWord, naughtyWords) > -1) {
                 
-                console.log(secretWord + " is naughty, running again");
+                console.log(secretWord + ' is naughty, running again');
                 WordGame.getSecretWord();
             
             // secret word has bad characters, run it again
             } else if (isLettersOnly(secretWord) === false) {       
                 
-                console.log(secretWord + " has bad characters, running again");
+                console.log(secretWord + ' has bad characters, running again');
                 WordGame.getSecretWord();
             
             // secret word is good to go, get definition
@@ -255,16 +255,16 @@ $(window).resize(function() {
             // get definition(s)
             $.ajax({
                 //async: false,
-                type: "GET",
-                url: "http://api.wordnik.com:80/v4/word.json/" + secretWord + "/definitions",
+                type: 'GET',
+                url: 'http://api.wordnik.com:80/v4/word.json/' + secretWord + '/definitions',
                 data: {
                     limit: 2,
-                    //partOfSpeech: "noun",
+                    //partOfSpeech: 'noun',
                     includeRelated: false,
-                    //sourceDictionaries: "all",
+                    //sourceDictionaries: 'all',
                     useCanonical: true,
                     includeTags: false,
-                    api_key: "65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a"
+                    api_key: '65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a'
                 },
                 success: function(data) {
                     //console.log(data);
@@ -284,25 +284,25 @@ $(window).resize(function() {
             // the word is in the defintion, run it again
             if (definition.toUpperCase().indexOf(secretWord.toUpperCase()) != -1) {
                 
-                console.log(secretWord + " is in '" + definition + "'(main def), running again");
+                console.log(secretWord + ' is in ' + definition + ' (main def), running again');
                 WordGame.getSecretWord();
             
             // the word is in the alternate defintion, run it again
-            } else if (alternateDefinition !== "" && alternateDefinition.toUpperCase().indexOf(secretWord.toUpperCase()) != -1) {
+            } else if (alternateDefinition !== '' && alternateDefinition.toUpperCase().indexOf(secretWord.toUpperCase()) != -1) {
                 
-                console.log(secretWord + " is in '" + alternateDefinition + "'(alt def), running again");
+                console.log(secretWord + ' is in ' + alternateDefinition + '(alt def), running again');
                 WordGame.getSecretWord();
             
             // they passed, play on
             } else {
                 
                 // log secret word and definition(s)
-                console.log("secret word: " + secretWord);
-                console.log("main definition: " + definition);
+                console.log('secret word: ' + secretWord);
+                console.log('main definition: ' + definition);
                 if (alternateDefinition) {
-                    console.log("alt definition: " + alternateDefinition);
+                    console.log('alt definition: ' + alternateDefinition);
                 } else {
-                    console.log("alt definition: UNAVAILABLE");
+                    console.log('alt definition: UNAVAILABLE');
                 }
                 // process the secret word
                 WordGame.processSecretWord();
@@ -343,27 +343,27 @@ $(window).resize(function() {
                 var charCodes = secretWord.charCodeAt(index);
                 secretWordCharacterCodes.push(charCodes);
                 
-                $(".secret-word").append('<input class="letter-holder" readonly type="text" value="' + secretWordCharacterCodes[index] + '" />');
+                $('.secret-word').append('<input class="letter-holder" readonly type="text" value="' + secretWordCharacterCodes[index] + '" />');
             }
             
             // animate in
-            $(".secret-word").addClass("animated bounceInRight");
-            $(".secret-word").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
+            $('.secret-word').addClass('animated bounceInRight');
+            $('.secret-word').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
                 function() {
-                    $(".secret-word").removeClass("animated bounceInRight");
+                    $('.secret-word').removeClass('animated bounceInRight');
                 });
             
             // display attempts count
-            $(".attempts-left").html(attemptsAllowed);
+            $('.attempts-left').html(attemptsAllowed);
             
             // display definition
-            $(".definition p").html(definition);
+            $('.definition p').html(definition);
             
             // display alternate definition button
-            if (alternateDefinition === "") {
-                $(".show-alternate-definition").css("visibility", "hidden");
+            if (alternateDefinition === '') {
+                $('.show-alternate-definition').css('visibility', 'hidden');
             } else {
-                $(".show-alternate-definition").css("visibility", "visible");
+                $('.show-alternate-definition').css('visibility', 'visible');
             }
         },
         
@@ -375,25 +375,25 @@ $(window).resize(function() {
                 // chalk up an attempt
                 if (attempt === true) { attempts++; }
                 
-                // add it to attempted letters, which will need to be renamed
+                // add it to attempted letters array
                 attemptedLetters.push(characterCode);
                 
-                // mark the letter as used
-                $("div[data-character-code=" + characterCode + "]").addClass("letter-selected");
+                // display the letter as used
+                $('div[data-character-code=" + characterCode + "]').addClass('letter-selected');
                     
                 var attemptsLeft = attemptsAllowed - attempts,
                     lettersLeft = Object.keys(secretWordObject).length;
                 
                 // update attempts value
-                $(".attempts-left").html(attemptsLeft);
+                $('.attempts-left').html(attemptsLeft);
                 
                 // letter in secret word
                 if (characterCode in secretWordObject) {
                     
                     // light up the letter
-                    $("input.letter-holder[value=" + characterCode + "]").val(String.fromCharCode(characterCode)).addClass("highlight");
+                    $('input.letter-holder[value=" + characterCode + "]').val(String.fromCharCode(characterCode)).addClass('highlight');
                     
-                    console.log(String.fromCharCode(characterCode) + " is a match, and appears " + secretWordObject[characterCode] + " time(s)");
+                    console.log(String.fromCharCode(characterCode) + ' is a match, and appears ' + secretWordObject[characterCode] + ' time(s)');
                     
                     // delete the letter from the object
                     delete secretWordObject[characterCode];
@@ -402,22 +402,22 @@ $(window).resize(function() {
                     if ($.isEmptyObject(secretWordObject)) {
                         
                         // animate
-                        $(".secret-word").addClass("animated flash");
-                        $(".secret-word").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
+                        $('.secret-word').addClass('animated flash');
+                        $('.secret-word').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
                             function() {
-                            $(".secret-word").removeClass("animated flash");
+                            $('.secret-word').removeClass('animated flash');
                         });
                         
                         // was it dude perfect?
                         if (attempts == uniqueLetters) {
-                            console.log("DUDE PERFECT!");
+                            console.log('DUDE PERFECT!');
                         }
                         
                         // get current score
                         var currentScore;
                         // if a score exists in local storage, use it
-                        if (localStorage.getItem("word-game-score")) {
-                            currentScore = parseInt(localStorage.getItem("word-game-score"));
+                        if (localStorage.getItem('word-game-score')) {
+                            currentScore = parseInt(localStorage.getItem('word-game-score'));
                         } else {
                             currentScore = 0;
                         }
@@ -425,23 +425,23 @@ $(window).resize(function() {
                         // determine new score
                         var updatedScore;
                         // if the freebie was used, don't add bonus points
-                        if ($(".freebie-button").is("[disabled=disabled]")) {
+                        if ($('.freebie-button').is('[disabled=disabled]')) {
                             updatedScore = characterCount * 10 + attemptsLeft * 5 + currentScore;
                         // if the freebie wasn't used, add 5 boner points
-                        } else if (!$(".freebie-button").is("[disabled=disabled]")) {
+                        } else if (!$('.freebie-button').is('[disabled=disabled]')) {
                             updatedScore = characterCount * 10 + attemptsLeft * 5 + 5 + currentScore;
                         }
                         
                         // store score value
-                        localStorage.setItem("word-game-score", updatedScore);
+                        localStorage.setItem('word-game-score', updatedScore);
                         
                         // update score display
-                        //$(".score-value").html(updatedScore);
-                        $(".score-value").animateNumbers(updatedScore, false, 2000, "linear");
+                        //$('.score-value').html(updatedScore);
+                        $('.score-value').animateNumbers(updatedScore, false, 2000, 'linear');
                         
                         WordGame.proceed();
                         
-                        console.log("YOU WIN");
+                        console.log('YOU WIN');
                     } else if (!$.isEmptyObject(secretWordObject) && this.settings.sound === true) {
                         // just play sound if sound setting is on
                         alertSound.play();
@@ -452,13 +452,13 @@ $(window).resize(function() {
                 // letter is NOT in secret word  
                 } else {
                     
-                    console.log(String.fromCharCode(characterCode) + " is NOT a match");
+                    console.log(String.fromCharCode(characterCode) + ' is NOT a match');
                     
                     // animate shake
-                    $(".secret-word").addClass("animated shake");
-                    $(".secret-word").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
+                    $('.secret-word').addClass('animated shake');
+                    $('.secret-word').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
                         function() {
-                        $(".secret-word").removeClass("animated shake");
+                        $('.secret-word').removeClass('animated shake');
                     });
                     
                     // did ya lose?
@@ -467,25 +467,25 @@ $(window).resize(function() {
                         WordGame.exposeSecretWord();
                         WordGame.proceed();
                         
-                        console.log("YOU LOSE");
+                        console.log('YOU LOSE');
                     }
                 }
                 
                 // log a bunch of shit
-                console.log("attempted letters: " + attemptedLetters);
-                console.log("attempts: " + attempts + " / attempts left: " + attemptsLeft + " / unique letters left: " + lettersLeft);
+                console.log('attempted letters: ' + attemptedLetters);
+                console.log('attempts: ' + attempts + ' / attempts left: ' + attemptsLeft + ' / unique letters left: ' + lettersLeft);
             
             // letter was already tried, doing nothing
             } else {
-                console.log("letter was already tried, doing nothing");
+                console.log('letter was already tried, doing nothing');
             }
                 
             
         },
         
         exposeSecretWord: function() {
-            $("input.letter-holder:not(.highlight)").each(function() {
-                $(this).val(String.fromCharCode($(this).val())).addClass("highlight"); 
+            $('input.letter-holder:not(.highlight)').each(function() {
+                $(this).val(String.fromCharCode($(this).val())).addClass('highlight'); 
             });
         },
         
@@ -493,13 +493,13 @@ $(window).resize(function() {
             setTimeout(function() {
                 console.clear();
                 
-                secretWord = "";
+                secretWord = '';
                 characterCount = 0;
                 secretWordCharacterCodes = [];
                 secretWordObject = {};
                 uniqueLetters = 0;
-                definition = "";
-                alternateDefinition = "";
+                definition = '';
+                alternateDefinition = '';
                 attemptsAllowed = 0;
                 attempts = 0;
                 attemptedLetters = [];
@@ -507,22 +507,22 @@ $(window).resize(function() {
                 lettersLeft = 0;
 
                 // animate out
-                $(".secret-word").addClass("animated bounceOutLeft");
+                $('.secret-word').addClass('animated bounceOutLeft');
                 
                 // empty and reload
-                $(".secret-word").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
+                $('.secret-word').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
                     function() {
-                        $(".secret-word, .definition p").empty();
-                        $(".secret-word").removeClass("animated bounceOutLeft");
+                        $('.secret-word, .definition p').empty();
+                        $('.secret-word').removeClass('animated bounceOutLeft');
                         WordGame.getSecretWord();
                     });
                 
                 // remove classes from letters
-                $(".keys div.letter-selected").removeClass("letter-selected");
-                $(".keys div.letter-selected:not(.special)").removeAttr("class");
+                $('.keys div.letter-selected').removeClass('letter-selected');
+                $('.keys div.letter-selected:not(.special)').removeAttr('class');
                 
                 // reenable freebie button
-                //$(".freebie-button").removeAttr("disabled");
+                //$('.freebie-button').removeAttr('disabled');
             }, 1000);
         }
     };
@@ -539,33 +539,33 @@ $(window).resize(function() {
     });
     
     // prevent native scrolling
-    document.body.addEventListener("touchmove", function(e) {
+    document.body.addEventListener('touchmove', function(e) {
         e.preventDefault();
     }, false);
     
     // determine score
     if (wordGameScore === null) {
         
-        scoreValue = "0";
-        localStorage.setItem("word-game-score", 0);
+        scoreValue = '0';
+        localStorage.setItem('word-game-score', 0);
         
     } else {
         // set their previous score
-        scoreValue = localStorage.getItem("word-game-score");
+        scoreValue = localStorage.getItem('word-game-score');
     }
     
     // display score
-    $(".score-value").text(scoreValue);
+    $('.score-value').text(scoreValue);
     
     // click the enter icon
-    $(".skip-button").click(function() {
+    $('.skip-button').click(function() {
         WordGame.exposeSecretWord();
         WordGame.proceed();
     });
     
     // freebie function
-    $(".freebie-button").click(function() {
-        if ($(this).hasClass("letter-selected")) {
+    $('.freebie-button').click(function() {
+        if ($(this).hasClass('letter-selected')) {
             return;
         } else {
             // find the unused letters
@@ -578,14 +578,14 @@ $(window).resize(function() {
             WordGame.letterMatcher(randomUnusedLetter, false);
             
             // disable freebie button
-            $(this).addClass("letter-selected");
+            $(this).addClass('letter-selected');
         }
     });
     
     // alternate definition
-    /*$(".show-alternate-definition").click(function() {
-        $(this).html($(this).text() == "ALTERNATE DEFINITION" ? "MAIN DEFINITION" : "ALTERNATE DEFINITION");
-        $(".definition p").html(alternateDefinition);
+    /*$('.show-alternate-definition').click(function() {
+        $(this).html($(this).text() == 'ALTERNATE DEFINITION' ? 'MAIN DEFINITION' : 'ALTERNATE DEFINITION');
+        $('.definition p').html(alternateDefinition);
     });*/
     
     // when a key is pressed
@@ -613,18 +613,18 @@ $(window).resize(function() {
     });
     
     // when a letter is clicked
-    $(".keys div:not(.special)").click(function(e) {
+    $('.keys div:not(.special)').click(function(e) {
         // if it's aleady been used, do nah
-        if ($(this).hasClass("letter-selected") ) {
+        if ($(this).hasClass('letter-selected') ) {
             e.preventDefault();
         } else {
             // run letterMatcher
-            WordGame.letterMatcher($(this).data("character-code"), true);
+            WordGame.letterMatcher($(this).data('character-code'), true);
         }
     });
     
     // sound control
-    $("input[name=sound]:radio").change(function () {
+    $('input[name=sound]:radio').change(function () {
         if (this.value == 'on') {
             WordGame.settings.sound = true;
         } else if (this.value == 'off') {
