@@ -95,7 +95,7 @@ $(window).resize(function() {
         attemptedLetters: [],
         attemptsLeft: 0,
         lettersLeft: 0,
-        storedScore: localStorage.getItem('word-game-score'),
+        storedScore: window.localStorage.getItem('word-game-score'),
         naughtyWords: [
             'skank',
             'wetback',
@@ -154,7 +154,8 @@ $(window).resize(function() {
             'popery',
             'fuck',
             'mulatto',
-            'faggot'
+            'faggot',
+            'jew'
         ],
         
         settings: {
@@ -369,14 +370,15 @@ $(window).resize(function() {
             $('.definition p').html(definition);
             
             // determine score
-            if (this.storedScore === null) {
+            var scoreValue;
+            if (window.localStorage.getItem('word-game-score') === null) {
                 
                 scoreValue = "0";
-                localStorage.setItem("word-game-score", 0);
+                window.localStorage.setItem("word-game-score", 0);
                 
             } else {
                 // set their previous score
-                scoreValue = this.storedScore;
+                scoreValue = window.localStorage.getItem('word-game-score');
             }
             
             // display score
@@ -425,9 +427,10 @@ $(window).resize(function() {
                     // if the secretWordObject is now empty, that's a win!
                     if ($.isEmptyObject(this.secretWordObject)) {
                         
-                        WordGame.animate('flash');
+                        console.log('YOU WIN');
                         
-                        WordGame.proceed('win');
+                        // animate
+                        WordGame.animate('flash');
                         
                         // was it dude perfect?
                         if (this.attempts == uniqueLetters) {
@@ -435,7 +438,7 @@ $(window).resize(function() {
                         }
                         
                         // get current score
-                        var currentScore = parseInt(this.storedScore) || 0;
+                        var currentScore = parseInt(window.localStorage.getItem('word-game-score')) || 0;
                         
                         // determine new score
                         var updatedScore;
@@ -447,14 +450,16 @@ $(window).resize(function() {
                             updatedScore = characterCount * 10 + attemptsLeft * 5 + 5 + currentScore;
                         }
                         
-                        // store score value
+                        // store new value
                         localStorage.setItem('word-game-score', updatedScore);
                         
-                        // update score display
-                        //$('.score-value').html(updatedScore);
-                        $('.score-value').animateNumbers(updatedScore, false, 2000, 'linear');
+                        // animate score update
+                        //$('.score-value').animateNumbers(updatedScore, false, 2000, 'linear');
+                        $('.score-value').prop('number', currentScore).animateNumber({ number: updatedScore });
                         
-                        console.log('YOU WIN');
+                        // play on
+                        WordGame.proceed('win');
+                        
                     } else if (!$.isEmptyObject(this.secretWordObject) && this.settings.sound === true) {
                         // just play sound if sound setting is on
                         alertSound.play();
@@ -472,9 +477,9 @@ $(window).resize(function() {
                     // did ya lose?
                     if (lettersLeft > attemptsLeft || this.attempts == attemptsAllowed) {
                         
-                        WordGame.proceed('lose');
                         console.log('YOU LOSE');
-                    
+                        WordGame.proceed('lose');
+                        
                     }
                 }
                 
@@ -489,7 +494,6 @@ $(window).resize(function() {
         },
         
         proceed: function(type) {
-            console.clear();
             
             if (type != 'win') {
                 // expose secret word for losers and skippers
@@ -499,6 +503,8 @@ $(window).resize(function() {
             }
             
             setTimeout(function() {
+                console.clear();
+                
                 // animate out
                 $(".secret-word").addClass("animated bounceOutLeft");
                 
