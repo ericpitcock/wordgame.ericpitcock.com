@@ -462,7 +462,7 @@ $(window).resize(function() {
                         
                     } else if (!$.isEmptyObject(this.secretWordObject) && this.settings.sound === true) {
                         // just play sound if sound setting is on
-                        alertSound.play();
+                        this.alertSound.play();
                     }
                     
                     console.log(this.secretWordObject);
