@@ -61,17 +61,19 @@ var renderKeys = (function renderKeys() {
 }());
 
 //resize mobile keys
+/*
 var resizeMobileKeys = (function resizeMobileKeys() {
     $('.keys div:not(.special)').each(function() { 
         $(this).css({'line-height': $(this).height() + 'px'});
     });
     return resizeMobileKeys;
 }());
+*/
 
 // call again after window resize
 $(window).resize(function() {
     renderKeys();
-    resizeMobileKeys();
+    //resizeMobileKeys();
 });
 
 //=============================================================================
