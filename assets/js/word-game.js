@@ -91,7 +91,7 @@ $(window).resize(function() {
         secretWordObject: {},
         uniqueLetters: 0,
         definition: '',
-        alternateDefinition: '',
+        //alternateDefinition: '',
         attemptsAllowed: 0,
         attempts: 0,
         attemptedLetters: [],
@@ -279,10 +279,10 @@ $(window).resize(function() {
                 success: function(data) {
                     //console.log(data);
                     definition = data[0].text;
-                    if (data[1]) {
+                    /*if (data[1]) {
                         //console.log(data[1].text);
                         this.alternateDefinition = data[1].text;
-                    }
+                    }*/
                     // filter the definition
                     WordGame.filterDefinition();
                 }
@@ -297,11 +297,12 @@ $(window).resize(function() {
                 console.log(secretWord + ' is in ' + definition + ' (main def), running again');
                 WordGame.getSecretWord();
             
-            // the word is in the alternate defintion, run it again
+            /* the word is in the alternate defintion, run it again
             } else if (this.alternateDefinition !== '' && this.alternateDefinition.toUpperCase().indexOf(secretWord.toUpperCase()) != -1) {
                 
                 console.log(secretWord + ' is in ' + this.alternateDefinition + '(alt def), running again');
                 WordGame.getSecretWord();
+            */
             
             // they passed, play on
             } else {
@@ -309,11 +310,11 @@ $(window).resize(function() {
                 // log secret word and definition(s)
                 console.log('secret word: ' + secretWord);
                 console.log('main definition: ' + definition);
-                if (this.alternateDefinition) {
+                /*if (this.alternateDefinition) {
                     console.log('alt definition: ' + this.alternateDefinition);
                 } else {
                     console.log('alt definition: UNAVAILABLE');
-                }
+                }*/
                 // process the secret word
                 WordGame.processSecretWord();
                 
@@ -386,12 +387,12 @@ $(window).resize(function() {
             // display score
             $(".score-value").text(scoreValue);
             
-            // display alternate definition button
+            /* display alternate definition button
             if (this.alternateDefinition === '') {
                 $('.show-alternate-definition').css('visibility', 'hidden');
             } else {
                 $('.show-alternate-definition').css('visibility', 'visible');
-            }
+            }*/
         },
         
         handleInput: function(characterCode, attempt) {
@@ -510,7 +511,7 @@ $(window).resize(function() {
                 // animate out
                 $('.secret-word').addClass('animated bounceOutLeft');
                 
-                // run a bunch of shit after animation completes
+                // reset everything after animation completes
                 $('.secret-word').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
                     function() {
                         // remove animation classes
@@ -532,7 +533,7 @@ $(window).resize(function() {
                         WordGame.secretWordObject = {};
                         WordGame.uniqueLetters = 0;
                         WordGame.definition = '';
-                        WordGame.alternateDefinition = '';
+                        //WordGame.alternateDefinition = '';
                         WordGame.attemptsAllowed = 0;
                         WordGame.attempts = 0;
                         WordGame.attemptedLetters = [];
