@@ -508,22 +508,22 @@ $(window).resize(function() {
                 console.clear();
                 
                 // animate out
-                $(".secret-word").addClass("animated bounceOutLeft");
+                $('.secret-word').addClass('animated bounceOutLeft');
                 
                 // run a bunch of shit after animation completes
-                $(".secret-word").one("webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend",
+                $('.secret-word').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
                     function() {
                         // remove animation classes
-                        $(".secret-word").removeClass("animated bounceOutLeft");
+                        $('.secret-word').removeClass('animated bounceOutLeft');
                         
                         // empty secret word and definition
-                        $(".secret-word, .definition p").empty();
+                        $('.secret-word, .definition p').empty();
                         
                         // remove classes from letters
-                        $(".keys div").removeClass().removeAttr("class");
+                        $('.keys div.alpha').removeClass('letter-selected');
                         
                         // reenable freebie button
-                        $(".freebie-button").removeAttr("disabled");
+                        $('.freebie-button').removeAttr('disabled');
                         
                         // reset game properties
                         WordGame.secretWord = '';
@@ -618,7 +618,7 @@ $(window).resize(function() {
     });
     
     // when a letter is clicked
-    $('.keys div:not(.special)').click(function(e) {
+    $('.keys div.alpha').click(function(e) {
         e.preventDefault();
         // if it's aleady been used, do nah
         if ($(this).hasClass('letter-selected')) {
