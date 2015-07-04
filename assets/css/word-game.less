@@ -186,6 +186,9 @@ html.no-touch button:hover {
         }
         
         .attempts {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
             height: 5%;
             
             p {
@@ -204,7 +207,7 @@ html.no-touch button:hover {
         
         .keys {
             position: absolute;
-            bottom: 0;
+            bottom: 40px;
             width: 100%;
             //height: 37%;
             height: auto;
@@ -272,6 +275,7 @@ html.no-touch button:hover {
         
             .keys {
                 position: relative;
+                bottom: auto;
                 display: block;
                 height: 60px;
                 max-width: 1140px;
@@ -312,6 +316,10 @@ html.no-touch button:hover {
                         }
                     }
                 }
+            }
+            
+            .attempts {
+                position: relative;
             }
         }
     }
