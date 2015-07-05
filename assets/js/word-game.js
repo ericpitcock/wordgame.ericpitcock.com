@@ -24,7 +24,7 @@ var renderKeys = (function renderKeys() {
         .appendTo(keysContainer);
     }
     
-    if (Modernizr.mq('(max-width: 768px)')) {
+    if (Modernizr.mq('(max-width: 767px)')) {
        
         if (desktopKeys === true) {
             
@@ -45,7 +45,7 @@ var renderKeys = (function renderKeys() {
         
         }
         
-    } else if (Modernizr.mq('(min-width: 769px)')) {
+    } else if (Modernizr.mq('(min-width: 768px)')) {
         if (desktopKeys === false) {
             keySort('data-character-code');
             // remove break spans
@@ -520,11 +520,8 @@ $(window).resize(function() {
                         // empty secret word and definition
                         $('.secret-word, .definition p').empty();
                         
-                        // remove classes from letters
-                        $('.keys div.alpha').removeClass('letter-selected');
-                        
-                        // reenable freebie button
-                        $('.freebie-button').removeAttr('disabled');
+                        // remove letter-selected class from buttons
+                        $('.keys div.alpha, .freebie-button').removeClass('letter-selected');
                         
                         // reset game properties
                         WordGame.secretWord = '';
