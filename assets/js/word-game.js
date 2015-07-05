@@ -376,8 +376,8 @@ $(window).resize(function() {
             var scoreValue;
             if (window.localStorage.getItem('word-game-score') === null) {
                 
-                scoreValue = "0";
-                window.localStorage.setItem("word-game-score", 0);
+                scoreValue = '0';
+                window.localStorage.setItem('word-game-score', 0);
                 
             } else {
                 // set their previous score
@@ -385,7 +385,7 @@ $(window).resize(function() {
             }
             
             // display score
-            $(".score-value").text(scoreValue);
+            $('.score-value').text(scoreValue);
             
             /* display alternate definition button
             if (this.alternateDefinition === '') {
