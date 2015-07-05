@@ -308,7 +308,7 @@ $(window).resize(function() {
             } else {
                 
                 // log secret word and definition(s)
-                console.log('secret word: ' + secretWord);
+                console.log('%csecret word: ' + secretWord, 'color: red');
                 console.log('main definition: ' + definition);
                 /*if (this.alternateDefinition) {
                     console.log('alt definition: ' + this.alternateDefinition);
@@ -422,7 +422,7 @@ $(window).resize(function() {
                     // display the letter
                     $('input.letter-holder[value="' + characterCode + '"]').val(String.fromCharCode(characterCode)).addClass('highlight');
                     
-                    console.log(String.fromCharCode(characterCode) + ' is a match, and appears ' + this.secretWordObject[characterCode] + ' time(s)');
+                    //console.log(String.fromCharCode(characterCode) + ' is a match, and appears ' + this.secretWordObject[characterCode] + ' time(s)');
                     
                     // delete the letter from the object
                     delete this.secretWordObject[characterCode];
@@ -487,7 +487,7 @@ $(window).resize(function() {
                 }
                 
                 // log a bunch of shit
-                console.log('attempted letters: ' + this.attemptedLetters);
+                //console.log('attempted letters: ' + this.attemptedLetters);
                 console.log('attempts: ' + this.attempts + ' / attempts left: ' + attemptsLeft + ' / unique letters left: ' + lettersLeft);
             
             // letter was already tried, doing nothing
