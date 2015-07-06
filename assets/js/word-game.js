@@ -42,10 +42,11 @@ var renderKeys = (function renderKeys() {
             
             mobileKeys = true;
             desktopKeys = false;
-        
         }
+        $('.keys').show();
         
     } else if (Modernizr.mq('(min-width: 768px)')) {
+        
         if (desktopKeys === false) {
             keySort('data-character-code');
             // remove break spans
@@ -54,26 +55,18 @@ var renderKeys = (function renderKeys() {
             $('.freebie-button').appendTo('.keys');
             $('.skip-button').appendTo('.keys');
         }
+        
         mobileKeys = false;
         desktopKeys = true;
+        
+        $('.keys').show();
     }
     return renderKeys;
 }());
 
-//resize mobile keys
-/*
-var resizeMobileKeys = (function resizeMobileKeys() {
-    $('.keys div:not(.special)').each(function() { 
-        $(this).css({'line-height': $(this).height() + 'px'});
-    });
-    return resizeMobileKeys;
-}());
-*/
-
 // call again after window resize
 $(window).resize(function() {
     renderKeys();
-    //resizeMobileKeys();
 });
 
 //=============================================================================
