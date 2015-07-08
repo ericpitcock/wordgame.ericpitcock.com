@@ -2,11 +2,6 @@
 // HELPER FUNCTIONS
 //=============================================================================
 
-// test for letters only
-function isLettersOnly(str) {
-    return (/^[a-z]+$/).test(str);
-}
-
 var mobileKeys = false;
 var desktopKeys = false;
 
@@ -43,7 +38,6 @@ var renderKeys = (function renderKeys() {
             mobileKeys = true;
             desktopKeys = false;
         }
-        $('.keys').show();
         
     } else if (Modernizr.mq('(min-width: 768px)')) {
         
@@ -58,9 +52,9 @@ var renderKeys = (function renderKeys() {
         
         mobileKeys = false;
         desktopKeys = true;
-        
-        $('.keys').show();
+    
     }
+    $('.keys').show();
     return renderKeys;
 }());
 
@@ -243,7 +237,7 @@ $(window).resize(function() {
                 WordGame.getSecretWord();
             
             // secret word has bad characters, run it again
-            } else if (isLettersOnly(secretWord) === false) {       
+            } else if (secretWord.search(/^[a-z]+$/)) {
                 
                 console.log(secretWord + ' has bad characters, running again');
                 WordGame.getSecretWord();
