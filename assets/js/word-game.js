@@ -259,14 +259,12 @@ $(window).resize(function() {
                     api_key: '65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a'
                 },
                 success: function(data) {
-                    //console.log(data);
-                    definition = data[0].text;
-                    /*if (data[1]) {
-                        //console.log(data[1].text);
-                        WordGame.alternateDefinition = data[1].text;
-                    }*/
-                    // filter the definition
-                    WordGame.filterDefinition();
+                    if (data[0].text === undefined) {
+                        WordGame.getSecretWord();
+                    } else {
+                        definition = data[0].text;
+                        WordGame.filterDefinition();
+                    }
                 }
             });
         },
