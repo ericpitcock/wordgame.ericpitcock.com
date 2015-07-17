@@ -157,10 +157,9 @@ html.no-touch button:hover {
                 margin-right: 2%;
                 width: 10%;
                 height: 100%;
-                padding: 2% 0 0 0;
-                border: 0;
-                background: transparent;
-                border-bottom: 3px solid @black;
+                //padding: 2% 0 0 0;
+                border: 1px solid @subtle-black;
+                background: #fff;
                 border-radius: 0;
                 font-size: 40px;
                 text-align: center;
@@ -169,12 +168,17 @@ html.no-touch button:hover {
                 -webkit-user-select: none;
                 -moz-user-select: none;
                 -ms-user-select: none;
+                -moz-transition: all .2s ease-in;
+                -o-transition: all .2s ease-in;
+                -webkit-transition: all .2s ease-in;
+                transition: all .2s ease-in;
                 
                 &:last-child {
                     margin-right: 0;
                 }
                 
                 &.highlight {
+                    background: #ffffcc;
                     color: #555;
                 }
             }
@@ -260,11 +264,11 @@ html.no-touch button:hover {
     .game-board {
         .controls {
             .secret-word {
-                height: 120px;
+                height: 100px;
 
                 input {
                     width: 8%;
-                    padding: 30px 0 0 0;
+                    //padding: 30px 0 0 0;
                     font-size: 60px;
                     margin-right: 1%;
                 }
