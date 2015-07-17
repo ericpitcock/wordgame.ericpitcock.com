@@ -336,13 +336,6 @@ $(window).resize(function() {
                 $('.secret-word').append('<input class="letter-holder" readonly type="text" value="' + WordGame.secretWordCharacterCodes[index] + '" />');
             }
             
-            // animate in
-            /*$('.secret-word').addClass('animated bounceInRight');
-            $('.secret-word').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
-                function() {
-                    $('.secret-word').removeClass('animated bounceInRight');
-                });*/
-                
             WordGame.animate('bounceInRight');
             
             // display attempts count
@@ -406,12 +399,8 @@ $(window).resize(function() {
                     // delete the letter from the object
                     delete WordGame.secretWordObject[characterCode];
                     
-                    // calculate attempts left and letters left
-                    //attemptsLeft = attemptsAllowed - WordGame.attempts;
+                    // define letters left
                     lettersLeft = Object.keys(WordGame.secretWordObject).length;
-                    
-                    // update attempts left value
-                    //$('.attempts-left').html(attemptsLeft);
                     
                     // if the secretWordObject is now empty, that's a win!
                     if ($.isEmptyObject(WordGame.secretWordObject)) {
@@ -531,7 +520,7 @@ $(window).resize(function() {
         }
     };
     
-    WordGame.getSecretWord();
+    $(document).ready(function() { WordGame.getSecretWord(); });
     
     //=============================================================================
     // ALL THE OTHER SHIZ
