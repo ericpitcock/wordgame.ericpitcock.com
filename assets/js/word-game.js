@@ -2,8 +2,7 @@
 // HELPER FUNCTIONS
 //=============================================================================
 
-var mobileKeys = false;
-var desktopKeys = false;
+var keysState = 'mobile';
 
 // keys magic
 var renderKeys = (function renderKeys() {
@@ -19,43 +18,36 @@ var renderKeys = (function renderKeys() {
         .appendTo(keysContainer);
     }
     
-    if (Modernizr.mq('(max-width: 767px)')) {
-       
-        if (desktopKeys === true) {
+    if (Modernizr.mq('(max-width: 767px)') && keysState === 'desktop') {
             
-            keySort('data-qwerty-order');
-            
-            //if ($('.keys').not(':has(span)')) 
-            if ($('div[data-qwerty-order="10"] > span.break').length === 0) {
-                $('div[data-qwerty-order="10"], div[data-qwerty-order="19"]').after('<span class="break"></span>');
-            }
-            
-            if (desktopKeys === true) {
-                $('.freebie-button').insertBefore('div[data-qwerty-order="20"]');
-                $('.skip-button').insertAfter('div[data-qwerty-order="26"]');
-            }
-            
-            mobileKeys = true;
-            desktopKeys = false;
+        keySort('data-qwerty-order');
+        
+        if ($('div[data-qwerty-order="10"] > br').length === 0) {
+            $('div[data-qwerty-order="10"], div[data-qwerty-order="19"]').after('<br>');
         }
         
-    } else if (Modernizr.mq('(min-width: 768px)')) {
+        $('.freebie-button').insertBefore('div[data-qwerty-order="20"]');
+        $('.skip-button').insertAfter('div[data-qwerty-order="26"]');
         
-        if (desktopKeys === false) {
-            keySort('data-character-code');
-            // remove break spans
-            keysContainer.find('span.break').remove();
+        keysState = 'mobile';
+    
+    } else if (Modernizr.mq('(min-width: 768px)') && keysState === 'mobile') {
             
-            $('.freebie-button').appendTo('.keys');
-            $('.skip-button').appendTo('.keys');
-        }
+        keySort('data-character-code');
         
-        mobileKeys = false;
-        desktopKeys = true;
+        // remove break spans
+        keysContainer.find('br').remove();
+        
+        $('.freebie-button').appendTo('.keys');
+        $('.skip-button').appendTo('.keys');
+        
+        keysState = 'desktop';
     
     }
-    $('.keys').show();
+    
+    keysContainer.show();
     return renderKeys;
+
 }());
 
 // call again after window resize
@@ -70,7 +62,7 @@ $(window).resize(function() {
 (function() {
     var WordGame = {
 
-        alertSound: new Audio('bleep.wav'),
+        debug: false,
         timeout: 0,
         secretWord: '',
         characterCount: 0,
@@ -84,6 +76,8 @@ $(window).resize(function() {
         attemptedLetters: [],
         attemptsLeft: 0,
         lettersLeft: 0,
+        // constants
+        alertSound: new Audio('bleep.wav'),
         storedScore: window.localStorage.getItem('word-game-score'),
         naughtyWords: [
             'skank',
@@ -166,10 +160,11 @@ $(window).resize(function() {
             if (window.location.search) {
                 
                 // GOOD TEST WORDS: wattage
+                WordGame.debug = true;
                 debugWord = window.location.search;
                 secretWord = debugWord.replace('?', '');
                 WordGame.filterSecretWord();
-                console.log('DEBUG: ' + secretWord);
+                console.log('%cDEBUG: ' + secretWord.toUpperCase(), 'color: red');
             
             } else {
                 
@@ -295,7 +290,7 @@ $(window).resize(function() {
             } else {
                 
                 // log secret word and definition(s)
-                console.log('%csecret word: ' + secretWord, 'color: red');
+                if (WordGame.debug === false) { console.log('%csecret word: ' + secretWord, 'color: red'); }
                 console.log('main definition: ' + definition);
                 /*if (this.alternateDefinition) {
                     console.log('alt definition: ' + this.alternateDefinition);
@@ -308,7 +303,6 @@ $(window).resize(function() {
             }
         },
         
-        // process the secret word in to a pulp
         processSecretWord: function() {
             
             // get the character count of secret word
@@ -511,6 +505,7 @@ $(window).resize(function() {
                         $('.keys div.alpha, .freebie-button').removeClass('letter-selected');
                         
                         // reset game properties
+                        WordGame.debug = false;
                         WordGame.secretWord = '';
                         WordGame.characterCount = 0;
                         WordGame.secretWordCharacterCodes = [];
@@ -523,7 +518,7 @@ $(window).resize(function() {
                         WordGame.attemptedLetters = [];
                         WordGame.attemptsLeft = 0;
                         WordGame.lettersLeft = 0;
-            
+                        
                         // run again!
                         WordGame.getSecretWord();
                     });
@@ -588,17 +583,25 @@ $(window).resize(function() {
             // get letter pressed
             var characterCode = e.which;
             
-            // if it's return
-            if (characterCode == 13) {
-                WordGame.proceed('skip');   
-            // if it's a-z
-            } else if (characterCode >= 97 && characterCode <= 122) {
-                // run handleInput
+            // make sure it's a-z
+            if (characterCode >= 97 && characterCode <= 122) {
                 WordGame.handleInput(characterCode, true);
             } else {
-                // do nah
                 return;
             }
+        }
+    });
+    
+    // when esc is pressed
+    $(document).keydown(function(e) {
+        // get letter pressed
+        var characterCode = e.keyCode;
+        
+        // make sure it's a-z
+        if (characterCode === 27) {
+            WordGame.proceed('skip');
+        } else {
+            return;
         }
     });
     
