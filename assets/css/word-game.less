@@ -212,7 +212,8 @@ body, input, button {
 }
 
 body {
-    background: #f9f9f9;
+    //background: #f9f9f9;
+    background: url(../img/word-game-background.png) center -55px no-repeat;
     text-align: center;
     font-size: 14px;
     color: @black;
@@ -342,7 +343,7 @@ html.no-touch button:hover {
                 line-height: 180px;
                 font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
                 font-size: 50px;
-                color: #c4c4c4;
+                color: @black;
                 .transition(all .15s cubic-bezier(0.29, 0.74, 0.04, 1.04));
                 
                 &:first-child {
@@ -357,6 +358,21 @@ html.no-touch button:hover {
                     font-family: 'HouseMovements-Sign';
                     font-size: 180px;
                     color: @black;
+                    
+                    // shadow
+                    &:after {
+                        content: "";
+                        position: relative;
+                        width: 40px;
+                        height: 5px;
+                        background-color: rgba(0,0,0,0.05);
+                        display: block;
+                        left: 50%;
+                        margin-left: -20px;
+                        top: -38px;
+                        border-radius: 10px;
+                        z-index: -1;
+                    }
                     
                     // custom kerning for T* (except l and i)
                     &:first-child[data-character-code="116"] + *:not([data-character-code="104"]):not([data-character-code="105"]) {
@@ -373,7 +389,7 @@ html.no-touch button:hover {
             &.win {
                 
                 span.letter-holder, &:after {
-                    color: #8db955;
+                    //color: #8db955;
                 }
                 
                 &:after {
@@ -443,7 +459,7 @@ html.no-touch button:hover {
                 font-size: 20px;
                 text-transform: uppercase;
                 line-height: 36px;
-                background: #fff;
+                //background: #fff;
                 
                 &[data-qwerty-order="10"], &[data-qwerty-order="19"],  {
                     margin-right: 0;
@@ -490,7 +506,7 @@ html.no-touch button:hover {
                 border: 1px solid @subtle-black;
                 border-radius: 3px;
                 margin: 80px auto 20px auto;
-                background: #fff;
+                //background: #fff;
                 
                 div {
                     //position: relative;
