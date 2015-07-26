@@ -1,68 +1,15 @@
 //=============================================================================
-// HELPER FUNCTIONS
-//=============================================================================
-
-var keysState = 'mobile';
-
-// keys magic
-var renderKeys = (function renderKeys() {
-    
-    var keysContainer = $('.keys');
-    
-    // sort function
-    function keySort(order) {
-        
-        keysContainer.find('div').sort(function(a, b) {
-            return +a.getAttribute(order) - +b.getAttribute(order);
-        })
-        .appendTo(keysContainer);
-    }
-    
-    if (Modernizr.mq('(max-width: 767px)') && keysState === 'desktop') {
-            
-        keySort('data-qwerty-order');
-        
-        if ($('div[data-qwerty-order="10"] > br').length === 0) {
-            $('div[data-qwerty-order="10"], div[data-qwerty-order="19"]').after('<br>');
-        }
-        
-        $('.freebie-button').insertBefore('div[data-qwerty-order="20"]');
-        $('.skip-button').insertAfter('div[data-qwerty-order="26"]');
-        
-        keysState = 'mobile';
-    
-    } else if (Modernizr.mq('(min-width: 768px)') && keysState === 'mobile') {
-            
-        keySort('data-character-code');
-        
-        // remove break spans
-        keysContainer.find('br').remove();
-        
-        $('.freebie-button').appendTo('.keys');
-        $('.skip-button').appendTo('.keys');
-        
-        keysState = 'desktop';
-    
-    }
-    
-    keysContainer.show();
-    return renderKeys;
-
-}());
-
-// call again after window resize
-$(window).resize(function() {
-    renderKeys();
-});
-
-//=============================================================================
-// GAME
+// WORD GAME
 //=============================================================================
 
 (function() {
     var WordGame = {
 
+        firstRun: true,
         debug: false,
+        filterCount: 0,
+        keysState: 'mobile',
+        inputAllowed: false,
         timeout: 0,
         secretWord: '',
         characterCount: 0,
@@ -70,14 +17,14 @@ $(window).resize(function() {
         secretWordObject: {},
         uniqueLetters: 0,
         definition: '',
-        //alternateDefinition: '',
+        // alternateDefinition: '',
         attemptsAllowed: 0,
         attempts: 0,
         attemptedLetters: [],
         attemptsLeft: 0,
         lettersLeft: 0,
         // constants
-        alertSound: new Audio('bleep.wav'),
+        // alertSound: new Audio('bleep.wav'),
         storedScore: window.localStorage.getItem('word-game-score'),
         naughtyWords: [
             'skank',
@@ -138,7 +85,8 @@ $(window).resize(function() {
             'fuck',
             'mulatto',
             'faggot',
-            'jew'
+            'jew',
+            'femme'
         ],
         
         settings: {
@@ -146,12 +94,109 @@ $(window).resize(function() {
         },
         
         animate: function(animation) {
-            //second = second || false;
+            WordGame.inputAllowed = false;
             $('.secret-word').addClass('animated ' + animation);
             $('.secret-word').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
                 function() {
+                    console.log('ready');
                     $('.secret-word').removeClass('animated ' + animation);
+                    WordGame.inputAllowed = true;
             });
+        },
+        
+        renderKeys: function() {
+            
+            //var keysState = 'mobile';
+            
+            var keysContainer = $('.keys');
+            
+            // sort function
+            function keySort(order) {
+                
+                keysContainer.find('div').sort(function(a, b) {
+                    return +a.getAttribute(order) - +b.getAttribute(order);
+                })
+                .appendTo(keysContainer);
+            }
+            
+            if (Modernizr.mq('(max-width: 767px)') && WordGame.keysState === 'desktop') {
+                    
+                keySort('data-qwerty-order');
+                
+                if ($('div[data-qwerty-order="10"] > br').length === 0) {
+                    $('div[data-qwerty-order="10"], div[data-qwerty-order="19"]').after('<br>');
+                }
+                
+                $('.freebie-button').insertBefore('div[data-qwerty-order="20"]');
+                $('.skip-button').insertAfter('div[data-qwerty-order="26"]');
+                
+                WordGame.keysState = 'mobile';
+            
+            } else if (Modernizr.mq('(min-width: 768px)') && WordGame.keysState === 'mobile') {
+                    
+                keySort('data-character-code');
+                
+                // remove break spans
+                keysContainer.find('br').remove();
+                
+                $('.freebie-button').appendTo('.keys');
+                $('.skip-button').appendTo('.keys');
+                
+                WordGame.keysState = 'desktop';
+            
+            }
+            
+            keysContainer.show();
+        
+        },
+        
+        initialize: function() {
+            
+            // fast button action
+            $(function() {
+                FastClick.attach(document.body);
+            });
+            
+            // prevent native scrolling
+            document.body.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+            }, false);
+            
+            /* click events
+            document.body.addEventListener('click', this.handleClick, false);
+            
+            // key events
+            window.addEventListener('keydown', this.handleKeyDown, false);
+            window.addEventListener('keypress', this.handleKeyPress, false);
+            
+            //window resize
+            window.addEventListener('resize', this.renderKeys, false);
+            */
+            
+            // click events
+            $(document).on('click', this.handleClick);
+            
+            // key events
+            $(document).on('keydown', this.handleKeyDown);
+            $(document).on('keypress', this.handleKeyPress);
+            
+            //window resize
+            $(window).on('resize', this.renderKeys);
+            
+            WordGame.renderKeys();
+            
+            // show intro if first run and not returning user
+            if (WordGame.firstRun === true && window.localStorage.getItem('word-game-score') === null) {
+                WordGame.introduction();
+            } else {
+                WordGame.getSecretWord();
+            }
+        },
+        
+        introduction: function() {
+            WordGame.firstRun = false;
+            secretWord = 'fun';
+            WordGame.getDefinition();
         },
         
         getSecretWord: function() {
@@ -225,17 +270,30 @@ $(window).resize(function() {
         },
         
         filterSecretWord: function() {
+            
             // secret word is naughty, run it again
             if ($.inArray(secretWord, WordGame.naughtyWords) > -1) {
                 
-                console.log(secretWord + ' is naughty, running again');
-                WordGame.getSecretWord();
+                WordGame.filterCount++;
+                
+                if (WordGame.filterCount < 10) {
+                    console.log(secretWord + ' is naughty, running again');
+                    WordGame.getSecretWord();
+                } else {
+                    console.log('Filtering stopped');
+                }
             
             // secret word has bad characters, run it again
             } else if (secretWord.search(/^[a-z]+$/)) {
                 
-                console.log(secretWord + ' has bad characters, running again');
-                WordGame.getSecretWord();
+                WordGame.filterCount++;
+                
+                if (WordGame.filterCount < 10) {
+                    console.log(secretWord + ' has bad characters, running again (' + WordGame.filterCount + ')');
+                    WordGame.getSecretWord();
+                } else {
+                    console.log('Filtering stopped');
+                }
             
             // secret word is good to go, get definition
             } else {
@@ -289,12 +347,18 @@ $(window).resize(function() {
                 
                 // log secret word and definition(s)
                 if (WordGame.debug === false) { console.log('%csecret word: ' + secretWord, 'color: red'); }
-                console.log('main definition: ' + definition);
+                
                 /*if (WordGame.alternateDefinition) {
                     console.log('alt definition: ' + WordGame.alternateDefinition);
                 } else {
                     console.log('alt definition: UNAVAILABLE');
                 }*/
+                
+                // remove category, if present. Splitting at three spaces '   ' and returning the end portion
+                definition = definition.split(/ {3,}/).pop();
+                
+                console.log('main definition: ' + definition);
+                
                 // process the secret word
                 WordGame.processSecretWord();
                 
@@ -333,7 +397,7 @@ $(window).resize(function() {
                 var charCodes = secretWord.charCodeAt(index);
                 WordGame.secretWordCharacterCodes.push(charCodes);
                 
-                $('.secret-word').append('<input class="letter-holder" readonly type="text" value="' + WordGame.secretWordCharacterCodes[index] + '" />');
+                $('.secret-word').append('<span class="letter-holder" data-character-code="' + WordGame.secretWordCharacterCodes[index] + '">&bull;</span>');
             }
             
             WordGame.animate('bounceInRight');
@@ -343,6 +407,8 @@ $(window).resize(function() {
             
             // display definition
             $('.definition p').html(definition);
+            
+            $('.definition p').widowFix();
             
             // determine score
             var scoreValue;
@@ -365,10 +431,111 @@ $(window).resize(function() {
             } else {
                 $('.show-alternate-definition').css('visibility', 'visible');
             }*/
+            
+        },
+        
+        handleClick: function(e) {
+            e.preventDefault();
+            //console.log(e);
+            
+            if (WordGame.inputAllowed === true) {
+            
+                // letter clicks
+                if ($(e.target).hasClass('alpha')) {
+                
+                    // if it's aleady been used, do nah
+                    if ($(e.target).hasClass('disabled')) {
+                        return;
+                    } else {
+                        // run handleInput
+                        WordGame.handleInput($(e.target).data('character-code'), true);
+                    }
+                    
+                
+                // skip
+                } else if ($(e.target).hasClass('skip-button')) {
+                
+                    WordGame.proceed('skip');
+                    WordGame.inputAllowed = false;
+                
+                // freebie
+                } else if ($(e.target).hasClass('freebie-button')) {
+                    
+                    if ($(e.target).hasClass('disabled')) {
+                        return;
+                    } else {
+                        // find the unused letters
+                        var unusedLetters = Object.keys(WordGame.secretWordObject);
+                        
+                        // get a random one
+                        var randomUnusedLetter = unusedLetters[Math.floor(Math.random() * unusedLetters.length)];
+                        
+                        // show freebie
+                        WordGame.handleInput(randomUnusedLetter, false);
+                        
+                        // disable freebie button
+                        $(e.target).addClass('disabled');
+                    }
+                }
+            }
+            
+            /* sound control
+            $('input[name=sound]:radio').change(function() {
+                if (this.value == 'on') {
+                    WordGame.settings.sound = true;
+                } else if (this.value == 'off') {
+                    WordGame.settings.sound = false;
+                }
+            });
+            */
+            
+        },
+        
+        handleKeyDown: function(e) {
+            // get letter pressed
+            var characterCode = e.keyCode;
+            
+            if (WordGame.inputAllowed === true) {
+                // make sure it's a-z
+                if (characterCode === 27) {
+                    WordGame.proceed('skip');
+                } else {
+                    return;
+                }
+            }
+            
+            // disable input
+            //WordGame.inputAllowed = false;
+        },
+        
+        handleKeyPress: function(e) {
+            e.preventDefault();
+            
+            function keyPressed() {
+                // get letter pressed
+                var characterCode = e.which;
+                
+                // make sure it's a-z
+                if (characterCode >= 97 && characterCode <= 122) {
+                    WordGame.handleInput(characterCode, true);
+                } else {
+                    return;
+                }
+            }
+            
+            if (WordGame.inputAllowed === true) {
+                clearTimeout(WordGame.timeout);
+                WordGame.timeout = setTimeout(keyPressed, 50);
+            } else {
+                return;
+            }
+            
+            // disable input
+            //WordGame.inputAllowed = false;
         },
         
         handleInput: function(characterCode, attempt) {
-    
+            
             // if letter hasn't been tried, run the shiz
             if ($.inArray(characterCode, WordGame.attemptedLetters) == -1) {
             
@@ -379,7 +546,7 @@ $(window).resize(function() {
                 WordGame.attemptedLetters.push(characterCode);
                 
                 // display the letter as used
-                $('div[data-character-code="' + characterCode + '"]').addClass('letter-selected');
+                $('div[data-character-code="' + characterCode + '"]').addClass('disabled');
                     
                 // calculate attempts left
                 attemptsLeft = attemptsAllowed - WordGame.attempts;
@@ -392,7 +559,7 @@ $(window).resize(function() {
                 if (characterCode in WordGame.secretWordObject) {
                     
                     // display the letter
-                    $('input.letter-holder[value="' + characterCode + '"]').val(String.fromCharCode(characterCode)).addClass('highlight');
+                    $('span.letter-holder[data-character-code="' + characterCode + '"]').text(String.fromCharCode(characterCode)).addClass('highlight');
                     
                     //console.log(String.fromCharCode(characterCode) + ' is a match, and appears ' + WordGame.secretWordObject[characterCode] + ' time(s)');
                     
@@ -405,13 +572,19 @@ $(window).resize(function() {
                     // if the secretWordObject is now empty, that's a win!
                     if ($.isEmptyObject(WordGame.secretWordObject)) {
                         
+                        // disable input
+                        WordGame.inputAllowed = false;
+                        
+                        // gray out all letters
+                        $('.keys div').addClass('disabled');
+                        
                         console.log('YOU WIN');
                         
                         // animate
-                        WordGame.animate('flash');
+                        //WordGame.animate('flash');
                         
                         // was it dude perfect?
-                        if (WordGame.attempts == uniqueLetters) {
+                        if (WordGame.attempts === uniqueLetters) {
                             console.log('DUDE PERFECT!');
                         }
                         
@@ -421,7 +594,7 @@ $(window).resize(function() {
                         // determine new score
                         var updatedScore;
                         // if the freebie was used, don't add bonus points
-                        if ($('.freebie-button').hasClass('letter-selected')) {
+                        if ($('.freebie-button').hasClass('disabled')) {
                             updatedScore = characterCount * 10 + attemptsLeft * 5 + currentScore;
                         // if the freebie wasn't used, add 5 boner points
                         } else {
@@ -435,12 +608,16 @@ $(window).resize(function() {
                         //$('.score-value').animateNumbers(updatedScore, false, 2000, 'linear');
                         $('.score-value').prop('number', currentScore).animateNumber({ number: updatedScore });
                         
+                        $('.secret-word').addClass('win');
+                        
                         // play on
                         WordGame.proceed('win');
                         
-                    } else if (!$.isEmptyObject(WordGame.secretWordObject) && WordGame.settings.sound === true) {
-                        // just play sound if sound setting is on
-                        WordGame.alertSound.play();
+                    } else if (!$.isEmptyObject(WordGame.secretWordObject)) {
+                        // play sound
+                        if (WordGame.settings.sound === true) { WordGame.alertSound.play(); }
+                        // enable input
+                        WordGame.inputAllowed = true;
                     }
                     
                     console.log(WordGame.secretWordObject);
@@ -450,14 +627,27 @@ $(window).resize(function() {
                     
                     console.log(String.fromCharCode(characterCode) + ' is NOT a match');
                     
-                    WordGame.animate('shake');
+                    // define letters left
+                    lettersLeft = Object.keys(WordGame.secretWordObject).length;
                     
-                    // did ya lose?
+                    // if you lost
                     if (lettersLeft > attemptsLeft || WordGame.attempts == attemptsAllowed) {
                         
-                        console.log('YOU LOSE');
-                        WordGame.proceed('lose');
+                        // disable input
+                        WordGame.inputAllowed = false;
                         
+                        // gray out all letters
+                        $('.keys div').addClass('disabled');
+                        
+                        console.log('YOU LOSE');
+                        $('.secret-word').addClass('lose');
+                        WordGame.proceed('lose');
+                    
+                    // just got the letter wrong  
+                    } else {
+                        WordGame.animate('shake');
+                        // enable input
+                        WordGame.inputAllowed = true;
                     }
                 }
                 
@@ -475,8 +665,8 @@ $(window).resize(function() {
             
             if (type != 'win') {
                 // expose secret word for losers and skippers
-                $('input.letter-holder:not(.highlight)').each(function() {
-                    $(this).val(String.fromCharCode($(this).val())).addClass('highlight'); 
+                $('span.letter-holder:not(.highlight)').each(function() {
+                    $(this).text(String.fromCharCode($(this).data('character-code'))).addClass('highlight'); 
                 });
             }
             
@@ -490,16 +680,18 @@ $(window).resize(function() {
                 $('.secret-word').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
                     function() {
                         // remove animation classes
-                        $('.secret-word').removeClass('animated bounceOutLeft');
+                        $('.secret-word').removeClass('animated bounceOutLeft win lose');
                         
                         // empty secret word and definition
                         $('.secret-word, .definition p').empty();
                         
-                        // remove letter-selected class from buttons
-                        $('.keys div.alpha, .freebie-button').removeClass('letter-selected');
+                        // remove disabled class from buttons
+                        $('.keys div').removeClass('disabled');
                         
                         // reset game properties
+                        WordGame.firstRun = false;
                         WordGame.debug = false;
+                        WordGame.inputAllowed = false;
                         WordGame.secretWord = '';
                         WordGame.characterCount = 0;
                         WordGame.secretWordCharacterCodes = [];
@@ -520,104 +712,6 @@ $(window).resize(function() {
         }
     };
     
-    $(document).ready(function() { WordGame.getSecretWord(); });
+    $(document).ready(function() { WordGame.initialize(); });
     
-    //=============================================================================
-    // ALL THE OTHER SHIZ
-    //=============================================================================
-    
-    // fast button action
-    $(function() {
-        FastClick.attach(document.body);
-    });
-    
-    // prevent native scrolling
-    document.body.addEventListener('touchmove', function(e) {
-        e.preventDefault();
-    }, false);
-    
-    // click the enter icon
-    $('.skip-button').click(function() {
-        WordGame.proceed('skip');
-    });
-    
-    // freebie function
-    $('.freebie-button').click(function() {
-        if ($(this).hasClass('letter-selected')) {
-            return;
-        } else {
-            // find the unused letters
-            var unusedLetters = Object.keys(WordGame.secretWordObject);
-            
-            // get a random one
-            var randomUnusedLetter = unusedLetters[Math.floor(Math.random() * unusedLetters.length)];
-            
-            // show freebie
-            WordGame.handleInput(randomUnusedLetter, false);
-            
-            // disable freebie button
-            $(this).addClass('letter-selected');
-        }
-    });
-    
-    // alternate definition
-    /*$('.show-alternate-definition').click(function() {
-        $(this).html($(this).text() == 'ALTERNATE DEFINITION' ? 'MAIN DEFINITION' : 'ALTERNATE DEFINITION');
-        $('.definition p').html(alternateDefinition);
-    });*/
-    
-    // when a key is pressed
-    $(document).keypress(function(e) {
-        e.preventDefault();
-        
-        clearTimeout(WordGame.timeout);
-        WordGame.timeout = setTimeout(keyPressed, 50);
-        
-        function keyPressed() {
-            // get letter pressed
-            var characterCode = e.which;
-            
-            // make sure it's a-z
-            if (characterCode >= 97 && characterCode <= 122) {
-                WordGame.handleInput(characterCode, true);
-            } else {
-                return;
-            }
-        }
-    });
-    
-    // when esc is pressed
-    $(document).keydown(function(e) {
-        // get letter pressed
-        var characterCode = e.keyCode;
-        
-        // make sure it's a-z
-        if (characterCode === 27) {
-            WordGame.proceed('skip');
-        } else {
-            return;
-        }
-    });
-    
-    // when a letter is clicked
-    $('.keys div.alpha').click(function(e) {
-        e.preventDefault();
-        // if it's aleady been used, do nah
-        if ($(this).hasClass('letter-selected')) {
-            return;
-        } else {
-            // run handleInput
-            WordGame.handleInput($(this).data('character-code'), true);
-        }
-    });
-    
-    // sound control
-    $('input[name=sound]:radio').change(function () {
-        if (this.value == 'on') {
-            WordGame.settings.sound = true;
-        } else if (this.value == 'off') {
-            WordGame.settings.sound = false;
-        }
-    });
-
 })();
