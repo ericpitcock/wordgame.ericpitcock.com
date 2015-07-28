@@ -26,68 +26,6 @@
         // constants
         // alertSound: new Audio('bleep.wav'),
         storedScore: window.localStorage.getItem('word-game-score'),
-        naughtyWords: [
-            'skank',
-            'wetback',
-            'bitch',
-            'cunt',
-            'dick',
-            'douchebag',
-            'dyke',
-            'fag',
-            'nigger',
-            'tranny',
-            'trannies',
-            'paki',
-            'pussy',
-            'retard',
-            'slut',
-            'titt',
-            'tits',
-            'wop',
-            'whore',
-            'chink',
-            'fatass',
-            'shemale',
-            'daygo',
-            'dego',
-            'dago',
-            'gook',
-            'kike',
-            'kraut',
-            'spic',
-            'twat',
-            'lesbo',
-            'homo',
-            'fatso',
-            'lardass',
-            'jap',
-            'biatch',
-            'tard',
-            'gimp',
-            'gyp',
-            'chinaman',
-            'chinamen',
-            'golliwog',
-            'crip',
-            'raghead',
-            'negro',
-            'darky', // ep additions begin here
-            'hooker',
-            'honky',
-            'coolie',
-            'bastard',
-            'douche',
-            'penis',
-            'vagina',
-            'blowjob',
-            'popery',
-            'fuck',
-            'mulatto',
-            'faggot',
-            'jew',
-            'femme'
-        ],
         
         settings: {
             sound: false,
@@ -98,7 +36,6 @@
             $('.secret-word').addClass('animated ' + animation);
             $('.secret-word').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
                 function() {
-                    console.log('ready');
                     $('.secret-word').removeClass('animated ' + animation);
                     WordGame.inputAllowed = true;
             });
@@ -106,17 +43,15 @@
         
         renderKeys: function() {
             
-            //var keysState = 'mobile';
-            
-            var keysContainer = $('.keys');
+            var $keys = $('.keys');
             
             // sort function
             function keySort(order) {
                 
-                keysContainer.find('div').sort(function(a, b) {
+                $keys.find('div').sort(function(a, b) {
                     return +a.getAttribute(order) - +b.getAttribute(order);
                 })
-                .appendTo(keysContainer);
+                .appendTo($keys);
             }
             
             if (Modernizr.mq('(max-width: 767px)') && WordGame.keysState === 'desktop') {
@@ -137,7 +72,7 @@
                 keySort('data-character-code');
                 
                 // remove break spans
-                keysContainer.find('br').remove();
+                $keys.find('br').remove();
                 
                 $('.freebie-button').appendTo('.keys');
                 $('.skip-button').appendTo('.keys');
@@ -146,7 +81,7 @@
             
             }
             
-            keysContainer.show();
+            $keys.show();
         
         },
         
@@ -271,8 +206,71 @@
         
         filterSecretWord: function() {
             
+            var naughtyWords = [
+                'skank',
+                'wetback',
+                'bitch',
+                'cunt',
+                'dick',
+                'douchebag',
+                'dyke',
+                'fag',
+                'nigger',
+                'tranny',
+                'trannies',
+                'paki',
+                'pussy',
+                'retard',
+                'slut',
+                'titt',
+                'tits',
+                'wop',
+                'whore',
+                'chink',
+                'fatass',
+                'shemale',
+                'daygo',
+                'dego',
+                'dago',
+                'gook',
+                'kike',
+                'kraut',
+                'spic',
+                'twat',
+                'lesbo',
+                'homo',
+                'fatso',
+                'lardass',
+                'jap',
+                'biatch',
+                'tard',
+                'gimp',
+                'gyp',
+                'chinaman',
+                'chinamen',
+                'golliwog',
+                'crip',
+                'raghead',
+                'negro',
+                'darky', // ep additions begin here
+                'hooker',
+                'honky',
+                'coolie',
+                'bastard',
+                'douche',
+                'penis',
+                'vagina',
+                'blowjob',
+                'popery',
+                'fuck',
+                'mulatto',
+                'faggot',
+                'jew',
+                'femme'
+            ];
+            
             // secret word is naughty, run it again
-            if ($.inArray(secretWord, WordGame.naughtyWords) > -1) {
+            if ($.inArray(secretWord, naughtyWords) > -1) {
                 
                 WordGame.filterCount++;
                 
@@ -425,6 +423,8 @@
             // display score
             $('.score-value').text(scoreValue);
             
+            WordGame.inputAllowed = true;
+            
             /* display alternate definition button
             if (WordGame.alternateDefinition === '') {
                 $('.show-alternate-definition').css('visibility', 'hidden');
@@ -511,7 +511,7 @@
         handleKeyPress: function(e) {
             e.preventDefault();
             
-            function keyPressed() {
+            if (WordGame.inputAllowed === true) {
                 // get letter pressed
                 var characterCode = e.which;
                 
@@ -521,23 +521,17 @@
                 } else {
                     return;
                 }
-            }
-            
-            if (WordGame.inputAllowed === true) {
-                clearTimeout(WordGame.timeout);
-                WordGame.timeout = setTimeout(keyPressed, 50);
             } else {
                 return;
             }
-            
-            // disable input
-            //WordGame.inputAllowed = false;
         },
         
         handleInput: function(characterCode, attempt) {
             
             // if letter hasn't been tried, run the shiz
             if ($.inArray(characterCode, WordGame.attemptedLetters) == -1) {
+                
+                WordGame.inputAllowed = false;
             
                 // chalk up an attempt
                 if (attempt === true) { WordGame.attempts++; }
@@ -573,7 +567,7 @@
                     if ($.isEmptyObject(WordGame.secretWordObject)) {
                         
                         // disable input
-                        WordGame.inputAllowed = false;
+                        //WordGame.inputAllowed = false;
                         
                         // gray out all letters
                         $('.keys div').addClass('disabled');
@@ -673,41 +667,36 @@
             setTimeout(function() {
                 console.clear();
                 
-                // animate out
-                $('.secret-word').addClass('animated bounceOutLeft');
+                WordGame.animate('bounceOutLeft');
                 
-                // reset everything after animation completes
-                $('.secret-word').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
-                    function() {
-                        // remove animation classes
-                        $('.secret-word').removeClass('animated bounceOutLeft win lose');
-                        
-                        // empty secret word and definition
-                        $('.secret-word, .definition p').empty();
-                        
-                        // remove disabled class from buttons
-                        $('.keys div').removeClass('disabled');
-                        
-                        // reset game properties
-                        WordGame.firstRun = false;
-                        WordGame.debug = false;
-                        WordGame.inputAllowed = false;
-                        WordGame.secretWord = '';
-                        WordGame.characterCount = 0;
-                        WordGame.secretWordCharacterCodes = [];
-                        WordGame.secretWordObject = {};
-                        WordGame.uniqueLetters = 0;
-                        WordGame.definition = '';
-                        //WordGame.alternateDefinition = '';
-                        WordGame.attemptsAllowed = 0;
-                        WordGame.attempts = 0;
-                        WordGame.attemptedLetters = [];
-                        WordGame.attemptsLeft = 0;
-                        WordGame.lettersLeft = 0;
-                        
-                        // run again!
-                        WordGame.getSecretWord();
-                    });
+                // remove animation classes
+                $('.secret-word').removeClass('win lose');
+                
+                // empty secret word and definition
+                $('.secret-word, .definition p').empty();
+                
+                // remove disabled class from buttons
+                $('.keys div').removeClass('disabled');
+                
+                // reset game properties
+                WordGame.firstRun = false;
+                WordGame.debug = false;
+                WordGame.inputAllowed = false;
+                WordGame.secretWord = '';
+                WordGame.characterCount = 0;
+                WordGame.secretWordCharacterCodes = [];
+                WordGame.secretWordObject = {};
+                WordGame.uniqueLetters = 0;
+                WordGame.definition = '';
+                //WordGame.alternateDefinition = '';
+                WordGame.attemptsAllowed = 0;
+                WordGame.attempts = 0;
+                WordGame.attemptedLetters = [];
+                WordGame.attemptsLeft = 0;
+                WordGame.lettersLeft = 0;
+                
+                // run again!
+                WordGame.getSecretWord();
             }, 1300);
         }
     };
