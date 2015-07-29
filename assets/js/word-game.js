@@ -87,6 +87,7 @@
         },
         
         updateScore: function() {
+            
             var currentScore = parseInt(window.localStorage.getItem('word-game-score')) || 0;
             
             // determine new score
@@ -100,10 +101,12 @@
             // store new value
             localStorage.setItem('word-game-score', updatedScore);
             
-            $('.score-value').prop('number', currentScore).animateNumber({
+            $('.score-value').addClass('updating').prop('number', currentScore).animateNumber({
                 number: updatedScore,
                 numberStep: WordGame.commaSeparatorNumberStep
-            }, 1000);
+            }, 1000, function() {
+                $('.score-value').removeClass('updating');
+            });
         },
         
         initialize: function() {
