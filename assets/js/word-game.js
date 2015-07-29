@@ -26,6 +26,7 @@
         // constants
         // alertSound: new Audio('bleep.wav'),
         storedScore: window.localStorage.getItem('word-game-score'),
+        commaSeparatorNumberStep: $.animateNumber.numberStepFactories.separator(','),
         
         settings: {
             sound: false,
@@ -85,6 +86,26 @@
         
         },
         
+        updateScore: function() {
+            var currentScore = parseInt(window.localStorage.getItem('word-game-score')) || 0;
+            
+            // determine new score
+            var updatedScore = WordGame.characterCount * 10 + WordGame.attemptsLeft * 5 + currentScore;
+            
+            // if the freebie wasn't used, add 5 boner points
+            if (!$('.freebie-button').hasClass('used')) {
+                updatedScore = updatedScore + 5;
+            }
+            
+            // store new value
+            localStorage.setItem('word-game-score', updatedScore);
+            
+            $('.score-value').prop('number', currentScore).animateNumber({
+                number: updatedScore,
+                numberStep: WordGame.commaSeparatorNumberStep
+            }, 1000);
+        },
+        
         initialize: function() {
             
             // fast button action
@@ -125,6 +146,17 @@
                 WordGame.introduction();
             } else {
                 WordGame.getSecretWord();
+            }
+            
+            // set score
+            if (WordGame.storedScore === null) {
+                $('.score-value').text('0');
+            // you're back, animate your previous score in
+            } else {
+                $('.score-value').prop('number', 0).animateNumber({
+                    number: WordGame.storedScore,
+                    numberStep: WordGame.commaSeparatorNumberStep
+                }, 1000);
             }
         },
         
@@ -366,10 +398,10 @@
         processSecretWord: function() {
             
             // get the character count of secret word
-            characterCount = secretWord.length;
+            WordGame.characterCount = secretWord.length;
             
             // populate secret word object: {97: 2, 101: 1, 103: 1, 116: 2, 119: 1} (wattage)
-            for (var index = 0; index < characterCount; index++) {
+            for (var index = 0; index < WordGame.characterCount; index++) {
                 var character = secretWord.charCodeAt(index);
                 if (WordGame.secretWordObject[character]) {
                    WordGame.secretWordObject[character]++;
@@ -381,8 +413,8 @@
             console.log(WordGame.secretWordObject);
             
             // set attempts allowed based on keys (unique letters) in the secretWordObject
-            uniqueLetters = Object.keys(WordGame.secretWordObject).length;
-            attemptsAllowed = uniqueLetters * 2;
+            WordGame.uniqueLetters = Object.keys(WordGame.secretWordObject).length;
+            WordGame.attemptsAllowed = WordGame.uniqueLetters * 2;
             
             WordGame.renderUI();
             
@@ -391,7 +423,7 @@
         renderUI: function() {
             
             // create character code array and letter holders
-            for (var index = 0; index < characterCount; index++) {
+            for (var index = 0; index < WordGame.characterCount; index++) {
                 var charCodes = secretWord.charCodeAt(index);
                 WordGame.secretWordCharacterCodes.push(charCodes);
                 
@@ -401,13 +433,14 @@
             WordGame.animate('bounceInRight');
             
             // display attempts count
-            $('.attempts-left').html(attemptsAllowed);
+            $('.attempts-left').html(WordGame.attemptsAllowed);
             
             // display definition
             $('.definition p').html(definition);
             
             $('.definition p').widowFix();
             
+/*
             // determine score
             var scoreValue;
             if (window.localStorage.getItem('word-game-score') === null) {
@@ -422,6 +455,7 @@
             
             // display score
             $('.score-value').text(scoreValue);
+*/
             
             WordGame.inputAllowed = true;
             
@@ -448,7 +482,7 @@
                         return;
                     } else {
                         // run handleInput
-                        WordGame.handleInput($(e.target).data('character-code'), true);
+                        WordGame.handleInput($(e.target).data('character-code'));
                     }
                     
                 
@@ -461,7 +495,7 @@
                 // freebie
                 } else if ($(e.target).hasClass('freebie-button')) {
                     
-                    if ($(e.target).hasClass('disabled')) {
+                    if ($(e.target).hasClass('used')) {
                         return;
                     } else {
                         // find the unused letters
@@ -471,10 +505,10 @@
                         var randomUnusedLetter = unusedLetters[Math.floor(Math.random() * unusedLetters.length)];
                         
                         // show freebie
-                        WordGame.handleInput(randomUnusedLetter, false);
+                        WordGame.handleInput(randomUnusedLetter);
                         
                         // disable freebie button
-                        $(e.target).addClass('disabled');
+                        $(e.target).addClass('disabled used');
                     }
                 }
             }
@@ -517,7 +551,7 @@
                 
                 // make sure it's a-z
                 if (characterCode >= 97 && characterCode <= 122) {
-                    WordGame.handleInput(characterCode, true);
+                    WordGame.handleInput(characterCode);
                 } else {
                     return;
                 }
@@ -526,7 +560,7 @@
             }
         },
         
-        handleInput: function(characterCode, attempt) {
+        handleInput: function(characterCode) {
             
             // if letter hasn't been tried, run the shiz
             if ($.inArray(characterCode, WordGame.attemptedLetters) == -1) {
@@ -534,7 +568,7 @@
                 WordGame.inputAllowed = false;
             
                 // chalk up an attempt
-                if (attempt === true) { WordGame.attempts++; }
+                WordGame.attempts++;
                 
                 // add it to attempted letters array
                 WordGame.attemptedLetters.push(characterCode);
@@ -543,11 +577,11 @@
                 $('div[data-character-code="' + characterCode + '"]').addClass('disabled');
                     
                 // calculate attempts left
-                attemptsLeft = attemptsAllowed - WordGame.attempts;
+                WordGame.attemptsLeft = WordGame.attemptsAllowed - WordGame.attempts;
                 //lettersLeft = Object.keys(WordGame.secretWordObject).length;
                 
                 // update attempts left value
-                $('.attempts-left').html(attemptsLeft);
+                $('.attempts-left').html(WordGame.attemptsLeft);
                 
                 // if letter's in secret word
                 if (characterCode in WordGame.secretWordObject) {
@@ -561,7 +595,7 @@
                     delete WordGame.secretWordObject[characterCode];
                     
                     // define letters left
-                    lettersLeft = Object.keys(WordGame.secretWordObject).length;
+                    WordGame.lettersLeft = Object.keys(WordGame.secretWordObject).length;
                     
                     // if the secretWordObject is now empty, that's a win!
                     if ($.isEmptyObject(WordGame.secretWordObject)) {
@@ -578,10 +612,11 @@
                         //WordGame.animate('flash');
                         
                         // was it dude perfect?
-                        if (WordGame.attempts === uniqueLetters) {
+                        if (WordGame.attempts === WordGame.uniqueLetters) {
                             console.log('DUDE PERFECT!');
                         }
                         
+/*
                         // get current score
                         var currentScore = parseInt(window.localStorage.getItem('word-game-score')) || 0;
                         
@@ -600,7 +635,14 @@
                         
                         // animate score update
                         //$('.score-value').animateNumbers(updatedScore, false, 2000, 'linear');
-                        $('.score-value').prop('number', currentScore).animateNumber({ number: updatedScore });
+                        var commaSeparatorNumberStep = $.animateNumber.numberStepFactories.separator(',')
+                        $('.score-value').prop('number', currentScore).animateNumber({
+                            number: updatedScore,
+                            numberStep: commaSeparatorNumberStep
+                        });
+*/
+
+                        WordGame.updateScore();
                         
                         $('.secret-word').addClass('win');
                         
@@ -622,10 +664,10 @@
                     console.log(String.fromCharCode(characterCode) + ' is NOT a match');
                     
                     // define letters left
-                    lettersLeft = Object.keys(WordGame.secretWordObject).length;
+                    WordGame.lettersLeft = Object.keys(WordGame.secretWordObject).length;
                     
                     // if you lost
-                    if (lettersLeft > attemptsLeft || WordGame.attempts == attemptsAllowed) {
+                    if (WordGame.lettersLeft > WordGame.attemptsLeft || WordGame.attempts == WordGame.attemptsAllowed) {
                         
                         // disable input
                         WordGame.inputAllowed = false;
@@ -647,7 +689,7 @@
                 
                 // log a bunch of shit
                 //console.log('attempted letters: ' + WordGame.attemptedLetters);
-                console.log('attempts: ' + WordGame.attempts + ' / attempts left: ' + attemptsLeft + ' / unique letters left: ' + lettersLeft);
+                console.log('attempts: ' + WordGame.attempts + ' / attempts left: ' + WordGame.attemptsLeft + ' / unique letters left: ' + WordGame.lettersLeft);
             
             // letter was already tried, doing nothing
             } else {
