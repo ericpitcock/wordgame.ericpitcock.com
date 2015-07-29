@@ -301,7 +301,9 @@
                 'mulatto',
                 'faggot',
                 'jew',
-                'femme'
+                'femme',
+                'nads',
+                'semen'
             ];
             
             // secret word is naughty, run it again
