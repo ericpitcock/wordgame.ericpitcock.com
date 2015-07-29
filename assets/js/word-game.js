@@ -721,7 +721,7 @@
                 $('.secret-word, .definition p').empty();
                 
                 // remove disabled class from buttons
-                $('.keys div').removeClass('disabled');
+                $('.keys div').removeClass('disabled used');
                 
                 // reset game properties
                 WordGame.firstRun = false;
