@@ -4,7 +4,8 @@
 
 (function() {
     var WordGame = {
-
+    
+        errorCount: 0,
         firstRun: true,
         debug: false,
         filterCount: 0,
@@ -187,7 +188,7 @@
                 $.ajax({
                     //async: false,
                     type: 'GET',
-                    url: 'http://api.wordnik.com:80/v4/words.json/randomWord', 
+                    url: 'http://aapi.wordnik.com:80/v4/words.json/randomWord', 
                     data: {
                         hasDictionaryDef: true,
                         /*includePartOfSpeech: 'noun',
@@ -234,8 +235,23 @@
                             secretWord = data.word;
                             WordGame.filterSecretWord();
                         }
+                    },
+                    error: function() {
+                        WordGame.handleError();
                     }
                 });
+            }
+        },
+        
+        handleError: function() {
+            
+            if (WordGame.errorCount > 3) {
+                $('.error p').html('Please try again in a few minutes.');
+                $('.error').show();
+            } else {
+                $('.error').show();
+                WordGame.errorCount++;
+                console.log(WordGame.errorCount);
             }
         },
         
@@ -750,4 +766,11 @@
     
     $(document).ready(function() { WordGame.initialize(); });
     
+    $('.error button').click(function() {
+        $('.error').hide();
+        WordGame.initialize();
+        //location.reload();
+    });
+    
 })();
+

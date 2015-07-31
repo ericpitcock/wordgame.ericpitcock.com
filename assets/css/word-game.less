@@ -252,6 +252,7 @@ button {
     font-size: 11px;
     font-weight: 600;
     text-align: center;
+    text-transform: uppercase;
     white-space: nowrap;
     vertical-align: middle;
     letter-spacing: 1px;
@@ -505,6 +506,24 @@ html.no-touch button:hover {
                 }
             }
         }
+    }
+}
+
+.error {
+    display: none;
+    position: absolute;
+    width: 340px;
+    top: 120px;
+    left: 50%;
+    padding: 40px 30px 30px;
+    margin-left: -170px;
+    background: #fff;
+    border: 1px solid @subtle-black;
+    box-shadow: 0 5px 20px rgba(85,85,85,0.1);
+    z-index: 1;
+    
+    p {
+        margin-bottom: 20px;
     }
 }
 
