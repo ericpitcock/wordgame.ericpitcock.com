@@ -188,7 +188,7 @@
                 $.ajax({
                     //async: false,
                     type: 'GET',
-                    url: 'http://aapi.wordnik.com:80/v4/words.json/randomWord', 
+                    url: 'http://api.wordnik.com:80/v4/words.json/randomWord', 
                     data: {
                         hasDictionaryDef: true,
                         /*includePartOfSpeech: 'noun',
