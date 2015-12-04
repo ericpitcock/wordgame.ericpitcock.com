@@ -393,6 +393,11 @@
                 WordGame.getSecretWord();
             */
             
+            } else if (definition.length > 150) {
+                
+                console.log('the definition for' + secretWord + ' had ' + definition.length + ' characters, running again');
+                WordGame.getSecretWord();
+            
             // they passed, play on
             } else {
                 

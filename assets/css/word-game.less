@@ -38,7 +38,7 @@
 //=============================================================================
 
 @black: #444;
-@subtle-black: rgba(85,85,85,0.2);
+@subtle-black: rgba(85,85,85,0.4);
 
 //=============================================================================
 // ANIMATION
@@ -216,29 +216,14 @@ body, input, button {
 }
 
 body {
-    background: rgba(196, 226, 229, 0.46);
+    background: @black;
     text-align: center;
     font-size: 14px;
-    color: @black;
+    color: lighten(@black, 30%);
     overflow: hidden;
     .user-select(none);
     cursor: default;
-    
-/*
-    &:after {
-        position: absolute;
-        content: "";
-        width: 200%;
-        height: 700px;
-        background-color: #acd885;
-        display: block;
-        border-radius: 50%;
-        top: 47%;
-        left: -50%;
-        z-index: -1;
-        box-shadow: 0 -2px 2px rgba(172,216,133,0.5);
-    }
-*/
+    -webkit-font-smoothing: antialiased;
 }
 
 button {
@@ -292,9 +277,9 @@ html.no-touch button:hover {
     left: 0;
     height: 60px;
     padding-top: 24px;
-    background-color: rgba(255, 255, 255, 0.38);
-    color: @black;
-    border-bottom: 1px solid @subtle-black;
+    //background-color: rgba(255, 255, 255, 0.38);
+    //color: @black;
+    //border-bottom: 1px solid @subtle-black;
     font-size: 12px;
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -314,9 +299,11 @@ html.no-touch button:hover {
         text-align: left;
         padding-left: 21px;
         border-left: 1px solid @subtle-black;
+        .transition(all 1s ease-in-out);
+        
         
         .score-value.updating {
-            //color: #ecf491;
+            color: #fff;
         }
     }
 }
@@ -378,7 +365,7 @@ html.no-touch button:hover {
                 line-height: 180px;
                 font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
                 font-size: 50px;
-                color: @black;
+                //color: @black;
                 .transition(all .15s cubic-bezier(0.29, 0.74, 0.04, 1.04));
                 
                 &:first-child {
@@ -392,7 +379,7 @@ html.no-touch button:hover {
                 &.highlight {
                     font-family: 'HouseMovements-Sign';
                     font-size: 180px;
-                    color: @black;
+                    //color: @black;
                     
                     // shadow
                     &:after {
@@ -400,7 +387,7 @@ html.no-touch button:hover {
                         position: relative;
                         width: 40px;
                         height: 5px;
-                        background-color: rgba(0,0,0,0.05);
+                        background-color: rgba(0,0,0,0.1);
                         display: block;
                         left: 50%;
                         margin-left: -20px;
@@ -423,31 +410,31 @@ html.no-touch button:hover {
             
             &.win {
                 
-                span.letter-holder, &:after {
+                span.letter-holder /* , &:after  */{
                     color: #8db955;
                 }
                 
-                &:after {
+                /*&:after {
                     position: relative;
                     content: '\2713';
                     font-size: 50px;
                     top: 13px;
                     left: 20px;
-                }
+                }*/
             }
             
             &.lose {
-                span.letter-holder, &:after {
+                span.letter-holder /* , &:after  */{
                     color: #d66a4c;
                 }
                 
-                &:after {
+                /*&:after {
                     position: relative;
                     content: '\00d7';
                     font-size: 50px;
                     top: 13px;
                     left: 20px;
-                }
+                }*/
             }
             
             &.animated.shake {
@@ -501,8 +488,7 @@ html.no-touch button:hover {
                 }
                 
                 &.disabled {
-                    //opacity: 0.3;
-                    color: @subtle-black;
+                    opacity: 0;
                 }
             }
         }
@@ -541,6 +527,15 @@ html.no-touch button:hover {
     }
     
     .game-board {
+        .definition-container {
+            .definition {
+                p {
+                    font-size: 36px;
+                    line-height: 42px;
+                }
+            }
+        }
+        
         .controls {
             .secret-word {
                 height: 180px;
@@ -556,7 +551,7 @@ html.no-touch button:hover {
                 max-width: 1140px;
                 padding: 12px 0 0 0;
                 border-top: 1px solid @subtle-black;
-                border-bottom: 1px solid @subtle-black;
+                //border-bottom: 1px solid @subtle-black;
                 margin: 80px auto 20px auto;
                 //background: #fff;
                 
