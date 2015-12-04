@@ -33,12 +33,12 @@
             sound: false,
         },
         
-        animate: function(animation) {
+        animate: function(element, animation) {
             WordGame.inputAllowed = false;
-            $('.secret-word').addClass('animated ' + animation);
-            $('.secret-word').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
+            $(element).addClass('animated ' + animation);
+            $(element).one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
                 function() {
-                    $('.secret-word').removeClass('animated ' + animation);
+                    $(element).removeClass('animated ' + animation);
                     WordGame.inputAllowed = true;
             });
         },
@@ -448,6 +448,16 @@
         
         renderUI: function() {
             
+            // clear previous stuff
+            // remove animation classes
+            $('.secret-word').removeClass('win lose').empty();;
+            
+            // empty secret word and definition
+            //$('.secret-word').empty();
+            
+            // remove disabled class from buttons
+            $('.keys div').removeClass('disabled used');
+            
             // create character code array and letter holders
             for (var index = 0; index < WordGame.characterCount; index++) {
                 var charCodes = secretWord.charCodeAt(index);
@@ -456,13 +466,13 @@
                 $('.secret-word').append('<span class="letter-holder" data-character-code="' + WordGame.secretWordCharacterCodes[index] + '">&bull;</span>');
             }
             
-            WordGame.animate('bounceInRight');
+            WordGame.animate('.secret-word', 'bounceInRight');
             
             // display attempts count
-            $('.attempts-left').html(WordGame.attemptsAllowed);
+            $('.attempts-left').empty().html(WordGame.attemptsAllowed);
             
             // display definition
-            $('.definition p').html(definition);
+            $('.definition p').empty().html(definition);
             
             $('.definition p').widowFix();
             
@@ -707,7 +717,7 @@
                     
                     // just got the letter wrong  
                     } else {
-                        WordGame.animate('shake');
+                        WordGame.animate('.secret-word', 'shake');
                         // enable input
                         WordGame.inputAllowed = true;
                     }
@@ -735,16 +745,7 @@
             setTimeout(function() {
                 console.clear();
                 
-                WordGame.animate('bounceOutLeft');
-                
-                // remove animation classes
-                $('.secret-word').removeClass('win lose');
-                
-                // empty secret word and definition
-                $('.secret-word, .definition p').empty();
-                
-                // remove disabled class from buttons
-                $('.keys div').removeClass('disabled used');
+                WordGame.animate('.secret-word', 'bounceOutLeft');
                 
                 // reset game properties
                 WordGame.firstRun = false;
