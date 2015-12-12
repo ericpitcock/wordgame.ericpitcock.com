@@ -1,5 +1,4 @@
-@import "../../../common/reset.less";
-///@import (less) "../../bower_components/animate.css/animate.min.css";
+@import '../../../common/reset.less';
 
 @font-face {
     font-family: 'HouseMovements-Sign';
@@ -49,6 +48,7 @@
             animation-duration: 1s;
     -webkit-animation-fill-mode: both;
             animation-fill-mode: both;
+    -webkit-transform: translateZ(0);
 }
 
 @-webkit-keyframes shake {
@@ -211,7 +211,7 @@ html {
 }
 
 body, input, button {
-    font-family: "Open Sans", sans-serif;
+    font-family: 'Open Sans', sans-serif;
     font-weight: 400;
 }
 
@@ -226,6 +226,7 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
+/* DO I NEED THIS?
 button {
     height: 22px;
     display: inline-block;
@@ -265,6 +266,7 @@ button {
         }
     }
 }
+*/
 
 html.no-touch button:hover {
     background: rgba(255,255,255,0.2);
@@ -277,9 +279,6 @@ html.no-touch button:hover {
     left: 0;
     height: 60px;
     padding-top: 24px;
-    //background-color: rgba(255, 255, 255, 0.38);
-    //color: @black;
-    //border-bottom: 1px solid @subtle-black;
     font-size: 12px;
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -365,7 +364,6 @@ html.no-touch button:hover {
                 line-height: 180px;
                 font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
                 font-size: 50px;
-                //color: @black;
                 .transition(all .15s cubic-bezier(0.29, 0.74, 0.04, 1.04));
                 
                 &:first-child {
@@ -379,11 +377,10 @@ html.no-touch button:hover {
                 &.highlight {
                     font-family: 'HouseMovements-Sign';
                     font-size: 180px;
-                    //color: @black;
                     
                     // shadow
                     &:after {
-                        content: "";
+                        content: '';
                         position: relative;
                         width: 40px;
                         height: 5px;
@@ -413,28 +410,12 @@ html.no-touch button:hover {
                 span.letter-holder /* , &:after  */{
                     color: #8db955;
                 }
-                
-                /*&:after {
-                    position: relative;
-                    content: '\2713';
-                    font-size: 50px;
-                    top: 13px;
-                    left: 20px;
-                }*/
             }
             
             &.lose {
                 span.letter-holder /* , &:after  */{
                     color: #d66a4c;
                 }
-                
-                /*&:after {
-                    position: relative;
-                    content: '\00d7';
-                    font-size: 50px;
-                    top: 13px;
-                    left: 20px;
-                }*/
             }
             
             &.animated.shake {
@@ -481,7 +462,6 @@ html.no-touch button:hover {
                 font-size: 20px;
                 text-transform: uppercase;
                 line-height: 36px;
-                //background: #fff;
                 
                 &[data-qwerty-order="10"], &[data-qwerty-order="19"],  {
                     margin-right: 0;
@@ -551,25 +531,16 @@ html.no-touch button:hover {
                 max-width: 1140px;
                 padding: 12px 0 0 0;
                 border-top: 1px solid @subtle-black;
-                //border-bottom: 1px solid @subtle-black;
                 margin: 80px auto 20px auto;
-                //background: #fff;
                 
                 div {
-                    //position: relative;
-                    //display: inline-block;
-                    //width: 3.3%;
                     width: 3.3333333333%;
-                    //text-transform: uppercase;
-                    //font-size: 20px;
                     border: none;
                     margin: 0;
                     cursor: pointer;
-                    //-webkit-tap-highlight-color: rgba(0,0,0,0);
                     
                     &.disabled {
                         cursor: default;
-                        //opacity: 0.3;
                     }
                     
                     &.freebie-button {
