@@ -216,6 +216,11 @@ body, input, button {
 }
 
 body {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    height: 100%;
+    
     background: @black;
     text-align: center;
     font-size: 14px;
@@ -273,12 +278,15 @@ html.no-touch button:hover {
 }
 
 .header {
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-    height: 60px;
-    padding-top: 24px;
+    //flex: 0 0 30px;
+    height: 30px;
+    
+    //position: absolute;
+    //top: 0;
+    //right: 0;
+    //left: 0;
+    //height: 60px;
+    padding-top: 8px;
     font-size: 12px;
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -308,32 +316,45 @@ html.no-touch button:hover {
 }
 
 .game-board {
-    position: absolute;
-    top: 60px;
-    right: 0;
-    left: 0;
-    bottom: 0;
+    //flex: 1 0 auto;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    
+    background: black;
+    
+    //position: absolute;
+    //top: 60px;
+    //right: 0;
+    //left: 0;
+    //bottom: 0;
     
     .definition-container {
-        height: 30%;
-        overflow-y: scroll;
+        //height: 30%;
+        //overflow-y: scroll;
+        display: flex;
+        flex-grow: 1;
+        justify-content: center;
         
         &::-webkit-scrollbar {
             display: none;
         }
         
         .definition {
-            display: table;
-            width: 100%;
+            align-self: center;
+            //display: table;
+            //width: 100%;
             max-width: 760px;
-            height: 100%;
-            margin: 0 auto;
+            //height: 100%;
+            //margin: 0 auto;
             
             p {
-                display: table-cell;
+                //display: table-cell;
                 text-align: center;
-                vertical-align: middle;
-                padding: 0 30px;
+                //vertical-align: middle;
+                //padding: 0 30px;
                 font-size: 26px;
                 line-height: 32px;
                 font-family: 'News Cycle', sans-serif;
@@ -346,131 +367,144 @@ html.no-touch button:hover {
         }
     }
     
-    .controls {
-        height: 70%;
+    .secret-word {
+        flex-grow: 1;
+        display: flex;
+        justify-content: center;
         
-        .secret-word {
+        //background: red;
+        
+        line-height: 0;
+        position: relative;
+        z-index: 10;
+        width: 100%;
+        //height: 180px;
+        max-width: 1020px;
+        margin: 0 auto;
+        
+        span.letter-holder {
+            //display: inline-block;
+            //vertical-align: middle;
+            //height: 180px;
             position: relative;
-            z-index: 10;
-            width: 100%;
-            height: 180px;
-            max-width: 1020px;
-            margin: 0 auto;
+            align-self: center;
+            //line-height: 180px;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 50px;
+            .transition(all .15s cubic-bezier(0.29, 0.74, 0.04, 1.04));
             
-            span.letter-holder {
-                display: inline-block;
-                vertical-align: middle;
-                height: 180px;
-                line-height: 180px;
-                font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-                font-size: 50px;
-                .transition(all .15s cubic-bezier(0.29, 0.74, 0.04, 1.04));
-                
-                &:first-child {
-                    text-transform: uppercase;
-                }
-                
-                &:last-child {
-                    margin-right: 0;
-                }
-                
-                &.highlight {
-                    font-family: 'HouseMovements-Sign';
-                    font-size: 80px;
-                    
-                    // shadow
-                    &:after {
-                        content: '';
-                        position: relative;
-                        width: 40px;
-                        height: 5px;
-                        background-color: rgba(0,0,0,0.1);
-                        display: block;
-                        left: 50%;
-                        margin-left: -20px;
-                        top: -38px;
-                        border-radius: 10px;
-                        z-index: -1;
-                    }
-                    
-                    // custom kerning for T* (except l and i)
-                    &:first-child[data-character-code="116"] + *:not([data-character-code="104"]):not([data-character-code="105"]) {
-                            margin-left: -9px;
-                    }
-                    
-                    /* custom kerning for P*
-                    &:first-child[data-character-code="112"] + * {
-                            margin-left: -4px;
-                    }
-                    */
-                }
+            &:first-child {
+                text-transform: uppercase;
             }
             
-            &.win {
+            &:last-child {
+                margin-right: 0;
+            }
+            
+            &.highlight {
+                font-family: 'HouseMovements-Sign';
+                font-size: 80px;
                 
-                span.letter-holder /* , &:after  */{
-                    color: #8db955;
+                // shadow
+                &:after {
+                    content: '';
+                    position: absolute;
+                    width: 20px;
+                    height: 5px;
+                    background-color: rgba(0,0,0,0.1);
+                    display: block;
+                    left: 50%;
+                    margin-left: -10px;
+                    bottom: 10px;
+                    border-radius: 10px;
+                    z-index: -1;
                 }
-            }
-            
-            &.lose {
-                span.letter-holder /* , &:after  */{
-                    color: #d66a4c;
+                
+                // custom kerning for T* (except l and i)
+                &:first-child[data-character-code="116"] + *:not([data-character-code="104"]):not([data-character-code="105"]) {
+                        margin-left: -9px;
                 }
-            }
-            
-            &.animated.shake {
-                -webkit-animation-duration: .5s;
+                
+                /* custom kerning for P*
+                &:first-child[data-character-code="112"] + * {
+                        margin-left: -4px;
+                }
+                */
             }
         }
         
-        .attempts {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 5%;
+        &.win {
             
-            p {
-                text-transform: uppercase;
-                letter-spacing: 2px;
-                font-size: 12px;
-                font-weight: 600;
-            
-                .attempts-left {
-                    display: inline-block;
-                    width: 15px;
-                    letter-spacing: 0;
-                }
+            span.letter-holder /* , &:after  */{
+                color: #8db955;
             }
         }
         
-        .keys {
-            display: none;
-            position: absolute;
-            bottom: 40px;
-            width: 100%;
-            height: auto;
+        &.lose {
+            span.letter-holder /* , &:after  */{
+                color: #d66a4c;
+            }
+        }
+        
+        &.animated.shake {
+            -webkit-animation-duration: .5s;
+        }
+    }
+    
+    .keys {
+        //display: none;
+        //flex-grow: 1;
+        //display: flex;
+        //flex-wrap: wrap;
+        //justify-content: center;
+        
+        //position: absolute;
+        //bottom: 40px;
+        width: 100%;
+        //height: auto;
+        
+        div {
+            //align-self: flex-end;
             
-            div {
+            display: inline-block;
+            width: 8.125%;
+            height: 36px;
+            border-radius: 3px;
+            border: 1px solid @subtle-black;
+            border-radius: 3px;
+            margin: 0 2px 12px 0;
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+            font-size: 20px;
+            text-transform: uppercase;
+            line-height: 36px;
+            
+            &[data-qwerty-order="10"], &[data-qwerty-order="19"],  {
+                margin-right: 0;
+            }
+            
+            &.disabled {
+                opacity: 0;
+            }
+        }
+    }
+    
+    .attempts {
+        //position: absolute;
+        //bottom: 0;
+        //width: 100%;
+        height: 20px;
+        //height: 5%;
+        
+        p {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 12px;
+            font-weight: 600;
+        
+            .attempts-left {
                 display: inline-block;
-                width: 8.125%;
-                height: 36px;
-                border-radius: 3px;
-                border: 1px solid @subtle-black;
-                border-radius: 3px;
-                margin: 0 2px 12px 0;
-                -webkit-tap-highlight-color: rgba(0,0,0,0);
-                font-size: 20px;
-                text-transform: uppercase;
-                line-height: 36px;
-                
-                &[data-qwerty-order="10"], &[data-qwerty-order="19"],  {
-                    margin-right: 0;
-                }
-                
-                &.disabled {
-                    opacity: 0;
-                }
+                width: 15px;
+                letter-spacing: 0;
             }
         }
     }
@@ -525,63 +559,61 @@ html.no-touch button:hover {
             }
         }
         
-        .controls {
-            .secret-word {
-                height: 180px;
+        .secret-word {
+            height: 180px;
 
-                span.letter-holder {
-                    
-                    &.highlight {
-                        font-size: 180px;
-                    }
-                    
-                    // custom kerning for T* (except l and i)
-                    &:first-child[data-character-code="116"] + *:not([data-character-code="104"]):not([data-character-code="105"]) {
-                        margin-left: -21px;
-                    }
-                    
-                    // custom kerning for P*
-                    &:first-child[data-character-code="112"] + * {
-                        margin-left: -4px;
-                    }
-                }
-            }
-        
-            .keys {
-                position: relative;
-                bottom: auto;
-                height: 60px;
-                max-width: 1140px;
-                padding: 12px 0 0 0;
-                border-top: 1px solid @subtle-black;
-                margin: 80px auto 20px auto;
+            span.letter-holder {
                 
-                div {
-                    width: 3.3333333333%;
-                    border: none;
-                    margin: 0;
-                    cursor: pointer;
-                    
-                    &.disabled {
-                        cursor: default;
-                    }
-                    
-                    &.freebie-button {
-                        position: relative;
-                        top: 3px;
-                        height: 28px;
-                        text-align: right;
-                        margin-left: 10px;
-                        padding-right: 8px;
-                        border-radius: 0;
-                        border-left: 1px solid @subtle-black;
-                    }
+                &.highlight {
+                    font-size: 180px;
+                }
+                
+                // custom kerning for T* (except l and i)
+                &:first-child[data-character-code="116"] + *:not([data-character-code="104"]):not([data-character-code="105"]) {
+                    margin-left: -21px;
+                }
+                
+                // custom kerning for P*
+                &:first-child[data-character-code="112"] + * {
+                    margin-left: -4px;
                 }
             }
+        }
+    
+        .keys {
+            position: relative;
+            bottom: auto;
+            height: 60px;
+            max-width: 1140px;
+            padding: 12px 0 0 0;
+            border-top: 1px solid @subtle-black;
+            margin: 80px auto 20px auto;
             
-            .attempts {
-                position: relative;
+            div {
+                width: 3.3333333333%;
+                border: none;
+                margin: 0;
+                cursor: pointer;
+                
+                &.disabled {
+                    cursor: default;
+                }
+                
+                &.freebie-button {
+                    position: relative;
+                    top: 3px;
+                    height: 28px;
+                    text-align: right;
+                    margin-left: 10px;
+                    padding-right: 8px;
+                    border-radius: 0;
+                    border-left: 1px solid @subtle-black;
+                }
             }
+        }
+        
+        .attempts {
+            position: relative;
         }
     }
 }
