@@ -376,7 +376,7 @@ html.no-touch button:hover {
                 
                 &.highlight {
                     font-family: 'HouseMovements-Sign';
-                    font-size: 180px;
+                    font-size: 80px;
                     
                     // shadow
                     &:after {
@@ -395,13 +395,14 @@ html.no-touch button:hover {
                     
                     // custom kerning for T* (except l and i)
                     &:first-child[data-character-code="116"] + *:not([data-character-code="104"]):not([data-character-code="105"]) {
-                            margin-left: -21px;
+                            margin-left: -9px;
                     }
                     
-                    // custom kerning for P*
+                    /* custom kerning for P*
                     &:first-child[data-character-code="112"] + * {
                             margin-left: -4px;
                     }
+                    */
                 }
             }
             
@@ -493,6 +494,14 @@ html.no-touch button:hover {
 }
 
 //=============================================================================
+// LARGER PHONES BREAK POINT
+//=============================================================================
+
+@media (min-width: 768px) {
+    
+}
+
+//=============================================================================
 // TABLET/DESKTOP BREAK POINT
 //=============================================================================
 
@@ -521,6 +530,20 @@ html.no-touch button:hover {
                 height: 180px;
 
                 span.letter-holder {
+                    
+                    &.highlight {
+                        font-size: 180px;
+                    }
+                    
+                    // custom kerning for T* (except l and i)
+                    &:first-child[data-character-code="116"] + *:not([data-character-code="104"]):not([data-character-code="105"]) {
+                        margin-left: -21px;
+                    }
+                    
+                    // custom kerning for P*
+                    &:first-child[data-character-code="112"] + * {
+                        margin-left: -4px;
+                    }
                 }
             }
         

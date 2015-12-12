@@ -508,30 +508,32 @@
             e.preventDefault();
             //console.log(e);
             
+            var $target = $(e.target);
+            
             if (WordGame.inputAllowed === true) {
             
                 // letter clicks
-                if ($(e.target).hasClass('alpha')) {
+                if ($target.hasClass('alpha')) {
                 
                     // if it's aleady been used, do nah
-                    if ($(e.target).hasClass('disabled')) {
+                    if ($target.hasClass('disabled')) {
                         return;
                     } else {
                         // run handleInput
-                        WordGame.handleInput($(e.target).data('character-code'));
+                        WordGame.handleInput($target.data('character-code'));
                     }
                     
                 
                 // skip
-                } else if ($(e.target).hasClass('skip-button')) {
+                } else if ($target.hasClass('skip-button')) {
                 
                     WordGame.proceed('skip');
                     WordGame.inputAllowed = false;
                 
                 // freebie
-                } else if ($(e.target).hasClass('freebie-button')) {
+                } else if ($target.hasClass('freebie-button')) {
                     
-                    if ($(e.target).hasClass('used')) {
+                    if ($target.hasClass('used')) {
                         return;
                     } else {
                         // find the unused letters
@@ -544,7 +546,7 @@
                         WordGame.handleInput(randomUnusedLetter);
                         
                         // disable freebie button
-                        $(e.target).addClass('disabled used');
+                        $target.addClass('disabled used');
                     }
                 }
             }
