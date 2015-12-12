@@ -221,7 +221,7 @@ body {
     flex-wrap: wrap;
     height: 100%;
     
-    background: @black;
+    background: darken(@black, 10%);
     text-align: center;
     font-size: 14px;
     color: lighten(@black, 30%);
@@ -321,9 +321,9 @@ html.no-touch button:hover {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
-    justify-content: flex-end;
+    justify-content: space-between;
     
-    background: black;
+    //background: black;
     
     //position: absolute;
     //top: 60px;
@@ -332,10 +332,10 @@ html.no-touch button:hover {
     //bottom: 0;
     
     .definition-container {
-        //height: 30%;
+        height: 200px;
         //overflow-y: scroll;
         display: flex;
-        flex-grow: 1;
+        //flex-grow: 1;
         justify-content: center;
         
         &::-webkit-scrollbar {
@@ -368,7 +368,7 @@ html.no-touch button:hover {
     }
     
     .secret-word {
-        flex-grow: 1;
+        //flex-grow: 1;
         display: flex;
         justify-content: center;
         
