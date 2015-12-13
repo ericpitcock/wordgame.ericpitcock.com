@@ -525,7 +525,7 @@
                         var randomUnusedLetter = unusedLetters[Math.floor(Math.random() * unusedLetters.length)];
                         
                         // show freebie
-                        WordGame.handleInput(randomUnusedLetter);
+                        WordGame.handleInput(randomUnusedLetter, true);
                         
                         // disable freebie button
                         $target.addClass('disabled used');
@@ -580,15 +580,17 @@
             }
         },
         
-        handleInput: function(characterCode) {
+        handleInput: function(characterCode, freebie) {
             
             // if letter hasn't been tried, run the shiz
             if ($.inArray(characterCode, WordGame.attemptedLetters) == -1) {
                 
                 WordGame.inputAllowed = false;
             
+                freebie = freebie || false;
+            
                 // chalk up an attempt
-                WordGame.attempts++;
+                if (freebie === false) { WordGame.attempts++; }
                 
                 // add it to attempted letters array
                 WordGame.attemptedLetters.push(characterCode);
