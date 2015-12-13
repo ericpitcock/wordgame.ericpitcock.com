@@ -232,52 +232,6 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-/* DO I NEED THIS?
-button {
-    height: 22px;
-    display: inline-block;
-    padding: 0 10px 1px 10px;
-    border: 1px solid rgba(85,85,85,0.7);
-    background: transparent;
-    color: @black;
-    border-radius: 3px;
-    font-size: 11px;
-    font-weight: 600;
-    text-align: center;
-    text-transform: uppercase;
-    white-space: nowrap;
-    vertical-align: middle;
-    letter-spacing: 1px;
-    cursor: pointer;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    background-image: none;
-    box-shadow: 1px 1px 0px rgba(85,85,85,0.7);
-    -webkit-transition: background .2s ease-in-out;
-    transition: background .2s ease-in-out;
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
-    
-    &:focus, &:active {
-        outline: 0;
-    }
-    
-    &[disabled] {
-        opacity: 0.5;
-        cursor: default;
-        
-        &:hover {
-            background: transparent;
-        }
-    }
-}
-*/
-
-html.no-touch button:hover {
-    background: rgba(255,255,255,0.2);
-}
-
 .header {
     //flex: 0 0 30px;
     height: 30px;
@@ -437,7 +391,7 @@ html.no-touch button:hover {
 }
 
 .keys {
-    //display: none;
+    display: none;
     //flex-grow: 1;
     //display: flex;
     //flex-wrap: wrap;
@@ -501,14 +455,65 @@ html.no-touch button:hover {
     top: 120px;
     left: 50%;
     padding: 40px 30px 30px;
+    border-radius: 3px;
     margin-left: -170px;
-    background: #fff;
-    border: 1px solid @subtle-black;
-    z-index: 1;
+    background: #e05e5e;
+    color: #fff;
+    font-weight: 600;
+    //z-index: 1;
+    
+    h1 {
+        font-size: 30px;
+        margin-bottom: 10px;
+    }
     
     p {
-        margin-bottom: 20px;
+        margin-bottom: 30px;
     }
+    
+    button {
+        height: 22px;
+        display: inline-block;
+        padding: 0 10px 1px 10px;
+        border: 0;
+        background: #fff;
+        color: @black;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 600;
+        text-align: center;
+        text-transform: uppercase;
+        white-space: nowrap;
+        vertical-align: middle;
+        letter-spacing: 1px;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        background-image: none;
+        box-shadow: 2px 2px 0 rgb(185, 76, 76);
+        -webkit-transition: background .2s ease-in-out;
+        transition: background .2s ease-in-out;
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+        
+        &:focus, &:active {
+            outline: 0;
+        }
+        
+        &[disabled] {
+            opacity: 0.5;
+            cursor: default;
+            
+            &:hover {
+                background: transparent;
+            }
+        }
+    }
+}
+
+html.no-touch button:hover {
+    background: #efefa7;
 }
 
 //=============================================================================
@@ -525,12 +530,7 @@ html.no-touch button:hover {
 
 @media (min-width: 768px) {
     .header {
-        .title {
-        }
-        
-        .score {
-        
-        }
+        padding-top: 20px;
     }
     
     .definition-container {
@@ -549,16 +549,16 @@ html.no-touch button:hover {
             
             &.highlight {
                 font-size: 180px;
-            }
             
-            // custom kerning for T* (except l and i)
-            &:first-child[data-character-code="116"] + *:not([data-character-code="104"]):not([data-character-code="105"]) {
-                margin-left: -21px;
-            }
-            
-            // custom kerning for P*
-            &:first-child[data-character-code="112"] + * {
-                margin-left: -4px;
+                // custom kerning for T* (except l and i)
+                &:first-child[data-character-code="116"] + *:not([data-character-code="104"]):not([data-character-code="105"]) {
+                    margin-left: -21px;
+                }
+                
+                // custom kerning for P*
+                &:first-child[data-character-code="112"] + * {
+                    margin-left: -4px;
+                }
             }
         }
     }

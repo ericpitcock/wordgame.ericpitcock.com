@@ -8,7 +8,7 @@
         errorCount: 0,
         firstRun: true,
         debug: false,
-        filterCount: 0,
+        requestCount: 0,
         keysState: 'mobile',
         inputAllowed: false,
         timeout: 0,
@@ -122,17 +122,6 @@
                 e.preventDefault();
             }, false);
             
-            /* click events
-            document.body.addEventListener('click', this.handleClick, false);
-            
-            // key events
-            window.addEventListener('keydown', this.handleKeyDown, false);
-            window.addEventListener('keypress', this.handleKeyPress, false);
-            
-            //window resize
-            window.addEventListener('resize', this.renderKeys, false);
-            */
-            
             // click events
             $(document).on('click', this.handleClick);
             
@@ -167,92 +156,105 @@
         introduction: function() {
             WordGame.firstRun = false;
             secretWord = 'fun';
-            WordGame.getDefinition();
+            definition = 'A source of enjoyment, amusement, or pleasure.';
+            WordGame.processSecretWord();
         },
         
         getSecretWord: function() {
             
-            // if debug word present
-            if (window.location.search) {
+            if (WordGame.requestCount < 10) {
                 
-                // GOOD TEST WORDS: wattage
-                WordGame.debug = true;
-                debugWord = window.location.search;
-                secretWord = debugWord.replace('?', '');
-                WordGame.filterSecretWord();
-                console.log('%cDEBUG: ' + secretWord.toUpperCase(), 'color: red');
+                // keep track of requests so we can stop in case of drama
+                WordGame.requestCount++;
             
-            } else {
+                // if debug word present
+                if (window.location.search) {
+                    
+                    // GOOD TEST WORDS: wattage
+                    WordGame.debug = true;
+                    debugWord = window.location.search;
+                    secretWord = debugWord.replace('?', '');
+                    WordGame.filterSecretWord();
+                    console.log('%cDEBUG: ' + secretWord.toUpperCase(), 'color: red');
                 
-                // get the secret word
-                $.ajax({
-                    //async: false,
-                    type: 'GET',
-                    url: 'http://api.wordnik.com:80/v4/words.json/randomWord', 
-                    data: {
-                        hasDictionaryDef: true,
-                        /*includePartOfSpeech: 'noun',
-                        noun
-                        adjective
-                        verb
-                        adverb
-                        interjection
-                        pronoun
-                        preposition
-                        abbreviation
-                        affix
-                        article
-                        auxiliary-verb
-                        conjunction
-                        definite-article
-                        family-name
-                        given-name
-                        idiom
-                        imperative
-                        noun-plural
-                        noun-posessive
-                        past-participle
-                        phrasal-prefix
-                        proper-noun
-                        proper-noun-plural
-                        proper-noun-posessive
-                        suffix
-                        verb-intransitive
-                        verb-transitive*/
-                        excludePartOfSpeech: 'family-name, given-name, noun-plural, proper-noun, proper-noun-plural, proper-noun-posessive, suffix',
-                        minCorpusCount: 2000,
-                        maxCorpusCount: -1,
-                        minDictionaryCount: 3,
-                        maxDictionaryCount: -1,
-                        minLength: 3,
-                        maxLength: 7,
-                        api_key: '65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a'
-                    },
-                    success: function(data) {
-                        if (data.word === undefined) {
-                            WordGame.getSecretWord();
-                        } else {
-                            secretWord = data.word;
-                            WordGame.filterSecretWord();
+                } else {
+                    
+                    // get the secret word
+                    $.ajax({
+                        //async: false,
+                        type: 'GET',
+                        url: 'http://api.wordnik.com:80/v4/words.json/randomWord',
+                        data: {
+                            hasDictionaryDef: true,
+                            /*includePartOfSpeech: 'noun',
+                            noun
+                            adjective
+                            verb
+                            adverb
+                            interjection
+                            pronoun
+                            preposition
+                            abbreviation
+                            affix
+                            article
+                            auxiliary-verb
+                            conjunction
+                            definite-article
+                            family-name
+                            given-name
+                            idiom
+                            imperative
+                            noun-plural
+                            noun-posessive
+                            past-participle
+                            phrasal-prefix
+                            proper-noun
+                            proper-noun-plural
+                            proper-noun-posessive
+                            suffix
+                            verb-intransitive
+                            verb-transitive*/
+                            excludePartOfSpeech: 'family-name, given-name, noun-plural, proper-noun, proper-noun-plural, proper-noun-posessive, suffix',
+                            minCorpusCount: 2000,
+                            maxCorpusCount: -1,
+                            minDictionaryCount: 3,
+                            maxDictionaryCount: -1,
+                            minLength: 3,
+                            maxLength: 7,
+                            api_key: '65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a'
+                        },
+                        success: function(data) {
+                            if (data.word === undefined) {
+                                WordGame.getSecretWord();
+                            } else {
+                                secretWord = data.word;
+                                WordGame.filterSecretWord();
+                            }
+                        },
+                        error: function() {
+                            WordGame.handleError('Noooooooooo!', 'There was an error grabbing the word');
                         }
-                    },
-                    error: function() {
-                        WordGame.handleError();
-                    }
-                });
+                    });
+                }
+            // throw error
+            } else {
+                WordGame.handleError('Whoa!', 'Too many requests');
             }
         },
         
-        handleError: function() {
+        handleError: function(mainMessage, secondaryMessage) {
             
             if (WordGame.errorCount > 3) {
-                $('.error p').html('Please try again in a few minutes.');
-                $('.error').show();
+                $('.error h1').html('It doesn&rsquo;t seem to be working');
+                $('.error p').html('Please try again in a few minutes');
+                WordGame.errorCount = 0;
             } else {
-                $('.error').show();
+                $('.error h1').html(mainMessage);
+                $('.error p').html(secondaryMessage);
                 WordGame.errorCount++;
                 console.log(WordGame.errorCount);
             }
+            $('.error').show();
         },
         
         filterSecretWord: function() {
@@ -325,27 +327,15 @@
             // secret word is naughty, run it again
             if ($.inArray(secretWord, naughtyWords) > -1) {
                 
-                WordGame.filterCount++;
-                
-                if (WordGame.filterCount < 10) {
-                    console.log(secretWord + ' is naughty, running again');
-                    WordGame.getSecretWord();
-                } else {
-                    console.log('Filtering stopped');
-                }
-            
+                console.log(secretWord + ' is naughty, running again');
+                WordGame.getSecretWord();
+
             // secret word has bad characters, run it again
             } else if (secretWord.search(/^[a-z]+$/)) {
                 
-                WordGame.filterCount++;
+                console.log(secretWord + ' has bad characters, running again');
+                WordGame.getSecretWord();
                 
-                if (WordGame.filterCount < 10) {
-                    console.log(secretWord + ' has bad characters, running again (' + WordGame.filterCount + ')');
-                    WordGame.getSecretWord();
-                } else {
-                    console.log('Filtering stopped');
-                }
-            
             // secret word is good to go, get definition
             } else {
                 WordGame.getDefinition();
@@ -374,6 +364,9 @@
                         definition = data[0].text;
                         WordGame.filterDefinition();
                     }
+                },
+                error: function() {
+                    WordGame.handleError('Noooooooooo!', 'There was an error grabbing the definition');
                 }
             });
         },
@@ -386,13 +379,6 @@
                 console.log(secretWord + ' is in ' + definition + ' (main def), running again');
                 WordGame.getSecretWord();
             
-            /* the word is in the alternate defintion, run it again
-            } else if (WordGame.alternateDefinition !== '' && WordGame.alternateDefinition.toUpperCase().indexOf(secretWord.toUpperCase()) != -1) {
-                
-                console.log(secretWord + ' is in ' + WordGame.alternateDefinition + '(alt def), running again');
-                WordGame.getSecretWord();
-            */
-            
             } else if (definition.length > 150) {
                 
                 console.log('the definition for' + secretWord + ' had ' + definition.length + ' characters, running again');
@@ -404,12 +390,6 @@
                 // log secret word and definition(s)
                 if (WordGame.debug === false) { console.log('%csecret word: ' + secretWord, 'color: red'); }
                 
-                /*if (WordGame.alternateDefinition) {
-                    console.log('alt definition: ' + WordGame.alternateDefinition);
-                } else {
-                    console.log('alt definition: UNAVAILABLE');
-                }*/
-                
                 // remove category, if present. Splitting at three spaces '   ' and returning the end portion
                 definition = definition.split(/ {3,}/).pop();
                 
@@ -417,6 +397,8 @@
                 
                 // process the secret word
                 WordGame.processSecretWord();
+                
+                WordGame.requestCount = 0;
                 
             }
         },
@@ -450,7 +432,7 @@
             
             // clear previous stuff
             // remove animation classes
-            $('.secret-word').removeClass('win lose').empty();;
+            $('.secret-word').removeClass('win lose').empty();
             
             // empty secret word and definition
             //$('.secret-word').empty();
