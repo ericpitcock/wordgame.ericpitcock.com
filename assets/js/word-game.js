@@ -18,7 +18,6 @@
         secretWordObject: {},
         uniqueLetters: 0,
         definition: '',
-        // alternateDefinition: '',
         attemptsAllowed: 0,
         attempts: 0,
         attemptedLetters: [],
@@ -181,7 +180,6 @@
                     
                     // get the secret word
                     $.ajax({
-                        //async: false,
                         type: 'GET',
                         url: 'http://api.wordnik.com:80/v4/words.json/randomWord',
                         data: {
@@ -345,7 +343,6 @@
         getDefinition: function() {
             // get definition(s)
             $.ajax({
-                //async: false,
                 type: 'GET',
                 url: 'http://api.wordnik.com:80/v4/word.json/' + secretWord + '/definitions',
                 data: {
@@ -458,31 +455,7 @@
             
             $('.definition p').widowFix();
             
-/*
-            // determine score
-            var scoreValue;
-            if (window.localStorage.getItem('word-game-score') === null) {
-                
-                scoreValue = '0';
-                window.localStorage.setItem('word-game-score', 0);
-                
-            } else {
-                // set their previous score
-                scoreValue = window.localStorage.getItem('word-game-score');
-            }
-            
-            // display score
-            $('.score-value').text(scoreValue);
-*/
-            
             WordGame.inputAllowed = true;
-            
-            /* display alternate definition button
-            if (WordGame.alternateDefinition === '') {
-                $('.show-alternate-definition').css('visibility', 'hidden');
-            } else {
-                $('.show-alternate-definition').css('visibility', 'visible');
-            }*/
             
         },
         
@@ -557,9 +530,6 @@
                     return;
                 }
             }
-            
-            // disable input
-            //WordGame.inputAllowed = false;
         },
         
         handleKeyPress: function(e) {
@@ -638,32 +608,6 @@
                             console.log('DUDE PERFECT!');
                         }
                         
-/*
-                        // get current score
-                        var currentScore = parseInt(window.localStorage.getItem('word-game-score')) || 0;
-                        
-                        // determine new score
-                        var updatedScore;
-                        // if the freebie was used, don't add bonus points
-                        if ($('.freebie-button').hasClass('disabled')) {
-                            updatedScore = characterCount * 10 + attemptsLeft * 5 + currentScore;
-                        // if the freebie wasn't used, add 5 boner points
-                        } else {
-                            updatedScore = characterCount * 10 + attemptsLeft * 5 + 5 + currentScore;
-                        }
-                        
-                        // store new value
-                        localStorage.setItem('word-game-score', updatedScore);
-                        
-                        // animate score update
-                        //$('.score-value').animateNumbers(updatedScore, false, 2000, 'linear');
-                        var commaSeparatorNumberStep = $.animateNumber.numberStepFactories.separator(',')
-                        $('.score-value').prop('number', currentScore).animateNumber({
-                            number: updatedScore,
-                            numberStep: commaSeparatorNumberStep
-                        });
-*/
-
                         WordGame.updateScore();
                         
                         $('.secret-word').addClass('win');
@@ -765,4 +709,3 @@
     });
     
 })();
-
