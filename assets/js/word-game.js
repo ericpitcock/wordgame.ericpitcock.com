@@ -55,7 +55,7 @@
                 .appendTo($keys);
             }
             
-            if (Modernizr.mq('(max-width: 767px)') && WordGame.keysState === 'desktop') {
+            if (Modernizr.mq('(max-width: 768px)') && WordGame.keysState === 'desktop') {
                     
                 keySort('data-qwerty-order');
                 
@@ -68,7 +68,7 @@
                 
                 WordGame.keysState = 'mobile';
             
-            } else if (Modernizr.mq('(min-width: 768px)') && WordGame.keysState === 'mobile') {
+            } else if (Modernizr.mq('(min-width: 769px)') && WordGame.keysState === 'mobile') {
                     
                 keySort('data-character-code');
                 

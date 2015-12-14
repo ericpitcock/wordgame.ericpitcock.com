@@ -33,13 +33,6 @@
 }
 
 //=============================================================================
-// VARIABLES
-//=============================================================================
-
-@black: #444;
-@subtle-black: rgba(85,85,85,0.4);
-
-//=============================================================================
 // ANIMATION
 //=============================================================================
 
@@ -197,6 +190,37 @@
 }
 
 //=============================================================================
+// VARIABLES
+//=============================================================================
+
+// shadows
+@blackest: #262626;
+
+// background
+@black: #2b2b2b;
+
+// dark text
+@dark-gray: #444;
+
+// line rules
+@subtle-gray: #333;
+
+// main text
+@gray: #919191;
+
+// white
+@white: #fff;
+
+// good green
+@green: #8db955;
+
+// bad red orange
+@red-orange: #d66a4c;
+
+// error red
+@error-red: #e05e5e;
+
+//=============================================================================
 // BASE STYLES
 //=============================================================================
 
@@ -223,11 +247,12 @@ body {
     height: 100%;
     
     transform: translateZ(0);
+    -webkit-transform: translate3d(0, 0, 0);
     
-    background: darken(@black, 10%);
+    background: @black;
     text-align: center;
     font-size: 14px;
-    color: lighten(@black, 30%);
+    color: @gray;
     overflow: hidden;
     .user-select(none);
     cursor: default;
@@ -262,12 +287,12 @@ body {
     .score {
         text-align: left;
         padding-left: 21px;
-        border-left: 1px solid @subtle-black;
+        border-left: 1px solid @subtle-gray;
         .transition(all 1s ease-in-out);
         
         
         .score-value.updating {
-            color: #fff;
+            color: @white;
         }
     }
 }
@@ -319,7 +344,7 @@ body {
     position: relative;
     z-index: 10;
     width: 100%;
-    //height: 180px;
+    height: 100px;
     max-width: 1020px;
     margin: 0 auto;
     
@@ -350,15 +375,16 @@ body {
             &:after {
                 content: '';
                 position: absolute;
-                width: 20px;
                 height: 5px;
-                background-color: rgba(0,0,0,0.1);
+                background-color: @blackest;
                 display: block;
                 left: 50%;
-                margin-left: -10px;
-                bottom: 10px;
                 border-radius: 10px;
                 z-index: -1;
+                
+                width: 25px;
+                margin-left: -15px;
+                top: 30px;
             }
             
             // custom kerning for T* (except l and i)
@@ -377,13 +403,13 @@ body {
     &.win {
         
         span.letter-holder /* , &:after  */{
-            color: #8db955;
+            color: @green;
         }
     }
     
     &.lose {
         span.letter-holder /* , &:after  */{
-            color: #d66a4c;
+            color: @red-orange;
         }
     }
     
@@ -411,7 +437,7 @@ body {
         width: 8.125%;
         height: 36px;
         border-radius: 3px;
-        border: 1px solid @subtle-black;
+        border: 1px solid @subtle-gray;
         border-radius: 3px;
         margin: 0 2px 12px 0;
         -webkit-tap-highlight-color: rgba(0,0,0,0);
@@ -459,8 +485,8 @@ body {
     padding: 40px 30px 30px;
     border-radius: 3px;
     margin-left: -170px;
-    background: #e05e5e;
-    color: #fff;
+    background: @error-red;
+    color: @white;
     font-weight: 600;
     //z-index: 1;
     
@@ -479,7 +505,7 @@ body {
         padding: 0 10px 1px 10px;
         border: 0;
         background: #fff;
-        color: @black;
+        color: @dark-gray;
         border-radius: 3px;
         font-size: 11px;
         font-weight: 600;
@@ -522,18 +548,18 @@ html.no-touch button:hover {
 // LARGER PHONES BREAK POINT
 //=============================================================================
 
-@media (min-width: 768px) {
+@media (min-width: 375px) {
     
+    .header {
+        padding-top: 20px;
+    }
 }
 
 //=============================================================================
 // TABLET/DESKTOP BREAK POINT
 //=============================================================================
 
-@media (min-width: 768px) {
-    .header {
-        padding-top: 20px;
-    }
+@media (min-width: 769px) {
     
     .definition-container {
         .definition {
@@ -551,6 +577,12 @@ html.no-touch button:hover {
             
             &.highlight {
                 font-size: 180px;
+                
+                &:after {
+                    width: 60px;
+                    margin-left: -35px;
+                    top: 60px;
+                }
             
                 // custom kerning for T* (except l and i)
                 &:first-child[data-character-code="116"] + *:not([data-character-code="104"]):not([data-character-code="105"]) {
@@ -571,7 +603,7 @@ html.no-touch button:hover {
         height: 60px;
         max-width: 1140px;
         padding: 12px 0 0 0;
-        border-top: 1px solid @subtle-black;
+        border-top: 1px solid @subtle-gray;
         margin: 80px auto 20px auto;
         
         div {
@@ -592,7 +624,7 @@ html.no-touch button:hover {
                 margin-left: 10px;
                 padding-right: 8px;
                 border-radius: 0;
-                border-left: 1px solid @subtle-black;
+                border-left: 1px solid @subtle-gray;
             }
         }
     }
