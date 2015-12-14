@@ -23,6 +23,7 @@
         attemptedLetters: [],
         attemptsLeft: 0,
         lettersLeft: 0,
+        highlightFontSize: 0,
         // constants
         // alertSound: new Audio('bleep.wav'),
         storedScore: window.localStorage.getItem('word-game-score'),
@@ -86,6 +87,14 @@
         
         },
         
+        setHighlightFontSize: function() {
+            // this will determine the .highlight font size based on element width
+            highlightFontSize = $(window).width() / 10;
+            //console.log('highlight font size' + highlightFontSize);
+            $('style#highlight').remove();
+            $('head').append('<style id="highlight">.secret-word span.letter-holder.highlight { font-size: ' + highlightFontSize + 'px !important; }<style>');
+        },
+        
         updateScore: function() {
             
             var currentScore = parseInt(window.localStorage.getItem('word-game-score')) || 0;
@@ -129,9 +138,13 @@
             $(document).on('keypress', this.handleKeyPress);
             
             //window resize
-            $(window).on('resize', this.renderKeys);
+            $(window).on('resize', function() {
+                WordGame.renderKeys();
+                WordGame.setHighlightFontSize();
+            });
             
             WordGame.renderKeys();
+            WordGame.setHighlightFontSize();
             
             // show intro if first run and not returning user
             if (WordGame.firstRun === true && window.localStorage.getItem('word-game-score') === null) {
