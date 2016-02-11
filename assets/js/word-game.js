@@ -92,7 +92,7 @@
             var currentScore = parseInt(window.localStorage.getItem('word-game-score')) || 0;
             
             // determine new score
-            var updatedScore = WordGame.characterCount * 10 + WordGame.attemptsLeft * 5 + currentScore;
+            var updatedScore = WordGame.uniqueLetters * 10 + WordGame.attemptsLeft * 5 + currentScore;
             
             // if the freebie wasn't used, add 5 boner points
             if (!$('.freebie-button').hasClass('used')) {
@@ -117,10 +117,12 @@
                 FastClick.attach(document.body);
             });
             
-            // prevent native scrolling
-            document.body.addEventListener('touchmove', function(e) {
-                e.preventDefault();
-            }, false);
+            // prevent native scrolling if not in an iframe.
+            if (window == window.top) {
+                document.body.addEventListener('touchmove', function(e) {
+                    e.preventDefault();
+                }, false);
+            }
             
             // click events
             $(document).on('click', this.handleClick);
@@ -320,7 +322,8 @@
                 'jew',
                 'femme',
                 'nads',
-                'semen'
+                'semen',
+                'sodomy'
             ];
             
             // secret word is naughty, run it again
