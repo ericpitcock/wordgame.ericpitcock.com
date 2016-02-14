@@ -301,7 +301,7 @@ body {
     height: 200px;
     //overflow-y: scroll;
     display: flex;
-    //flex-grow: 1;
+    flex: 1;
     justify-content: center;
     
     &::-webkit-scrollbar {
@@ -334,7 +334,7 @@ body {
 }
 
 .secret-word {
-    //flex-grow: 1;
+    flex: 1;
     display: flex;
     justify-content: center;
     
@@ -344,9 +344,9 @@ body {
     position: relative;
     z-index: 10;
     width: 100%;
-    height: 100px;
-    max-width: 1020px;
-    margin: 0 auto;
+    //height: 100px;
+    //max-width: 1020px;
+    //margin: 0 auto;
     
     span.letter-holder {
         //display: inline-block;
@@ -371,32 +371,10 @@ body {
             font-family: 'HouseMovements-Sign';
             font-size: 15vw;
             
-            // shadow
-            &:after {
-                content: '';
-                position: absolute;
-                height: 5px;
-                background-color: $blackest;
-                display: block;
-                left: 50%;
-                border-radius: 10px;
-                z-index: -1;
-                
-                width: 25px;
-                margin-left: -15px;
-                top: 30px;
-            }
-            
             // custom kerning for T* (except l and i)
             &:first-child[data-character-code="116"] + *:not([data-character-code="104"]):not([data-character-code="105"]) {
                     margin-left: -9px;
             }
-            
-            /* custom kerning for P*
-            &:first-child[data-character-code="112"] + * {
-                    margin-left: -4px;
-            }
-            */
         }
     }
     
@@ -420,7 +398,7 @@ body {
 
 .keys {
     display: none;
-    //flex-grow: 1;
+    flex: 1;
     //display: flex;
     //flex-wrap: wrap;
     //justify-content: center;
@@ -568,18 +546,12 @@ html.no-touch button:hover {
     }
     
     .secret-word {
-        height: 180px;
+        //height: 180px;
 
         span.letter-holder {
             
             &.highlight {
-                font-size: 15vw;
-                
-                &:after {
-                    width: 60px;
-                    margin-left: -35px;
-                    top: 60px;
-                }
+                //font-size: 300px;
             
                 // custom kerning for T* (except l and i)
                 &:first-child[data-character-code="116"] + *:not([data-character-code="104"]):not([data-character-code="105"]) {

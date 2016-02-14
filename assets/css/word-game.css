@@ -213,6 +213,7 @@ body {
 .definition-container {
   height: 200px;
   display: flex;
+  flex: 1;
   justify-content: center; }
   .definition-container::-webkit-scrollbar {
     display: none; }
@@ -229,15 +230,13 @@ body {
         text-transform: capitalize; }
 
 .secret-word {
+  flex: 1;
   display: flex;
   justify-content: center;
   line-height: 0;
   position: relative;
   z-index: 10;
-  width: 100%;
-  height: 100px;
-  max-width: 1020px;
-  margin: 0 auto; }
+  width: 100%; }
   .secret-word span.letter-holder {
     position: relative;
     align-self: center;
@@ -253,24 +252,7 @@ body {
       margin-right: 0; }
     .secret-word span.letter-holder.highlight {
       font-family: 'HouseMovements-Sign';
-      font-size: 15vw;
-      /* custom kerning for P*
-            &:first-child[data-character-code="112"] + * {
-                    margin-left: -4px;
-            }
-            */ }
-      .secret-word span.letter-holder.highlight:after {
-        content: '';
-        position: absolute;
-        height: 5px;
-        background-color: #262626;
-        display: block;
-        left: 50%;
-        border-radius: 10px;
-        z-index: -1;
-        width: 25px;
-        margin-left: -15px;
-        top: 30px; }
+      font-size: 15vw; }
       .secret-word span.letter-holder.highlight:first-child[data-character-code="116"] + *:not([data-character-code="104"]):not([data-character-code="105"]) {
         margin-left: -9px; }
   .secret-word.win span.letter-holder {
@@ -282,6 +264,7 @@ body {
 
 .keys {
   display: none;
+  flex: 1;
   width: 100%; }
   .keys div {
     display: inline-block;
@@ -375,18 +358,10 @@ html.no-touch button:hover {
   .definition-container .definition p {
     font-size: 36px;
     line-height: 42px; }
-  .secret-word {
-    height: 180px; }
-    .secret-word span.letter-holder.highlight {
-      font-size: 15vw; }
-      .secret-word span.letter-holder.highlight:after {
-        width: 60px;
-        margin-left: -35px;
-        top: 60px; }
-      .secret-word span.letter-holder.highlight:first-child[data-character-code="116"] + *:not([data-character-code="104"]):not([data-character-code="105"]) {
-        margin-left: -21px; }
-      .secret-word span.letter-holder.highlight:first-child[data-character-code="112"] + * {
-        margin-left: -4px; }
+  .secret-word span.letter-holder.highlight:first-child[data-character-code="116"] + *:not([data-character-code="104"]):not([data-character-code="105"]) {
+    margin-left: -21px; }
+  .secret-word span.letter-holder.highlight:first-child[data-character-code="112"] + * {
+    margin-left: -4px; }
   .keys {
     position: relative;
     bottom: auto;
