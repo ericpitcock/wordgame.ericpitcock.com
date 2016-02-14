@@ -11219,7 +11219,8 @@ colors = jQuery.Color.names = {
                 'femme',
                 'nads',
                 'semen',
-                'sodomy'
+                'sodomy',
+                'dildo'
             ];
             
             // secret word is naughty, run it again
