@@ -7,6 +7,7 @@ var sass = require('gulp-sass');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
+var stripDebug = require('gulp-strip-debug');
 
 // Lint Task
 gulp.task('lint', function() {
@@ -32,6 +33,7 @@ gulp.task('scripts', function() {
             'assets/js/jquery.widowFix-1.3.2.min.js', 
             'assets/js/word-game.js'])
         .pipe(concat('all.js'))
+        .pipe(stripDebug())
         .pipe(gulp.dest('assets/js'))
         .pipe(rename('word-game.min.js'))
         .pipe(uglify())

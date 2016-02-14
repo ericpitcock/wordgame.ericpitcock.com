@@ -11073,7 +11073,7 @@ colors = jQuery.Color.names = {
                     debugWord = window.location.search;
                     secretWord = debugWord.replace('?', '');
                     WordGame.filterSecretWord();
-                    console.log('%cDEBUG: ' + secretWord.toUpperCase(), 'color: red');
+                    void 0;
                 
                 } else {
                     
@@ -11149,7 +11149,7 @@ colors = jQuery.Color.names = {
                 $('.error h1').html(mainMessage);
                 $('.error p').html(secondaryMessage);
                 WordGame.errorCount++;
-                console.log(WordGame.errorCount);
+                void 0;
             }
             $('.error').show();
         },
@@ -11225,13 +11225,13 @@ colors = jQuery.Color.names = {
             // secret word is naughty, run it again
             if ($.inArray(secretWord, naughtyWords) > -1) {
                 
-                console.log(secretWord + ' is naughty, running again');
+                void 0;
                 WordGame.getSecretWord();
 
             // secret word has bad characters, run it again
             } else if (secretWord.search(/^[a-z]+$/)) {
                 
-                console.log(secretWord + ' has bad characters, running again');
+                void 0;
                 WordGame.getSecretWord();
                 
             // secret word is good to go, get definition
@@ -11273,24 +11273,24 @@ colors = jQuery.Color.names = {
             // the word is in the defintion, run it again
             if (definition.toUpperCase().indexOf(secretWord.toUpperCase()) != -1) {
                 
-                console.log(secretWord + ' is in ' + definition + ' (main def), running again');
+                void 0;
                 WordGame.getSecretWord();
             
             } else if (definition.length > 150) {
                 
-                console.log('the definition for' + secretWord + ' had ' + definition.length + ' characters, running again');
+                void 0;
                 WordGame.getSecretWord();
             
             // they passed, play on
             } else {
                 
                 // log secret word and definition(s)
-                if (WordGame.debug === false) { console.log('%csecret word: ' + secretWord, 'color: red'); }
+                if (WordGame.debug === false) { void 0; }
                 
                 // remove category, if present. Splitting at three spaces '   ' and returning the end portion
                 definition = definition.split(/ {3,}/).pop();
                 
-                console.log('main definition: ' + definition);
+                void 0;
                 
                 // process the secret word
                 WordGame.processSecretWord();
@@ -11315,7 +11315,7 @@ colors = jQuery.Color.names = {
                 }
             }
         
-            console.log(WordGame.secretWordObject);
+            void 0;
             
             // set attempts allowed based on keys (unique letters) in the secretWordObject
             WordGame.uniqueLetters = Object.keys(WordGame.secretWordObject).length;
@@ -11498,14 +11498,14 @@ colors = jQuery.Color.names = {
                         // gray out all letters
                         $('.keys div').addClass('disabled');
                         
-                        console.log('YOU WIN');
+                        void 0;
                         
                         // animate
                         //WordGame.animate('flash');
                         
                         // was it dude perfect?
                         if (WordGame.attempts === WordGame.uniqueLetters) {
-                            console.log('DUDE PERFECT!');
+                            void 0;
                         }
                         
                         WordGame.updateScore();
@@ -11522,12 +11522,12 @@ colors = jQuery.Color.names = {
                         WordGame.inputAllowed = true;
                     }
                     
-                    console.log(WordGame.secretWordObject);
+                    void 0;
                     
                 // letter is NOT in secret word  
                 } else {
                     
-                    console.log(String.fromCharCode(characterCode) + ' is NOT a match');
+                    void 0;
                     
                     // define letters left
                     WordGame.lettersLeft = Object.keys(WordGame.secretWordObject).length;
@@ -11541,7 +11541,7 @@ colors = jQuery.Color.names = {
                         // gray out all letters
                         $('.keys div').addClass('disabled');
                         
-                        console.log('YOU LOSE');
+                        void 0;
                         $('.secret-word').addClass('lose');
                         WordGame.proceed('lose');
                     
@@ -11555,11 +11555,11 @@ colors = jQuery.Color.names = {
                 
                 // log a bunch of shit
                 //console.log('attempted letters: ' + WordGame.attemptedLetters);
-                console.log('attempts: ' + WordGame.attempts + ' / attempts left: ' + WordGame.attemptsLeft + ' / unique letters left: ' + WordGame.lettersLeft);
+                void 0;
             
             // letter was already tried, doing nothing
             } else {
-                console.log('letter was already tried, doing nothing');
+                void 0;
             }
         },
         
@@ -11573,7 +11573,7 @@ colors = jQuery.Color.names = {
             }
             
             setTimeout(function() {
-                console.clear();
+                void 0;
                 
                 WordGame.animate('.secret-word', 'bounceOutLeft');
                 
