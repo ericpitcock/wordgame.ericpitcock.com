@@ -252,7 +252,7 @@ body {
       margin-right: 0; }
     .secret-word span.letter-holder.highlight {
       font-family: 'HouseMovements-Sign';
-      font-size: 15vw; }
+      font-size: 15vh; }
       .secret-word span.letter-holder.highlight:first-child[data-character-code="116"] + *:not([data-character-code="104"]):not([data-character-code="105"]) {
         margin-left: -9px; }
   .secret-word.win span.letter-holder {
