@@ -91,7 +91,7 @@ var WordGame = {
         // determine new score
         var updatedScore = WordGame.uniqueLetters * 10 + WordGame.attemptsLeft * 5 + currentScore;
 
-        // if the freebie wasn't used, add 5 boner points
+        // if the freebie wasn't used, add 5 bonus points
         if (!$('.freebie-button').hasClass('used')) {
             updatedScore = updatedScore + 5;
         }
