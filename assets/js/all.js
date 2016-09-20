@@ -11087,6 +11087,7 @@ var WordGame = {
                     type: 'GET',
                     url: '//api.wordnik.com:80/v4/words.json/randomWord',
                     data: {
+                        dataType: 'jsonp',
                         hasDictionaryDef: true,
                         /*includePartOfSpeech: 'noun',
                         noun
@@ -11252,6 +11253,7 @@ var WordGame = {
             type: 'GET',
             url: '//api.wordnik.com:80/v4/word.json/' + secretWord + '/definitions',
             data: {
+                dataType: 'jsonp',
                 limit: 2,
                 //partOfSpeech: 'noun',
                 includeRelated: false,
