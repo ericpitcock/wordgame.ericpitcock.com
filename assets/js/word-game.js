@@ -189,7 +189,7 @@ var WordGame = {
                 // get the secret word
                 $.ajax({
                     type: 'GET',
-                    url: '//api.wordnik.com:80/v4/words.json/randomWord',
+                    url: 'https://api.wordnik.com:443/v4/words.json/randomWord',
                     data: {
                         dataType: 'jsonp',
                         hasDictionaryDef: true,
@@ -355,7 +355,7 @@ var WordGame = {
         // get definition(s)
         $.ajax({
             type: 'GET',
-            url: '//api.wordnik.com:80/v4/word.json/' + secretWord + '/definitions',
+            url: 'https://api.wordnik.com:443/v4/word.json/' + secretWord + '/definitions',
             data: {
                 dataType: 'jsonp',
                 limit: 2,
