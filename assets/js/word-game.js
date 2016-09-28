@@ -41,7 +41,6 @@ var WordGame = {
     },
 
     renderKeys: function() {
-
         var $keys = $('.keys');
 
         // sort function
@@ -81,11 +80,9 @@ var WordGame = {
         }
 
         $keys.show();
-
     },
 
     updateScore: function() {
-
         var currentScore = parseInt(window.localStorage.getItem('word-game-score')) || 0;
 
         // determine new score
@@ -108,7 +105,6 @@ var WordGame = {
     },
 
     initialize: function() {
-
         // fast button action
         $(function() {
             FastClick.attach(document.body);
@@ -167,7 +163,6 @@ var WordGame = {
     },
 
     getSecretWord: function() {
-
         if (WordGame.requestCount < 10) {
 
             // keep track of requests so we can stop in case of drama
@@ -219,7 +214,6 @@ var WordGame = {
     },
 
     handleError: function(mainMessage, secondaryMessage) {
-
         if (WordGame.errorCount > 3) {
             $('.error h1').html('It doesn&rsquo;t seem to be working');
             $('.error p').html('Please try again in a few minutes');
@@ -233,7 +227,6 @@ var WordGame = {
     },
 
     filterSecretWord: function() {
-
         var naughtyWords = [
             //
         ];
@@ -281,19 +274,13 @@ var WordGame = {
     },
 
     filterDefinition: function() {
-
         // the word is in the defintion, run it again
         if (definition.toUpperCase().indexOf(secretWord.toUpperCase()) != -1) {
-
             WordGame.getSecretWord();
-
         } else if (definition.length > 150) {
-
             WordGame.getSecretWord();
-
         // they passed, play on
         } else {
-
             // remove category, if present. Splitting at three spaces '   ' and returning the end portion
             definition = definition.split(/ {3,}/).pop();
 
@@ -301,12 +288,10 @@ var WordGame = {
             WordGame.processSecretWord();
 
             WordGame.requestCount = 0;
-
         }
     },
 
     processSecretWord: function() {
-
         // get the character count of secret word
         WordGame.characterCount = secretWord.length;
 
@@ -325,11 +310,9 @@ var WordGame = {
         WordGame.attemptsAllowed = WordGame.uniqueLetters * 2;
 
         WordGame.renderUI();
-
     },
 
     renderUI: function() {
-
         // clear previous stuff
         // remove animation classes
         $('.secret-word').removeClass('win lose').empty();
@@ -356,7 +339,6 @@ var WordGame = {
         $('.definition p').widowFix();
 
         WordGame.inputAllowed = true;
-
     },
 
     handleClick: function(e) {
@@ -439,7 +421,6 @@ var WordGame = {
     },
 
     handleInput: function(characterCode, freebie) {
-
         // if letter hasn't been tried, run the shiz
         if ($.inArray(characterCode, WordGame.attemptedLetters) == -1) {
 
@@ -528,7 +509,6 @@ var WordGame = {
     },
 
     proceed: function(type) {
-
         if (type != 'win') {
             // expose secret word for losers and skippers
             $('span.letter-holder:not(.highlight)').each(function() {
