@@ -1,6 +1,4 @@
-//=============================================================================
-// WORD GAME
-//=============================================================================
+/// WORD GAME /////////////////////////////////////////////////////////
 
 var WordGame = {
 
@@ -118,7 +116,7 @@ var WordGame = {
         }
 
         // click events
-        $(document).on('click', this.handleClick);
+        $(document).on('click', WordGame.handleClick);
 
         // move into handleClick
         $('.error button').on('click', function() {
@@ -128,11 +126,11 @@ var WordGame = {
         });
 
         // key events
-        $(document).on('keydown', this.handleKeyDown);
-        $(document).on('keypress', this.handleKeyPress);
+        $(document).on('keydown', WordGame.handleKeyDown);
+        $(document).on('keypress', WordGame.handleKeyPress);
 
         //window resize
-        $(window).on('resize', this.renderKeys);
+        $(window).on('resize', WordGame.renderKeys);
 
         WordGame.renderKeys();
 
@@ -354,7 +352,6 @@ var WordGame = {
                     // run handleInput
                     WordGame.handleInput($target.data('character-code'));
                 }
-
 
             // skip
             } else if ($target.hasClass('skip-button')) {
