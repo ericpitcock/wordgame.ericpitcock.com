@@ -2,6 +2,7 @@ var gulp = require('gulp');
     browserSync = require('browser-sync').create(),
     autoprefixer = require('gulp-autoprefixer'),
     concat = require('gulp-concat'),
+    jade = require('gulp-jade'),
     jshint = require('gulp-jshint'),
     notify = require('gulp-notify'),
     plumber = require('gulp-plumber'),
@@ -49,6 +50,14 @@ function handleErrors() {
 
 gulp.task('browser-sync', function() {
     browserSync.init(pluginConfig.browserSync);
+});
+
+/// JADE /////////////////////////////////////////////////////////
+
+gulp.task('jade', function() {
+    gulp.src('src/index.jade')
+        .pipe(jade())
+        .pipe(gulp.dest('dist'));
 });
 
 /// SASS /////////////////////////////////////////////////////////
@@ -104,4 +113,4 @@ gulp.task('watch', function() {
 
 /// DEFAULT /////////////////////////////////////////////////////////
 
-gulp.task('default', ['jshint', 'sass', 'js', 'watch', 'browser-sync']);
+gulp.task('default', ['jade', 'jshint', 'sass', 'js', 'watch', 'browser-sync']);
