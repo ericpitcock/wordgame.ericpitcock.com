@@ -54,20 +54,20 @@ gulp.task('browser-sync', function() {
 /// SASS /////////////////////////////////////////////////////////
 
 gulp.task('sass', function() {
-    gulp.src('assets/css/word-game.scss')
+    gulp.src('src/assets/sass/word-game.scss')
         .pipe(sourcemaps.init())
         .pipe(sass(pluginConfig.sass))
         .pipe(autoprefixer())
         .pipe(rename(pluginConfig.rename))
         .pipe(sourcemaps.write('../maps'))
-        .pipe(gulp.dest('assets/css'))
+        .pipe(gulp.dest('dist/assets/css'))
         .pipe(browserSync.stream());
 });
 
 /// JS HINT /////////////////////////////////////////////////////////
 
 gulp.task('jshint', function() {
-    gulp.src('assets/js/word-game.js')
+    gulp.src('src/assets/js/word-game.js')
         .pipe(jshint())
         .pipe(jshint.reporter('default'));
 });
@@ -76,12 +76,14 @@ gulp.task('jshint', function() {
 
 gulp.task('js', function() {
     gulp.src([
-        'assets/bower/jquery/dist/jquery.js',
-        'assets/bower/jquery-color/jquery.color.js',
-        'assets/bower/jquery-animateNumber/jquery.animateNumber.js',
-        'assets/bower/fastclick/lib/fastclick.js',
-        'assets/js/jquery.widowFix-1.3.2.min.js',
-        'assets/js/word-game.js'
+        'src/assets/bower/jquery/dist/jquery.js',
+        'src/assets/bower/jquery-color/jquery.color.js',
+        'src/assets/bower/jquery-animateNumber/jquery.animateNumber.js',
+        'src/assets/bower/fastclick/lib/fastclick.js',
+        'src/assets/js/jquery.widowFix-1.3.2.min.js',
+        'src/assets/js/modernizr.custom.76225.js',
+        'config.js',
+        'src/assets/js/word-game.js'
     ])
     .pipe(sourcemaps.init())
     .pipe(plumber(pluginConfig.plumber))
@@ -89,14 +91,15 @@ gulp.task('js', function() {
     .pipe(rename(pluginConfig.rename))
     .pipe(uglify())
     .pipe(sourcemaps.write('../maps'))
-    .pipe(gulp.dest('assets/js'));
+    .pipe(gulp.dest('dist/assets/js'));
 });
 
 /// WATCH /////////////////////////////////////////////////////////
 
 gulp.task('watch', function() {
-    gulp.watch('assets/js/word-game.js', ['jshint', 'js']);
-    gulp.watch('assets/css/word-game.scss', ['sass']);
+    gulp.watch('src/assets/js/word-game.js', ['jshint', 'js']);
+    gulp.watch('src/assets/css/word-game.scss', ['sass']);
+    gulp.watch('dist/**/*').on('change', browserSync.reload);
 });
 
 /// DEFAULT /////////////////////////////////////////////////////////

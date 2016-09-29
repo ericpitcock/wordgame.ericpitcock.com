@@ -1,5 +1,5 @@
-_Password-Protection/*
 api-key.txt
-assets/bower/*
-assets/fonts/*
-node_modules/*
+assets/bower
+assets/fonts
+config.js
+node_modules
