@@ -66,7 +66,7 @@ gulp.task('sass', function() {
     gulp.src('src/assets/sass/word-game.scss')
         .pipe(sourcemaps.init())
         .pipe(sass(pluginConfig.sass))
-        .pipe(autoprefixer())
+        .pipe(autoprefixer(pluginConfig.autoprefixer))
         .pipe(rename(pluginConfig.rename))
         .pipe(sourcemaps.write('../maps'))
         .pipe(gulp.dest('dist/assets/css'))
@@ -106,11 +106,18 @@ gulp.task('js', function() {
 /// WATCH /////////////////////////////////////////////////////////
 
 gulp.task('watch', function() {
+    gulp.watch('src/index.jade', ['jade']);
     gulp.watch('src/assets/js/word-game.js', ['jshint', 'js']);
     gulp.watch('src/assets/css/word-game.scss', ['sass']);
-    gulp.watch('dist/**/*').on('change', browserSync.reload);
+    gulp.watch('dist/index.html').on('change', browserSync.reload);
 });
+
+/// BUILD AND SERVE /////////////////////////////////////////////////////////
+
+gulp.task('build', ['jade', 'jshint', 'sass', 'js']);
+
+gulp.task('serve', ['browser-sync', 'watch']);
 
 /// DEFAULT /////////////////////////////////////////////////////////
 
-gulp.task('default', ['jade', 'jshint', 'sass', 'js', 'watch', 'browser-sync']);
+gulp.task('default', ['jade', 'jshint', 'sass', 'js', 'browser-sync', 'watch']);
