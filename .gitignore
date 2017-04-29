@@ -1,3 +1,6 @@
-config.js
-node_modules
-src/assets/bower
+.DS_Store
+node_modules/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
