@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <input ref="input" @keyup="handleInput($event.which)" type="text" name="" value="">
     <div class="header">
       <div class="title">Word Game</div>
       <div class="score">Score:<span class="score-value"></span></div>
@@ -10,27 +11,26 @@
       </div>
     </div>
     <div class="secret-word">
-      <span class="letter-holder" v-for="(count, code) in secretWordObject" v-bind:data-character-code="code">&bull;</span>
+      <span class="letter-holder" v-for="letter in secretWord.array" v-bind:data-character-code="getCharacterCode(letter)">&bull;</span>
     </div>
-    <div class="keys">
-      <div class="alpha" v-for="letter in alpha" v-bind:data-character-code="letter.dataCharacterCode" v-bind:data-qwerty-order="letter.dataQwertyOrder">{{ letter.letter }}</div>
-      <!-- <div class="alpha" dataCharacterCode="122" dataQwertyOrder="20">z</div> -->
-    </div>
-    <div class="freebie-button special">*</div>
-    <div class="skip-button special">⇥</div>
-    <div class="attempts"></div>
-    <p>Attempts left:<span class="attempts-left"></span></p>
+    <!-- <div class="keys">
+      <div class="alpha" v-for="letter in alpha" @click="click(letter.dataCharacterCode)" v-bind:data-character-code="letter.dataCharacterCode" v-bind:data-qwerty-order="letter.dataQwertyOrder">{{ letter.letter }}</div>
+    </div> -->
     <button @click="getSecretWord" type="button" name="button">GET WORD</button>
-    <!-- <button @click="getSecretWord" type="button" name="button">GET WORD</button> -->
+    <button @click="" type="button" name="button">FREEBIE</button>
+    <button @click="" type="button" name="button">SKIP</button>
   </div>
 </template>
 
 <script>
-  // import jQuery from 'jQuery'
-
   export default {
     name: 'app',
-    data() {
+    config: {
+      keyCodes: {
+
+      }
+    },
+    data: function() {
       return {
         alpha: [
           {
@@ -164,14 +164,16 @@
             "dataQwertyOrder": 26
           }
         ],
-        attempts: 0,
         debug: false,
         definition: '',
         errors: 0,
         inputAllow: false,
         qwerty: true,
-        secretWord: '',
-        secretWordObject: {},
+        secretWord: {
+          string: '',
+          array: [],
+          object: {}
+        },
         score: 0
       }
     },
@@ -192,8 +194,8 @@
           }
         })
         .then(function(response) {
-          self.secretWord = response.data.word;
-          console.log(self.secretWord);
+          self.secretWord.string = response.data.word;
+          // console.log(self.secretWord);
           self.processSecretWord();
         })
         .catch(function(error) {
@@ -226,18 +228,31 @@
 
       },
       processSecretWord: function() {
-        this.secretWordObject = {};
+        this.secretWord.object = {};
         // populate secret word object: {97: 2, 101: 1, 103: 1, 116: 2, 119: 1} (wattage)
-        for (var index = 0; index < this.secretWord.length; index++) {
-          var character = this.secretWord.charCodeAt(index);
-          if (this.secretWordObject[character]) {
-            this.secretWordObject[character]++;
+        for (var index = 0; index < this.secretWord.string.length; index++) {
+          var character = this.secretWord.string.charCodeAt(index);
+          if (this.secretWord.object[character]) {
+            this.secretWord.object[character]++;
           } else {
-            this.secretWordObject[character] = 1;
+            this.secretWord.object[character] = 1;
           }
         }
+        // populate secretWordArray
+        this.secretWord.array = this.secretWord.string.split('');
         // console.log('processSecretWord');
-        console.log(this.secretWordObject);
+        console.log('string ' + this.secretWord.string);
+        console.log('array ' + this.secretWord.array);
+        console.log('object ' + JSON.stringify(this.secretWord.object));
+      },
+      getCharacterCode: function(letter) {
+        return letter.charCodeAt();
+      },
+      handleInput: function(code) {
+        // make sure it's a-z
+        if (code >= 65 && code <= 90) {
+          console.log(code + ' was pressed');
+        }
       }
     },
     // computed: {
@@ -254,13 +269,19 @@
         console.log('definition recevied');
       }
     },
-    mounted() {
+    mounted: function() {
+      this.$refs.input.focus();
       this.getSecretWord();
+      // var self = this;
+      // window.addEventListener('keyup', function(e) {
+      //   self.handleInput(e.which);
+      // });
     }
   }
 </script>
 
 <style lang="scss">
+  @import '/assets/sass/_reset';
   @import '/assets/sass/_variables';
   @import '/assets/sass/_animation';
 
@@ -276,11 +297,11 @@
     font-style: normal;
   }
 
-  *, *:before, *:after {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-  }
+  // *, *:before, *:after {
+  //   -webkit-box-sizing: border-box;
+  //   -moz-box-sizing: border-box;
+  //   box-sizing: border-box;
+  // }
 
   html {
     height: 100%;
@@ -309,6 +330,24 @@
     user-select: none;
     cursor: default;
     -webkit-font-smoothing: antialiased;
+  }
+
+  input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding-top: 90%;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    text-align: center;
+    pointer-events: none;
+    &:focus {
+      outline: 0;
+    }
   }
 
   .header {
@@ -442,21 +481,6 @@
       }
       &.disabled {
         opacity: 0;
-      }
-    }
-  }
-
-  .attempts {
-    height: 20px;
-    p {
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      font-size: 12px;
-      font-weight: 600;
-      .attempts-left {
-        display: inline-block;
-        width: 15px;
-        letter-spacing: 0;
       }
     }
   }
