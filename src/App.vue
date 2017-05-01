@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <input ref="input" @keyup="handleInput($event.which)" type="text" name="" value="">
     <div class="header">
       <div class="title">Word Game</div>
       <div class="score">Score:<span class="score-value"></span></div>
@@ -16,13 +15,20 @@
     <!-- <div class="keys">
       <div class="alpha" v-for="letter in alpha" @click="click(letter.dataCharacterCode)" v-bind:data-character-code="letter.dataCharacterCode" v-bind:data-qwerty-order="letter.dataQwertyOrder">{{ letter.letter }}</div>
     </div> -->
-    <button @click="getSecretWord" type="button" name="button">GET WORD</button>
-    <button @click="" type="button" name="button">FREEBIE</button>
-    <button @click="" type="button" name="button">SKIP</button>
+    <div ref="selections" class="selections">
+      <div class="alpha" v-for="(code, letter) in alpha" v-bind:data-character-code="code">{{ letter }}</div>
+    </div>
+    <div class="buttons">
+      <button @click="getSecretWord" type="button" name="button">GET WORD</button>
+      <button @click="" type="button" name="button">FREEBIE</button>
+      <button @click="" type="button" name="button">SKIP</button>
+    </div>
   </div>
 </template>
 
 <script>
+  import $ from 'jquery'
+
   export default {
     name: 'app',
     config: {
@@ -32,138 +38,34 @@
     },
     data: function() {
       return {
-        alpha: [
-          {
-            "letter": "q",
-            "dataCharacterCode": 113,
-            "dataQwertyOrder": 1
-          },
-          {
-            "letter": "w",
-            "dataCharacterCode": 119,
-            "dataQwertyOrder": 2
-          },
-          {
-            "letter": "e",
-            "dataCharacterCode": 101,
-            "dataQwertyOrder": 3
-          },
-          {
-            "letter": "r",
-            "dataCharacterCode": 114,
-            "dataQwertyOrder": 4
-          },
-          {
-            "letter": "t",
-            "dataCharacterCode": 116,
-            "dataQwertyOrder": 5
-          },
-          {
-            "letter": "y",
-            "dataCharacterCode": 121,
-            "dataQwertyOrder": 6
-          },
-          {
-            "letter": "u",
-            "dataCharacterCode": 117,
-            "dataQwertyOrder": 7
-          },
-          {
-            "letter": "i",
-            "dataCharacterCode": 105,
-            "dataQwertyOrder": 8
-          },
-          {
-            "letter": "o",
-            "dataCharacterCode": 111,
-            "dataQwertyOrder": 9
-          },
-          {
-            "letter": "p",
-            "dataCharacterCode": 112,
-            "dataQwertyOrder": 10
-          },
-          {
-            "letter": "a",
-            "dataCharacterCode": 97,
-            "dataQwertyOrder": 11
-          },
-          {
-            "letter": "s",
-            "dataCharacterCode": 115,
-            "dataQwertyOrder": 12
-          },
-          {
-            "letter": "d",
-            "dataCharacterCode": 100,
-            "dataQwertyOrder": 13
-          },
-          {
-            "letter": "f",
-            "dataCharacterCode": 102,
-            "dataQwertyOrder": 14
-          },
-          {
-            "letter": "g",
-            "dataCharacterCode": 103,
-            "dataQwertyOrder": 15
-          },
-          {
-            "letter": "h",
-            "dataCharacterCode": 104,
-            "dataQwertyOrder": 16
-          },
-          {
-            "letter": "j",
-            "dataCharacterCode": 106,
-            "dataQwertyOrder": 17
-          },
-          {
-            "letter": "k",
-            "dataCharacterCode": 107,
-            "dataQwertyOrder": 18
-          },
-          {
-            "letter": "l",
-            "dataCharacterCode": 108,
-            "dataQwertyOrder": 19
-          },
-          {
-            "letter": "z",
-            "dataCharacterCode": 122,
-            "dataQwertyOrder": 20
-          },
-          {
-            "letter": "x",
-            "dataCharacterCode": 120,
-            "dataQwertyOrder": 21
-          },
-          {
-            "letter": "c",
-            "dataCharacterCode": 99,
-            "dataQwertyOrder": 22
-          },
-          {
-            "letter": "v",
-            "dataCharacterCode": 118,
-            "dataQwertyOrder": 23
-          },
-          {
-            "letter": "b",
-            "dataCharacterCode": 98,
-            "dataQwertyOrder": 24
-          },
-          {
-            "letter": "n",
-            "dataCharacterCode": 110,
-            "dataQwertyOrder": 25
-          },
-          {
-            "letter": "m",
-            "dataCharacterCode": 109,
-            "dataQwertyOrder": 26
-          }
-        ],
+        alpha: {
+          "a": 65,
+          "b": 66,
+          "c": 67,
+          "d": 68,
+          "e": 69,
+          "f": 70,
+          "g": 71,
+          "h": 72,
+          "i": 73,
+          "j": 74,
+          "k": 75,
+          "l": 76,
+          "m": 77,
+          "n": 78,
+          "o": 79,
+          "p": 80,
+          "q": 81,
+          "r": 82,
+          "s": 83,
+          "t": 84,
+          "u": 85,
+          "v": 86,
+          "w": 87,
+          "x": 88,
+          "y": 89,
+          "z": 90
+        },
         debug: false,
         definition: '',
         errors: 0,
@@ -250,8 +152,10 @@
       },
       handleInput: function(code) {
         // make sure it's a-z
-        if (code >= 65 && code <= 90) {
-          console.log(code + ' was pressed');
+        if (code >= 97 && code <= 122) {
+          $('span[data-character-code="' + code + '"]')
+            .html(String.fromCharCode(code))
+            .addClass('highlight');
         }
       }
     },
@@ -270,12 +174,11 @@
       }
     },
     mounted: function() {
-      this.$refs.input.focus();
       this.getSecretWord();
-      // var self = this;
-      // window.addEventListener('keyup', function(e) {
-      //   self.handleInput(e.which);
-      // });
+      var self = this;
+      window.addEventListener('keypress', function(e) {
+        self.handleInput(e.which);
+      });
     }
   }
 </script>
@@ -287,12 +190,12 @@
 
   @font-face {
     font-family: 'HouseMovements-Sign';
-    src: url('/assets/fonts/HouseMovements-Sign.eot');
-    src: url('/assets/fonts/HouseMovements-Sign.eot?#iefix') format('embedded-opentype'),
-         url('/assets/fonts/HouseMovements-Sign.woff2') format('woff2'),
-         url('/assets/fonts/HouseMovements-Sign.woff') format('woff'),
-         url('/assets/fonts/HouseMovements-Sign.ttf') format('truetype'),
-         url('/assets/fonts/HouseMovements-Sign.svg#HouseMovements-Sign') format('svg');
+    src: url('/static/fonts/HouseMovements-Sign.eot');
+    src: url('/static/fonts/HouseMovements-Sign.eot?#iefix') format('embedded-opentype'),
+         url('/static/fonts/HouseMovements-Sign.woff2') format('woff2'),
+         url('/static/fonts/HouseMovements-Sign.woff') format('woff'),
+         url('/static/fonts/HouseMovements-Sign.ttf') format('truetype'),
+         url('/static/fonts/HouseMovements-Sign.svg#HouseMovements-Sign') format('svg');
     font-weight: normal;
     font-style: normal;
   }
@@ -330,24 +233,6 @@
     user-select: none;
     cursor: default;
     -webkit-font-smoothing: antialiased;
-  }
-
-  input {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding-top: 90%;
-    border: 0;
-    background: transparent;
-    color: #fff;
-    text-align: center;
-    pointer-events: none;
-    &:focus {
-      outline: 0;
-    }
   }
 
   .header {
