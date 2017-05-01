@@ -39,32 +39,32 @@
     data: function() {
       return {
         alpha: {
-          "a": 65,
-          "b": 66,
-          "c": 67,
-          "d": 68,
-          "e": 69,
-          "f": 70,
-          "g": 71,
-          "h": 72,
-          "i": 73,
-          "j": 74,
-          "k": 75,
-          "l": 76,
-          "m": 77,
-          "n": 78,
-          "o": 79,
-          "p": 80,
-          "q": 81,
-          "r": 82,
-          "s": 83,
-          "t": 84,
-          "u": 85,
-          "v": 86,
-          "w": 87,
-          "x": 88,
-          "y": 89,
-          "z": 90
+          "a": 97,
+          "b": 98,
+          "c": 99,
+          "d": 100,
+          "e": 101,
+          "f": 102,
+          "g": 103,
+          "h": 104,
+          "i": 105,
+          "j": 106,
+          "k": 107,
+          "l": 108,
+          "m": 109,
+          "n": 110,
+          "o": 111,
+          "p": 112,
+          "q": 113,
+          "r": 114,
+          "s": 115,
+          "t": 116,
+          "u": 117,
+          "v": 118,
+          "w": 119,
+          "x": 120,
+          "y": 121,
+          "z": 122
         },
         debug: false,
         definition: '',
@@ -190,12 +190,7 @@
 
   @font-face {
     font-family: 'HouseMovements-Sign';
-    src: url('/static/fonts/HouseMovements-Sign.eot');
-    src: url('/static/fonts/HouseMovements-Sign.eot?#iefix') format('embedded-opentype'),
-         url('/static/fonts/HouseMovements-Sign.woff2') format('woff2'),
-         url('/static/fonts/HouseMovements-Sign.woff') format('woff'),
-         url('/static/fonts/HouseMovements-Sign.ttf') format('truetype'),
-         url('/static/fonts/HouseMovements-Sign.svg#HouseMovements-Sign') format('svg');
+    src: url('/static/fonts/HouseMovements-Sign.woff2') format('woff2');
     font-weight: normal;
     font-style: normal;
   }
@@ -216,10 +211,10 @@
   }
 
   body {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    // display: flex;
+    // flex-direction: column;
+    // flex-wrap: wrap;
+    // justify-content: space-between;
     height: 100%;
 
     transform: translateZ(0);
@@ -229,10 +224,21 @@
     text-align: center;
     font-size: 14px;
     color: $gray;
-    overflow: hidden;
+    // overflow: hidden;
     user-select: none;
     cursor: default;
     -webkit-font-smoothing: antialiased;
+  }
+
+  #app {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 
   .header {
@@ -343,6 +349,11 @@
     &.animated.shake {
       -webkit-animation-duration: .5s;
     }
+  }
+
+  .selections {
+    display: flex;
+    justify-content: center;
   }
 
   .keys {
