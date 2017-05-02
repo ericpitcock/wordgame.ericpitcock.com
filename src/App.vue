@@ -10,11 +10,8 @@
       </div>
     </div>
     <div class="secret-word">
-      <span class="letter-holder" v-for="letter in secretWord.array" v-bind:data-character-code="getCharacterCode(letter)">&bull;</span>
+      <span class="letter-holder" v-for="letter in secretWord.split('')" v-bind:data-character-code="getCharacterCode(letter)">&bull;</span>
     </div>
-    <!-- <div class="keys">
-      <div class="alpha" v-for="letter in alpha" @click="click(letter.dataCharacterCode)" v-bind:data-character-code="letter.dataCharacterCode" v-bind:data-qwerty-order="letter.dataQwertyOrder">{{ letter.letter }}</div>
-    </div> -->
     <div ref="selections" class="selections">
       <div class="alpha" v-for="(code, letter) in alpha" v-bind:data-character-code="code">{{ letter }}</div>
     </div>
@@ -71,17 +68,14 @@
         errors: 0,
         inputAllow: false,
         qwerty: true,
-        secretWord: {
-          string: '',
-          array: [],
-          object: {}
-        },
+        secretWord: '',
         score: 0
       }
     },
     methods: {
       getSecretWord: function() {
         var self = this;
+        self.secretWord = '';
         self.$http.get('http://api.wordnik.com:80/v4/words.json/randomWord', {
           params: {
             api_key: '65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a',
@@ -96,9 +90,9 @@
           }
         })
         .then(function(response) {
-          self.secretWord.string = response.data.word;
-          // console.log(self.secretWord);
-          self.processSecretWord();
+          self.secretWord = response.data.word;
+          console.log(self.secretWord);
+          self.getDefinition();
         })
         .catch(function(error) {
           console.log(error);
@@ -108,16 +102,17 @@
         var self = this;
         self.$http.get('http://api.wordnik.com:80/v4/word.json/' + self.secretWord + '/definitions', {
           params: {
+            api_key: '65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a',
             limit: 2,
             includeRelated: false,
             useCanonical: true,
-            includeTags: false,
-            api_key: '65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a'
+            includeTags: false
           }
         })
         .then(function(response) {
-          console.log(response.data["0"].text);
-          self.definition = response.data["0"].text;
+          self.definition = '';
+          self.definition = response.data[0].text;
+          console.log(self.definition);
         })
         .catch(function(error) {
           console.log(error);
@@ -130,32 +125,43 @@
 
       },
       processSecretWord: function() {
-        this.secretWord.object = {};
+        // this.secretWord.object = {};
         // populate secret word object: {97: 2, 101: 1, 103: 1, 116: 2, 119: 1} (wattage)
-        for (var index = 0; index < this.secretWord.string.length; index++) {
-          var character = this.secretWord.string.charCodeAt(index);
-          if (this.secretWord.object[character]) {
-            this.secretWord.object[character]++;
-          } else {
-            this.secretWord.object[character] = 1;
-          }
-        }
+        // for (var index = 0; index < this.secretWord.string.length; index++) {
+        //   var character = this.secretWord.string.charCodeAt(index);
+        //   if (this.secretWord.object[character]) {
+        //     this.secretWord.object[character]++;
+        //   } else {
+        //     this.secretWord.object[character] = 1;
+        //   }
+        // }
         // populate secretWordArray
-        this.secretWord.array = this.secretWord.string.split('');
+        // this.secretWord.array = this.secretWord.string.split('');
         // console.log('processSecretWord');
-        console.log('string ' + this.secretWord.string);
-        console.log('array ' + this.secretWord.array);
-        console.log('object ' + JSON.stringify(this.secretWord.object));
+        // console.log(this.secretWord);
+        // console.log('array ' + this.secretWord.array);
+        // console.log('object ' + JSON.stringify(this.secretWord.object));
       },
       getCharacterCode: function(letter) {
         return letter.charCodeAt();
       },
       handleInput: function(code) {
-        // make sure it's a-z
+        // check if it's a-z
         if (code >= 97 && code <= 122) {
-          $('span[data-character-code="' + code + '"]')
-            .html(String.fromCharCode(code))
-            .addClass('highlight');
+          // check if the letter is in the word
+          var letterString = String.fromCharCode(code);
+          if (this.secretWord.indexOf(letterString) > -1) {
+            // var letter = document.querySelector('.secret-word span[data-character-code="' + code + '"]');
+            // console.log(letterString);
+            // letter.innerHTML = letterString;
+            // letter.className += ' highlight';
+            $('.secret-word span[data-character-code="' + code + '"]').each(function() {
+              $(this).html(letterString).addClass('highlight');
+            });
+          } else {
+            console.log(letterString + ' not in word');
+          }
+
         }
       }
     },
@@ -170,7 +176,7 @@
       },
       definition: function() {
         // do stuff
-        console.log('definition recevied');
+        // console.log('definition recevied');
       }
     },
     mounted: function() {
@@ -187,6 +193,8 @@
   @import '/assets/sass/_reset';
   @import '/assets/sass/_variables';
   @import '/assets/sass/_animation';
+
+  @import url('https://fonts.googleapis.com/css?family=News+Cycle|Source+Sans+Pro:400,600');
 
   @font-face {
     font-family: 'HouseMovements-Sign';
@@ -206,7 +214,7 @@
   }
 
   body, input, button {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Source Sans Pro', sans-serif;
     font-weight: 400;
   }
 
