@@ -6,11 +6,13 @@
     </div>
     <div class="definition-container">
       <div class="definition">
-        <p>{{ definition }}</p>
+        <transition name="bounce">
+          <p v-if="ready">{{ definition }}</p>
+        </transition>
       </div>
     </div>
     <div class="secret-word">
-      <span class="letter-holder" v-for="letter in secretWord.split('')" v-bind:data-character-code="getCharacterCode(letter)">&bull;</span>
+      <span class="letter-holder" v-if="ready" v-for="letter in secretWord.split('')" v-bind:data-character-code="getCharacterCode(letter)">&bull;</span>
     </div>
     <div ref="selections" class="selections">
       <div class="alpha" v-for="(code, letter) in alpha" v-bind:data-character-code="code">{{ letter }}</div>
@@ -66,15 +68,104 @@
         debug: false,
         definition: '',
         errors: 0,
+        excludeWords: [
+            'skank',
+            'wetback',
+            'bitch',
+            'cunt',
+            'dick',
+            'douchebag',
+            'dyke',
+            'fag',
+            'nigger',
+            'tranny',
+            'trannies',
+            'paki',
+            'pussy',
+            'retard',
+            'slut',
+            'titt',
+            'tits',
+            'wop',
+            'whore',
+            'chink',
+            'fatass',
+            'shemale',
+            'daygo',
+            'dego',
+            'dago',
+            'gook',
+            'kike',
+            'kraut',
+            'spic',
+            'twat',
+            'lesbo',
+            'homo',
+            'fatso',
+            'lardass',
+            'jap',
+            'biatch',
+            'tard',
+            'gimp',
+            'gyp',
+            'chinaman',
+            'chinamen',
+            'golliwog',
+            'crip',
+            'raghead',
+            'negro',
+            'darky',
+            'hooker',
+            'honky',
+            'coolie',
+            'bastard',
+            'douche',
+            'penis',
+            'vagina',
+            'blowjob',
+            'popery',
+            'fuck',
+            'mulatto',
+            'faggot',
+            'jew',
+            'femme',
+            'nads',
+            'semen',
+            'sodomy',
+            'dildo'
+        ],
         inputAllow: false,
         qwerty: true,
+        ready: false,
         secretWord: '',
         score: 0
       }
     },
     methods: {
+      getDefinition: function() {
+        var self = this;
+        self.$http.get('http://api.wordnik.com:80/v4/word.json/' + self.secretWord + '/definitions', {
+          params: {
+            api_key: '65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a',
+            limit: 2,
+            includeRelated: false,
+            useCanonical: true,
+            includeTags: false
+          }
+        })
+        .then(function(response) {
+          self.definition = '';
+          self.definition = response.data[0].text;
+          console.log(self.definition);
+          self.filterDefinition();
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+      },
       getSecretWord: function() {
         var self = this;
+        self.ready = false;
         self.secretWord = '';
         self.$http.get('http://api.wordnik.com:80/v4/words.json/randomWord', {
           params: {
@@ -92,37 +183,37 @@
         .then(function(response) {
           self.secretWord = response.data.word;
           console.log(self.secretWord);
-          self.getDefinition();
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
-      },
-      getDefinition: function() {
-        var self = this;
-        self.$http.get('http://api.wordnik.com:80/v4/word.json/' + self.secretWord + '/definitions', {
-          params: {
-            api_key: '65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a',
-            limit: 2,
-            includeRelated: false,
-            useCanonical: true,
-            includeTags: false
-          }
-        })
-        .then(function(response) {
-          self.definition = '';
-          self.definition = response.data[0].text;
-          console.log(self.definition);
+          self.filterSecretWord();
         })
         .catch(function(error) {
           console.log(error);
         });
       },
       filterDefinition: function() {
-
+        // the word is in the defintion, run it again
+        if (this.definition.toUpperCase().indexOf(this.secretWord.toUpperCase()) != -1) {
+          this.getSecretWord();
+        } else if (this.definition.length > 150) {
+        this.getSecretWord();
+        // they passed, play on
+        } else {
+          // remove category, if present. Splitting at three spaces '   ' and returning the end portion
+          this.definition = this.definition.split(/ {3,}/).pop();
+          this.requestCount = 0;
+          this.ready = true;
+        }
       },
       filterSecretWord: function() {
-
+        // secret word is naughty, run it again
+        if ($.inArray(this.secretWord, this.excludeWords) > -1) {
+          this.getSecretWord();
+        // secret word has bad characters, run it again
+        } else if (this.secretWord.search(/^[a-z]+$/)) {
+          this.getSecretWord();
+        // secret word is good to go, get definition
+        } else {
+          this.getDefinition();
+        }
       },
       processSecretWord: function() {
         // this.secretWord.object = {};
@@ -149,19 +240,14 @@
         // check if it's a-z
         if (code >= 97 && code <= 122) {
           // check if the letter is in the word
-          var letterString = String.fromCharCode(code);
-          if (this.secretWord.indexOf(letterString) > -1) {
-            // var letter = document.querySelector('.secret-word span[data-character-code="' + code + '"]');
-            // console.log(letterString);
-            // letter.innerHTML = letterString;
-            // letter.className += ' highlight';
+          var letter = String.fromCharCode(code);
+          if (this.secretWord.indexOf(letter) > -1) {
             $('.secret-word span[data-character-code="' + code + '"]').each(function() {
-              $(this).html(letterString).addClass('highlight');
+              $(this).html(letter).addClass('highlight');
             });
           } else {
-            console.log(letterString + ' not in word');
+            console.log(letter + ' not in word');
           }
-
         }
       }
     },

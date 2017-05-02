@@ -73,9 +73,9 @@
     }
 }
 
-.bounceOutLeft {
-    -webkit-animation-name: bounceOutLeft;
-            animation-name: bounceOutLeft;
+.bounce-leave-active {
+    -webkit-animation: bounceOutLeft .5s;
+            animation: bounceOutLeft .5s;
 }
 
 @-webkit-keyframes bounceInRight {
@@ -146,7 +146,7 @@
     }
 }
 
-.bounceInRight {
-    -webkit-animation-name: bounceInRight;
-            animation-name: bounceInRight;
+.bounce-enter-active {
+    -webkit-animation: bounceInRight .5s;
+            animation: bounceInRight .5s;
 }
