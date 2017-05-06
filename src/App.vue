@@ -2,7 +2,7 @@
   <div id="app">
     <div class="header">
       <div class="title">Word Game</div>
-      <div class="score">Score:<span class="score-value"></span></div>
+      <!-- <div class="score">Score:<span class="score-value"></span></div> -->
     </div>
     <div class="definition-container">
       <div class="definition">
@@ -11,8 +11,8 @@
         </transition>
       </div>
     </div>
-    <div class="secret-word">
-      <span class="letter-holder" v-if="ready" v-for="letter in secretWord.split('')" v-bind:data-character-code="getCharacterCode(letter)">&bull;</span>
+    <div class="secret-word" :class="{win: isWin}">
+      <span class="letter-holder" v-if="ready" v-for="letter in secretWord.array" v-bind:data-character-code="getCharacterCode(letter)">&bull;</span>
     </div>
     <div ref="selections" class="selections">
       <div class="alpha" v-for="(code, letter) in alpha" v-bind:data-character-code="code">{{ letter }}</div>
@@ -30,11 +30,6 @@
 
   export default {
     name: 'app',
-    config: {
-      keyCodes: {
-
-      }
-    },
     data: function() {
       return {
         alpha: {
@@ -134,17 +129,55 @@
             'sodomy',
             'dildo'
         ],
-        inputAllow: false,
+        inputAllowed: true,
+        isWin: false,
         qwerty: true,
         ready: false,
-        secretWord: '',
-        score: 0
+        score: 0,
+        secretWord: {
+          string: '',
+          array: []
+        },
+        secretWordArray: [],
+        wins: 0
       }
     },
     methods: {
+      filterDefinition: function() {
+        // the word is in the defintion, run it again
+        if (this.definition.toUpperCase().indexOf(this.secretWord.string.toUpperCase()) != -1) {
+          console.log('Definition filter: Word in definition. Getting Again.');
+          this.getSecretWord();
+        } else if (this.definition.length > 150) {
+          console.log('Definition filter: Too long. Getting Again.');
+          this.getSecretWord();
+        // they passed, play on
+        } else {
+          // remove category, if present. Splitting at three spaces '   ' and returning the end portion
+          this.definition = this.definition.split(/ {3,}/).pop();
+          this.requestCount = 0;
+          this.ready = true;
+          console.log('definition: ' + this.definition);
+        }
+      },
+      filterSecretWord: function() {
+        // secret word is naughty, run it again
+        if ($.inArray(this.secretWord.string, this.excludeWords) > -1) {
+          console.log('Word filter: Naughty. Getting Again.');
+          this.getSecretWord();
+        // secret word has bad characters, run it again
+        } else if (this.secretWord.string.search(/^[a-z]+$/)) {
+          console.log('Word filter: Special characters. Getting Again.');
+          this.getSecretWord();
+        // secret word is good to go, get definition
+        } else {
+          console.log('secretword: ' + this.secretWord.string);
+          this.getDefinition();
+        }
+      },
       getDefinition: function() {
         var self = this;
-        self.$http.get('http://api.wordnik.com:80/v4/word.json/' + self.secretWord + '/definitions', {
+        self.$http.get('http://api.wordnik.com:80/v4/word.json/' + self.secretWord.string + '/definitions', {
           params: {
             api_key: '65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a',
             limit: 2,
@@ -156,7 +189,7 @@
         .then(function(response) {
           self.definition = '';
           self.definition = response.data[0].text;
-          console.log(self.definition);
+          // console.log(self.definition);
           self.filterDefinition();
         })
         .catch(function(error) {
@@ -165,8 +198,6 @@
       },
       getSecretWord: function() {
         var self = this;
-        self.ready = false;
-        self.secretWord = '';
         self.$http.get('http://api.wordnik.com:80/v4/words.json/randomWord', {
           params: {
             api_key: '65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a',
@@ -181,81 +212,60 @@
           }
         })
         .then(function(response) {
-          self.secretWord = response.data.word;
-          console.log(self.secretWord);
-          self.filterSecretWord();
+          self.secretWord.string = response.data.word;
+          // console.log(self.secretWord.string);
+          self.processSecretWord();
         })
         .catch(function(error) {
           console.log(error);
         });
       },
-      filterDefinition: function() {
-        // the word is in the defintion, run it again
-        if (this.definition.toUpperCase().indexOf(this.secretWord.toUpperCase()) != -1) {
-          this.getSecretWord();
-        } else if (this.definition.length > 150) {
-        this.getSecretWord();
-        // they passed, play on
-        } else {
-          // remove category, if present. Splitting at three spaces '   ' and returning the end portion
-          this.definition = this.definition.split(/ {3,}/).pop();
-          this.requestCount = 0;
-          this.ready = true;
-        }
-      },
-      filterSecretWord: function() {
-        // secret word is naughty, run it again
-        if ($.inArray(this.secretWord, this.excludeWords) > -1) {
-          this.getSecretWord();
-        // secret word has bad characters, run it again
-        } else if (this.secretWord.search(/^[a-z]+$/)) {
-          this.getSecretWord();
-        // secret word is good to go, get definition
-        } else {
-          this.getDefinition();
-        }
-      },
-      processSecretWord: function() {
-        // this.secretWord.object = {};
-        // populate secret word object: {97: 2, 101: 1, 103: 1, 116: 2, 119: 1} (wattage)
-        // for (var index = 0; index < this.secretWord.string.length; index++) {
-        //   var character = this.secretWord.string.charCodeAt(index);
-        //   if (this.secretWord.object[character]) {
-        //     this.secretWord.object[character]++;
-        //   } else {
-        //     this.secretWord.object[character] = 1;
-        //   }
-        // }
-        // populate secretWordArray
-        // this.secretWord.array = this.secretWord.string.split('');
-        // console.log('processSecretWord');
-        // console.log(this.secretWord);
-        // console.log('array ' + this.secretWord.array);
-        // console.log('object ' + JSON.stringify(this.secretWord.object));
-      },
       getCharacterCode: function(letter) {
         return letter.charCodeAt();
       },
       handleInput: function(code) {
-        // check if it's a-z
-        if (code >= 97 && code <= 122) {
-          // check if the letter is in the word
-          var letter = String.fromCharCode(code);
-          if (this.secretWord.indexOf(letter) > -1) {
-            $('.secret-word span[data-character-code="' + code + '"]').each(function() {
-              $(this).html(letter).addClass('highlight');
-            });
-          } else {
-            console.log(letter + ' not in word');
+        if (this.inputAllowed) {
+          this.inputAllowed = false;
+          // check if it's a-z
+          if (code >= 97 && code <= 122) {
+            var letter = String.fromCharCode(code);
+            // check if the letter is in the word
+            if (this.secretWord.string.indexOf(letter) > -1) {
+              // show letter
+              $('.secret-word span[data-character-code="' + code + '"]').each(function() {
+                $(this).html(letter).addClass('highlight');
+              });
+              // remove it from array
+              this.secretWordArray = this.secretWordArray.filter(function(a) { return a !== letter });
+              console.log(this.secretWordArray);
+              // determine if it's a win or not
+              if (this.secretWordArray.length == 0) {
+                console.log('YOU WIN');
+                this.isWin = true;
+                var self = this;
+                setTimeout(function() { self.init() }, 1300);
+              }
+            } else {
+              console.log(letter + ' not in word');
+            }
           }
         }
+        this.inputAllowed = true;
+      },
+      init: function() {
+        console.log('Init');
+        this.isWin = false;
+        this.ready = false;
+        // this.secretWord.string = '';
+        this.getSecretWord();
+      },
+      processSecretWord: function() {
+        this.secretWord.array = this.secretWord.string.split('');
+        // populate worker array
+        this.secretWordArray = this.secretWord.array;
+        this.filterSecretWord();
       }
     },
-    // computed: {
-    //   secretWordObject: function() {
-    //     //
-    //   }
-    // },
     watch: {
       secretWord: function() {
         // this.processSecretWord();
@@ -266,7 +276,7 @@
       }
     },
     mounted: function() {
-      this.getSecretWord();
+      this.init();
       var self = this;
       window.addEventListener('keypress', function(e) {
         self.handleInput(e.which);
@@ -305,10 +315,6 @@
   }
 
   body {
-    // display: flex;
-    // flex-direction: column;
-    // flex-wrap: wrap;
-    // justify-content: space-between;
     height: 100%;
 
     transform: translateZ(0);
@@ -339,26 +345,22 @@
     height: 30px;
     padding-top: 8px;
     font-size: 12px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
+    // letter-spacing: 2px;
+    // text-transform: uppercase;
     font-weight: 600;
-
     .title, .score {
       float: left;
       width: 50%;
     }
-
     .title {
       text-align: right;
       padding-right: 20px;
     }
-
     .score {
       text-align: left;
       padding-left: 21px;
       border-left: 1px solid $subtle-gray;
       transition: all 1s ease-in-out;
-
       .score-value.updating {
         color: $white;
       }
@@ -370,22 +372,18 @@
     display: flex;
     flex: 1;
     justify-content: center;
-
     &::-webkit-scrollbar {
       display: none;
     }
-
     .definition {
       align-self: center;
       max-width: 760px;
-
       p {
         text-align: center;
         font-size: 26px;
         line-height: 32px;
         font-family: 'News Cycle', sans-serif;
         font-weight: 400;
-
         &:first-letter {
           text-transform: capitalize;
         }
@@ -401,50 +399,42 @@
     position: relative;
     z-index: 10;
     width: 100%;
-
     span.letter-holder {
       position: relative;
       align-self: center;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-size: 50px;
       transition: all .15s cubic-bezier(0.29, 0.74, 0.04, 1.04);
-
       &:first-child {
         text-transform: uppercase;
       }
-
       &:last-child {
         margin-right: 0;
       }
-
       &.highlight {
         font-family: 'HouseMovements-Sign';
         font-size: 15vh;
 
         // custom kerning for T* (except l and i)
-        &:first-child[dataCharacterCode="116"] + *:not([dataCharacterCode="104"]):not([dataCharacterCode="105"]) {
+        &:first-child[data-character-code="116"] + *:not([data-character-code="104"]):not([data-character-code="105"]) {
           margin-left: -9px;
         }
       }
     }
-
     &.win {
       span.letter-holder /* , &:after  */{
         color: $green;
       }
     }
-
     &.lose {
       span.letter-holder /* , &:after  */{
         color: $red-orange;
       }
     }
-
     &.animated.shake {
       -webkit-animation-duration: .5s;
     }
   }
-
   .selections {
     display: flex;
     justify-content: center;
@@ -531,75 +521,5 @@
 
   html.no-touch button:hover {
     background: #efefa7;
-  }
-
-  @media (min-width: 375px) {
-    .header {
-      padding-top: 20px;
-    }
-  }
-
-  @media (min-width: 769px) {
-
-      .definition-container {
-          .definition {
-              p {
-                  font-size: 36px;
-                  line-height: 42px;
-              }
-          }
-      }
-
-      .secret-word {
-          span.letter-holder {
-              &.highlight {
-                  // custom kerning for T* (except l and i)
-                  &:first-child[dataCharacterCode="116"] + *:not([dataCharacterCode="104"]):not([dataCharacterCode="105"]) {
-                      margin-left: -21px;
-                  }
-
-                  // custom kerning for P*
-                  &:first-child[dataCharacterCode="112"] + * {
-                      margin-left: -4px;
-                  }
-              }
-          }
-      }
-
-      .keys {
-          position: relative;
-          bottom: auto;
-          height: 60px;
-          max-width: 1140px;
-          padding: 12px 0 0 0;
-          border-top: 1px solid $subtle-gray;
-          margin: 80px auto 20px auto;
-
-          div {
-              width: 3.3333333333%;
-              border: none;
-              margin: 0;
-              cursor: pointer;
-
-              &.disabled {
-                  cursor: default;
-              }
-
-              &.freebie-button {
-                  position: relative;
-                  top: 3px;
-                  height: 28px;
-                  text-align: right;
-                  margin-left: 10px;
-                  padding-right: 8px;
-                  border-radius: 0;
-                  border-left: 1px solid $subtle-gray;
-              }
-          }
-      }
-
-      .attempts {
-          position: relative;
-      }
   }
 </style>
