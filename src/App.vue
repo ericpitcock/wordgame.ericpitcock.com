@@ -1,9 +1,9 @@
 <template>
   <div id="app">
-    <div class="header">
-      <div class="title">Word Game</div>
-      <div class="score">Score: <span class="score-value">{{ gameScore }}</span></div>
-    </div>
+    <div class="title">
+      <svg width="20" height="20" viewBox="0 0 20 20"><path d="M0,0V20H20V0H0ZM14,6H7V9h4v2H7v3h7v2H5V4h9V6Z"/></svg>
+      <span>Word Game</span></div>
+    <div class="game-score">Score: <span class="score-value">{{ gameScore }}</span></div>
     <div class="secret-word" :class="{ win: isWin }">
       <span class="letter-holder" v-if="ready" v-for="letter in secretWord.array" v-bind:data-character-code="getCharacterCode(letter)">&bull;</span>
     </div>
@@ -14,14 +14,12 @@
         </transition>
       </div>
     </div>
-    <div ref="selections" class="selections">
-      <div class="alpha" v-for="(code, letter) in alpha" v-bind:data-character-code="code">{{ letter }}</div>
+    <div class="selections">
+      <div v-for="(code, letter) in alpha" v-bind:data-character-code="code">{{ letter }}</div>
     </div>
-    <div class="buttons">
-      <button @click="init()" type="button" name="button">GET WORD</button>
-      <button @click="" type="button" name="button">FREEBIE</button>
-      <button @click="" type="button" name="button">SKIP</button>
-    </div>
+    <!-- <div class="buttons">
+      <button @click="init()" type="button" name="button">NEW WORD</button>
+    </div> -->
   </div>
 </template>
 
@@ -243,6 +241,7 @@
               $('.secret-word span[data-character-code="' + code + '"]').each(function() {
                 $(this).html(letter).addClass('highlight');
               });
+              $('.selections div[data-character-code="' + code + '"]').addClass('yes');
               // remove it from array
               this.secretWordArray = this.secretWordArray.filter(function(a) { return a !== letter });
               console.log(this.secretWordArray);
@@ -255,6 +254,7 @@
               }
             } else {
               console.log(letter + ' not in word');
+              $('.selections div[data-character-code="' + code + '"]').addClass('no');
             }
           }
         }
@@ -346,33 +346,32 @@
     overflow: hidden;
   }
 
-  .header {
-    height: 30px;
-    padding-top: 8px;
-    font-size: 12px;
-    // letter-spacing: 2px;
-    // text-transform: uppercase;
-    font-weight: 600;
-    .title, .score {
-      float: left;
-      width: 50%;
+  .title {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    height: 20px;
+    // background: red;
+    path {
+      fill: $white;
     }
-    .title {
-      text-align: right;
-      padding-right: 20px;
-    }
-    .score {
-      text-align: left;
-      padding-left: 21px;
-      border-left: 1px solid $subtle-gray;
-      transition: all 1s ease-in-out;
-      .score-value.updating {
-        color: $white;
-      }
+    span {
+      padding-left: 8px;
+      color: $white;
+      vertical-align: super;
     }
   }
 
+  .game-score {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    height: 20px;
+    line-height: 20px;
+  }
+
   .secret-word {
+    // background: lighten(red, 40%);
     flex: 1;
     display: flex;
     justify-content: center;
@@ -416,9 +415,27 @@
       -webkit-animation-duration: .5s;
     }
   }
+
   .selections {
+    position: absolute;
+    width: 100%;
+    bottom: 20px;
+    padding: 0 20px;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
+    div {
+      width: 30px;
+      height: 30px;
+      border: 1px solid $dark-gray;
+      line-height: 27px;
+      text-transform: uppercase;
+      &.yes {
+        border-color: $green;
+      }
+      &.no {
+        border-color: $red-orange;
+      }
+    }
   }
 
   .definition-container {
@@ -431,16 +448,16 @@
     }
     .definition {
       align-self: flex-start;
-      max-width: 760px;
+      max-width: 600px;
       p {
         padding-top: 30px;
-        text-align: center;
+        // text-align: center;
         font-size: 26px;
         line-height: 32px;
         font-family: 'News Cycle', sans-serif;
         font-weight: 400;
         &:first-letter {
-          text-transform: capitalize;
+          // text-transform: capitalize;
         }
       }
     }
