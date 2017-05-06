@@ -2,7 +2,10 @@
   <div id="app">
     <div class="header">
       <div class="title">Word Game</div>
-      <!-- <div class="score">Score:<span class="score-value"></span></div> -->
+      <div class="score">Score: <span class="score-value">{{ gameScore }}</span></div>
+    </div>
+    <div class="secret-word" :class="{ win: isWin }">
+      <span class="letter-holder" v-if="ready" v-for="letter in secretWord.array" v-bind:data-character-code="getCharacterCode(letter)">&bull;</span>
     </div>
     <div class="definition-container">
       <div class="definition">
@@ -11,14 +14,11 @@
         </transition>
       </div>
     </div>
-    <div class="secret-word" :class="{win: isWin}">
-      <span class="letter-holder" v-if="ready" v-for="letter in secretWord.array" v-bind:data-character-code="getCharacterCode(letter)">&bull;</span>
-    </div>
     <div ref="selections" class="selections">
       <div class="alpha" v-for="(code, letter) in alpha" v-bind:data-character-code="code">{{ letter }}</div>
     </div>
     <div class="buttons">
-      <button @click="getSecretWord" type="button" name="button">GET WORD</button>
+      <button @click="init()" type="button" name="button">GET WORD</button>
       <button @click="" type="button" name="button">FREEBIE</button>
       <button @click="" type="button" name="button">SKIP</button>
     </div>
@@ -27,6 +27,7 @@
 
 <script>
   import $ from 'jquery'
+  import _ from 'lodash'
 
   export default {
     name: 'app',
@@ -60,10 +61,7 @@
           "y": 121,
           "z": 122
         },
-        debug: false,
-        definition: '',
-        errors: 0,
-        excludeWords: [
+        blacklist: [
             'skank',
             'wetback',
             'bitch',
@@ -129,20 +127,30 @@
             'sodomy',
             'dildo'
         ],
+        debug: false,
+        definition: '',
+        errors: 0,
+        gameScore: 0,
         inputAllowed: true,
         isWin: false,
         qwerty: true,
         ready: false,
-        score: 0,
         secretWord: {
           string: '',
           array: []
         },
         secretWordArray: [],
-        wins: 0
+        wins: 0,
+        wordScore: 0,
       }
     },
     methods: {
+      calculatePotentialWordScore: function() {
+        var uniqueLetters = _.uniq(this.secretWord.array).length;
+        this.potentialWordScore = uniqueLetters * 10;
+        // 26 letters
+        console.log('Unique letters: ' + uniqueLetters);
+      },
       filterDefinition: function() {
         // the word is in the defintion, run it again
         if (this.definition.toUpperCase().indexOf(this.secretWord.string.toUpperCase()) != -1) {
@@ -157,12 +165,12 @@
           this.definition = this.definition.split(/ {3,}/).pop();
           this.requestCount = 0;
           this.ready = true;
-          console.log('definition: ' + this.definition);
+          // console.log('definition: ' + this.definition);
         }
       },
       filterSecretWord: function() {
         // secret word is naughty, run it again
-        if ($.inArray(this.secretWord.string, this.excludeWords) > -1) {
+        if ($.inArray(this.secretWord.string, this.blacklist) > -1) {
           console.log('Word filter: Naughty. Getting Again.');
           this.getSecretWord();
         // secret word has bad characters, run it again
@@ -253,7 +261,8 @@
         this.inputAllowed = true;
       },
       init: function() {
-        console.log('Init');
+        console.clear();
+        // console.log('Init');
         this.isWin = false;
         this.ready = false;
         // this.secretWord.string = '';
@@ -267,12 +276,8 @@
       }
     },
     watch: {
-      secretWord: function() {
-        // this.processSecretWord();
-      },
-      definition: function() {
-        // do stuff
-        // console.log('definition recevied');
+      ready: function() {
+        this.calculatePotentialWordScore();
       }
     },
     mounted: function() {
@@ -367,41 +372,17 @@
     }
   }
 
-  .definition-container {
-    height: 200px;
-    display: flex;
-    flex: 1;
-    justify-content: center;
-    &::-webkit-scrollbar {
-      display: none;
-    }
-    .definition {
-      align-self: center;
-      max-width: 760px;
-      p {
-        text-align: center;
-        font-size: 26px;
-        line-height: 32px;
-        font-family: 'News Cycle', sans-serif;
-        font-weight: 400;
-        &:first-letter {
-          text-transform: capitalize;
-        }
-      }
-    }
-  }
-
   .secret-word {
     flex: 1;
     display: flex;
     justify-content: center;
-    line-height: 0;
+    // line-height: 0;
     position: relative;
     z-index: 10;
     width: 100%;
     span.letter-holder {
       position: relative;
-      align-self: center;
+      align-self: flex-end;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       font-size: 50px;
       transition: all .15s cubic-bezier(0.29, 0.74, 0.04, 1.04);
@@ -413,7 +394,7 @@
       }
       &.highlight {
         font-family: 'HouseMovements-Sign';
-        font-size: 15vh;
+        font-size: 100px;
 
         // custom kerning for T* (except l and i)
         &:first-child[data-character-code="116"] + *:not([data-character-code="104"]):not([data-character-code="105"]) {
@@ -438,6 +419,31 @@
   .selections {
     display: flex;
     justify-content: center;
+  }
+
+  .definition-container {
+    height: 200px;
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    .definition {
+      align-self: flex-start;
+      max-width: 760px;
+      p {
+        padding-top: 30px;
+        text-align: center;
+        font-size: 26px;
+        line-height: 32px;
+        font-family: 'News Cycle', sans-serif;
+        font-weight: 400;
+        &:first-letter {
+          text-transform: capitalize;
+        }
+      }
+    }
   }
 
   .keys {
