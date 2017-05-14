@@ -33,34 +33,6 @@
     name: 'app',
     data: function() {
       return {
-        alpha: {
-          "a": 97,
-          "b": 98,
-          "c": 99,
-          "d": 100,
-          "e": 101,
-          "f": 102,
-          "g": 103,
-          "h": 104,
-          "i": 105,
-          "j": 106,
-          "k": 107,
-          "l": 108,
-          "m": 109,
-          "n": 110,
-          "o": 111,
-          "p": 112,
-          "q": 113,
-          "r": 114,
-          "s": 115,
-          "t": 116,
-          "u": 117,
-          "v": 118,
-          "w": 119,
-          "x": 120,
-          "y": 121,
-          "z": 122
-        },
         backgroundLightness: 100,
         blacklist: [
             'skank',
@@ -135,7 +107,6 @@
         incorrectLetters: [],
         inputAllowed: true,
         isWin: false,
-        qwerty: true,
         ready: false,
         secretWord: {
           string: '',
@@ -255,56 +226,27 @@
             // verify it's a-z
             case (this.isAlphabetical(code)):
               console.log('Not a-z');
+              this.inputAllowed = true;
               break;
             // verif letter exists in word
             case (this.isInWord(code)):
-              console.log('Letter not in word');
+              this.handleBadLetter(code);
               break;
             default:
               // input is good, proceed
               this.processInput(code);
           }
         }
-
-        // // if (this.secretWord.string.indexOf(letter) > -1) {
-        //   // show letter(s)
-        //
-        //
-        //   // remove it from array
-        //   this.secretWordArray = this.secretWordArray.filter(function(a) { return a !== letter });
-        //
-        //   // to used array
-        //   this.secretWord.used.push(letter);
-        //   console.log(this.secretWord.used);
-        //
-        //
-        //
-        //   // determine if it's a win or not
-        //   if (this.secretWordArray.length == 0) {
-        //     console.log('YOU WIN');
-        //     this.isWin = true;
-        //     this.inputAllowed = false;
-        //     var self = this;
-        //     setTimeout(function() { self.init() }, 1300);
-        //   }
-
-          // this.inputAllowed = true
-        // not in word
-        // } else {
-        //   if (this.incorrectLetters.indexOf(letter) == -1) {
-        //     this.incorrectLetters.push(letter);
-        //     console.log(letter + ' not in word');
-        //   } else {
-        //     console.log(letter + ' already tried');
-        //   }
-        //   this.inputAllowed = true
-        // }
       },
-      handleBadLetter: function() {
-
-      },
-      handleGoodLetter: function() {
-
+      handleBadLetter: function(code) {
+        var letter = this.getLetter(code);
+        if (this.incorrectLetters.indexOf(letter) == -1) {
+          this.incorrectLetters.push(letter);
+          console.log(letter + ' not in word');
+        } else {
+          console.log(letter + ' already tried');
+        }
+        this.inputAllowed = true;
       },
       init: function() {
         console.clear();
@@ -313,7 +255,6 @@
         this.incorrectLetters = [];
         this.ready = false;
         this.backgroundLightness = 100;
-        this.inputAllowed = false;
         this.secretWord.used = [];
         // this.secretWord.string = '';
         this.getSecretWord();
@@ -332,8 +273,8 @@
           console.log('YOU WIN');
           this.isWin = true;
           this.inputAllowed = false;
-          // var self = this;
-          // setTimeout(function() { self.init() }, 1300);
+          var self = this;
+          setTimeout(function() { self.init() }, 1300);
         }
       },
       processSecretWord: function() {
@@ -362,6 +303,9 @@
       },
       isAlphabetical: function(code) {
         return (code >= 97 && code <= 122) ? true : false;
+      },
+      wasAttempted: function(code) {
+
       }
     },
     mounted: function() {
@@ -387,12 +331,6 @@
     font-weight: normal;
     font-style: normal;
   }
-
-  // *, *:before, *:after {
-  //   -webkit-box-sizing: border-box;
-  //   -moz-box-sizing: border-box;
-  //   box-sizing: border-box;
-  // }
 
   html {
     height: 100%;
@@ -428,6 +366,7 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    transition: background-color 0.5s ease;
   }
 
   .title {
@@ -492,14 +431,7 @@
       }
     }
     &.win {
-      span.letter-holder /* , &:after  */{
-        // color: $green;
-      }
-    }
-    &.lose {
-      span.letter-holder /* , &:after  */{
-        color: $red-orange;
-      }
+      transform: scale(1.5);
     }
     &.animated.shake {
       -webkit-animation-duration: .5s;
@@ -558,31 +490,6 @@
     }
   }
 
-  .keys {
-    // display: none;
-    flex: 1;
-    width: 100%;
-    div {
-      display: inline-block;
-      width: 8.125%;
-      height: 36px;
-      border-radius: 3px;
-      border: 1px solid $subtle-gray;
-      border-radius: 3px;
-      margin: 0 2px 12px 0;
-      -webkit-tap-highlight-color: rgba(0,0,0,0);
-      font-size: 20px;
-      text-transform: uppercase;
-      line-height: 36px;
-      &[dataQwertyOrder="10"], &[dataQwertyOrder="19"],  {
-        margin-right: 0;
-      }
-      &.disabled {
-        opacity: 0;
-      }
-    }
-  }
-
   .error {
     display: none;
     position: absolute;
@@ -635,9 +542,5 @@
         }
       }
     }
-  }
-
-  html.no-touch button:hover {
-    background: #efefa7;
   }
 </style>
