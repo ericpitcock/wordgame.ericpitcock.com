@@ -2,11 +2,12 @@
   <div id="app" :style="{ background: 'hsla(140, 40%, ' + backgroundLightness + '%, 1)' }">
     <div class="title">
       <svg width="20" height="20" viewBox="0 0 20 20"><path d="M0,0V20H20V0H0ZM14,6H7V9h4v2H7v3h7v2H5V4h9V6Z"/></svg>
-      <span>Word Game</span></div>
+      <span>Word Game</span>
+    </div>
     <div class="game-score">Score: <span class="score-value">{{ gameScore }}</span></div>
-    <div class="secret-word" :class="{ win: isWin }">
-      <div>
-        <span class="letter-holder" v-if="ready" v-for="letter in secretWord.array" v-bind:data-character-code="getCharacterCode(letter)">&bull;</span>
+    <div class="secret-word-container">
+      <div class="secret-word" :class="{ 'secret-word--win': isWin }">
+        <span class="secret-word__letter" v-if="ready" v-for="letter in secretWord.array" v-bind:data-character-code="getCharacterCode(letter)">&bull;</span>
       </div>
     </div>
     <div class="definition-container">
@@ -19,9 +20,6 @@
     <div class="selections">
       <div class="no" v-for="letter in incorrectLetters">{{ letter }}</div>
     </div>
-    <!-- <div class="buttons">
-      <button @click="init()" type="button" name="button">NEW WORD</button>
-    </div> -->
   </div>
 </template>
 
@@ -374,15 +372,14 @@
     top: 20px;
     left: 20px;
     height: 20px;
-    // background: red;
-    path {
-      fill: $black;
+    svg {
+      vertical-align: text-top;
+      path {
+        fill: $black;
+      }
     }
     span {
       padding-left: 8px;
-      // font-weight: 600;
-      color: $black;
-      vertical-align: super;
     }
   }
 
@@ -395,7 +392,7 @@
     line-height: 20px;
   }
 
-  .secret-word {
+  .secret-word-container {
     // background: lighten(red, 40%);
     flex: 1;
     display: flex;
@@ -404,10 +401,13 @@
     position: relative;
     z-index: 10;
     width: 100%;
-    div {
+    .secret-word {
       display: flex;
       align-self: flex-end;
-      span.letter-holder {
+      &--win {
+        transform: scale(1.5);
+      }
+      &__letter {
         position: relative;
         align-self: flex-end;
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -429,9 +429,6 @@
           }
         }
       }
-    }
-    &.win {
-      transform: scale(1.5);
     }
     &.animated.shake {
       -webkit-animation-duration: .5s;
