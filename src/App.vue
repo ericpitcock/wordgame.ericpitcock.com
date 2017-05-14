@@ -151,7 +151,7 @@
       uniqueLetters: function() {
         return _.uniq(this.secretWord.array).length;
       },
-      calculateBackgroundLightness: function() {
+      updateBackgroundLightness: function() {
           this.backgroundLightness -= 40 / this.uniqueLetters();
           // console.log(this.backgroundLightness);
       },
@@ -162,6 +162,7 @@
         console.log('Unique letters: ' + this.uniqueLetters());
       },
       filterDefinition: function() {
+        // console.log('Filtering defintion…');
         // the word is in the defintion, run it again
         if (this.definition.toUpperCase().indexOf(this.secretWord.string.toUpperCase()) != -1) {
           console.log('Definition filter: Word in definition. Getting Again.');
@@ -173,28 +174,29 @@
         } else {
           // remove category, if present. Splitting at three spaces '   ' and returning the end portion
           this.definition = this.definition.split(/ {3,}/).pop();
-          this.requestCount = 0;
-          this.ready = true;
-          this.inputAllowed = true;
+          // this.requestCount = 0;
+          this.processSecretWord();
+
           // console.log('definition: ' + this.definition);
         }
       },
       filterSecretWord: function() {
-        // secret word is naughty, run it again
-        if ($.inArray(this.secretWord.string, this.blacklist) > -1) {
-          console.log('Word filter: Naughty. Getting Again.');
-          this.getSecretWord();
-        // secret word has bad characters, run it again
-        } else if (this.secretWord.string.search(/^[a-z]+$/)) {
-          console.log('Word filter: Special characters. Getting Again.');
-          this.getSecretWord();
-        // secret word is good to go, get definition
-        } else {
-          console.log('secretword: ' + this.secretWord.string);
-          this.getDefinition();
+        // console.log('Filtering secret word…');
+        switch (true) {
+          case ($.inArray(this.secretWord.string, this.blacklist) > -1):
+            console.log('Word filter: Blacklisted');
+            this.getSecretWord();
+            break;
+          case (this.secretWord.string.search(/\W/g) != -1):
+            console.log('Word filter: Special characters');
+            this.getSecretWord();
+            break;
+          default:
+            this.getDefinition();
         }
       },
       getDefinition: function() {
+        // console.log('Getting definition…');
         var self = this;
         self.$http.get('http://api.wordnik.com:80/v4/word.json/' + self.secretWord.string + '/definitions', {
           params: {
@@ -216,6 +218,7 @@
         });
       },
       getSecretWord: function() {
+        // console.log('Getting secret word…');
         var self = this;
         self.$http.get('http://api.wordnik.com:80/v4/words.json/randomWord', {
           params: {
@@ -233,7 +236,7 @@
         .then(function(response) {
           self.secretWord.string = response.data.word;
           // console.log(self.secretWord.string);
-          self.processSecretWord();
+          self.filterSecretWord();
         })
         .catch(function(error) {
           console.log(error);
@@ -242,56 +245,66 @@
       getCharacterCode: function(letter) {
         return letter.charCodeAt();
       },
-      handleInput: function(code) {
+      getLetter: function(code) {
+        return String.fromCharCode(code);
+      },
+      verifyInput: function(code) {
         if (this.inputAllowed === true) {
           this.inputAllowed = false;
-          // check if it's a-z
-          if (code >= 97 && code <= 122) {
-            var letter = String.fromCharCode(code);
-            // check if the letter is in the word ADD check for used
-            if (this.secretWord.string.indexOf(letter) > -1 && this.secretWord.used.indexOf(letter)) {
-              // show letter(s)
-              $('.secret-word span[data-character-code="' + code + '"]').each(function() {
-                $(this).html(letter).addClass('highlight');
-              });
-
-              // add object to attemptedLetters array
-              // this.attemptedLetters.push({ 'letter': letter, 'status': 'yes' });
-              // console.log(this.incorrectLetters);
-              // $('.selections div[data-character-code="' + code + '"]').addClass('yes');
-
-              // remove it from array
-              this.secretWordArray = this.secretWordArray.filter(function(a) { return a !== letter });
-
-              // to used array
-              this.secretWord.used.push(letter);
-              console.log(this.secretWord.used);
-
-              this.calculateBackgroundLightness();
-
-              // determine if it's a win or not
-              if (this.secretWordArray.length == 0) {
-                console.log('YOU WIN');
-                this.isWin = true;
-                this.inputAllowed = false;
-                var self = this;
-                setTimeout(function() { self.init() }, 1300);
-              }
-
-              this.inputAllowed = true
-            // not in word
-            } else {
-              if (this.incorrectLetters.indexOf(letter) == -1) {
-                this.incorrectLetters.push(letter);
-                console.log(letter + ' not in word');
-              } else {
-                console.log(letter + ' already tried');
-              }
-              this.inputAllowed = true
-            }
-            // this.inputAllowed = true;
+          switch (false) {
+            // verify it's a-z
+            case (this.isAlphabetical(code)):
+              console.log('Not a-z');
+              break;
+            // verif letter exists in word
+            case (this.isInWord(code)):
+              console.log('Letter not in word');
+              break;
+            default:
+              // input is good, proceed
+              this.processInput(code);
           }
         }
+
+        // // if (this.secretWord.string.indexOf(letter) > -1) {
+        //   // show letter(s)
+        //
+        //
+        //   // remove it from array
+        //   this.secretWordArray = this.secretWordArray.filter(function(a) { return a !== letter });
+        //
+        //   // to used array
+        //   this.secretWord.used.push(letter);
+        //   console.log(this.secretWord.used);
+        //
+        //
+        //
+        //   // determine if it's a win or not
+        //   if (this.secretWordArray.length == 0) {
+        //     console.log('YOU WIN');
+        //     this.isWin = true;
+        //     this.inputAllowed = false;
+        //     var self = this;
+        //     setTimeout(function() { self.init() }, 1300);
+        //   }
+
+          // this.inputAllowed = true
+        // not in word
+        // } else {
+        //   if (this.incorrectLetters.indexOf(letter) == -1) {
+        //     this.incorrectLetters.push(letter);
+        //     console.log(letter + ' not in word');
+        //   } else {
+        //     console.log(letter + ' already tried');
+        //   }
+        //   this.inputAllowed = true
+        // }
+      },
+      handleBadLetter: function() {
+
+      },
+      handleGoodLetter: function() {
+
       },
       init: function() {
         console.clear();
@@ -300,29 +313,62 @@
         this.incorrectLetters = [];
         this.ready = false;
         this.backgroundLightness = 100;
+        this.inputAllowed = false;
+        this.secretWord.used = [];
         // this.secretWord.string = '';
         this.getSecretWord();
       },
+      processInput: function(code) {
+        var self = this;
+        // remove it from array
+        this.secretWordArray = this.secretWordArray.filter(function(a) { return a !== self.getLetter(code) });
+
+        this.revealLetters(code);
+        this.updateBackgroundLightness();
+        this.inputAllowed = true;
+
+        // if it's a win
+        if (this.secretWordArray.length == 0) {
+          console.log('YOU WIN');
+          this.isWin = true;
+          this.inputAllowed = false;
+          // var self = this;
+          // setTimeout(function() { self.init() }, 1300);
+        }
+      },
       processSecretWord: function() {
+        // console.log('Processing secret word…');
         this.secretWord.array = this.secretWord.string.split('');
         // populate worker array
         this.secretWordArray = this.secretWord.array;
-        this.filterSecretWord();
-      }
-    },
-    computed: {
-
-    },
-    watch: {
-      ready: function() {
-        this.calculatePotentialWordScore();
+        this.readyReady();
+        // this.filterSecretWord();
+      },
+      revealLetters: function(code) {
+        var self = this;
+        $('.secret-word span[data-character-code="' + code + '"]').each(function() {
+          $(this).html(self.getLetter(code)).addClass('highlight');
+        });
+      },
+      readyReady: function() {
+        // console.log('Ready');
+        this.ready = true;
+        this.inputAllowed = true;
+        console.log(this.secretWord.string);
+      },
+      isInWord: function(code) {
+        var letter = this.getLetter(code);
+        return (this.secretWord.string.indexOf(letter) > -1);
+      },
+      isAlphabetical: function(code) {
+        return (code >= 97 && code <= 122) ? true : false;
       }
     },
     mounted: function() {
       this.init();
       var self = this;
       window.addEventListener('keypress', function(e) {
-        self.handleInput(e.which);
+        self.verifyInput(e.which);
       });
     }
   }
