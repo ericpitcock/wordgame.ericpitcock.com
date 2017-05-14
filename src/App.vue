@@ -139,7 +139,8 @@
         ready: false,
         secretWord: {
           string: '',
-          array: []
+          array: [],
+          used: []
         },
         secretWordArray: [],
         wins: 0,
@@ -147,20 +148,18 @@
       }
     },
     methods: {
+      uniqueLetters: function() {
+        return _.uniq(this.secretWord.array).length;
+      },
       calculateBackgroundLightness: function() {
-        // get unique characters
-        // divide 100 / unique to get steps
-        // use steps as increment
-        var uniqueLetters = _.uniq(this.secretWord.array).length;
-        var increment = 100 / (uniqueLetters * 2);
-
-        this.backgroundLightness -= increment;
+          this.backgroundLightness -= 40 / this.uniqueLetters();
+          // console.log(this.backgroundLightness);
       },
       calculatePotentialWordScore: function() {
-        var uniqueLetters = _.uniq(this.secretWord.array).length;
-        this.potentialWordScore = uniqueLetters * 10;
+        // var uniqueLetters = _.uniq(this.secretWord.array).length;
+        this.potentialWordScore = this.uniqueLetters() * 10;
         // 26 letters
-        console.log('Unique letters: ' + uniqueLetters);
+        console.log('Unique letters: ' + this.uniqueLetters());
       },
       filterDefinition: function() {
         // the word is in the defintion, run it again
@@ -176,6 +175,7 @@
           this.definition = this.definition.split(/ {3,}/).pop();
           this.requestCount = 0;
           this.ready = true;
+          this.inputAllowed = true;
           // console.log('definition: ' + this.definition);
         }
       },
@@ -243,13 +243,13 @@
         return letter.charCodeAt();
       },
       handleInput: function(code) {
-        if (this.inputAllowed) {
+        if (this.inputAllowed === true) {
           this.inputAllowed = false;
           // check if it's a-z
           if (code >= 97 && code <= 122) {
             var letter = String.fromCharCode(code);
-            // check if the letter is in the word
-            if (this.secretWord.string.indexOf(letter) > -1) {
+            // check if the letter is in the word ADD check for used
+            if (this.secretWord.string.indexOf(letter) > -1 && this.secretWord.used.indexOf(letter)) {
               // show letter(s)
               $('.secret-word span[data-character-code="' + code + '"]').each(function() {
                 $(this).html(letter).addClass('highlight');
@@ -262,7 +262,10 @@
 
               // remove it from array
               this.secretWordArray = this.secretWordArray.filter(function(a) { return a !== letter });
-              console.log(this.secretWordArray);
+
+              // to used array
+              this.secretWord.used.push(letter);
+              console.log(this.secretWord.used);
 
               this.calculateBackgroundLightness();
 
@@ -274,6 +277,9 @@
                 var self = this;
                 setTimeout(function() { self.init() }, 1300);
               }
+
+              this.inputAllowed = true
+            // not in word
             } else {
               if (this.incorrectLetters.indexOf(letter) == -1) {
                 this.incorrectLetters.push(letter);
@@ -281,10 +287,11 @@
               } else {
                 console.log(letter + ' already tried');
               }
+              this.inputAllowed = true
             }
+            // this.inputAllowed = true;
           }
         }
-        this.inputAllowed = true;
       },
       init: function() {
         console.clear();
@@ -302,6 +309,9 @@
         this.secretWordArray = this.secretWord.array;
         this.filterSecretWord();
       }
+    },
+    computed: {
+
     },
     watch: {
       ready: function() {
