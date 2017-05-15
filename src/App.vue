@@ -31,6 +31,7 @@
     name: 'app',
     data: function() {
       return {
+        attemptedLetters: [],
         backgroundLightness: 100,
         blacklist: [
             'skank',
@@ -178,12 +179,16 @@
         })
         .then(function(response) {
           self.definition = '';
-          self.definition = response.data[0].text;
-          // console.log(self.definition);
-          self.filterDefinition();
+          if (response.data[0].text == 'undefined') {
+            this.handleError('Definition undefined');
+          } else {
+            self.definition = response.data[0].text;
+            // console.log(self.definition);
+            self.filterDefinition();
+          }
         })
         .catch(function(error) {
-          console.log(error);
+          this.handleError(error);
         });
       },
       getSecretWord: function() {
@@ -208,7 +213,7 @@
           self.filterSecretWord();
         })
         .catch(function(error) {
-          console.log(error);
+          this.handleError(error);
         });
       },
       getCharacterCode: function(letter) {
@@ -217,34 +222,68 @@
       getLetter: function(code) {
         return String.fromCharCode(code);
       },
-      verifyInput: function(code) {
+      validateInput: function(code) {
         if (this.inputAllowed === true) {
           this.inputAllowed = false;
-          switch (false) {
-            // verify it's a-z
-            case (this.isAlphabetical(code)):
-              console.log('Not a-z');
-              this.inputAllowed = true;
-              break;
-            // verif letter exists in word
-            case (this.isInWord(code)):
-              this.handleBadLetter(code);
-              break;
-            default:
-              // input is good, proceed
-              this.processInput(code);
+          if (code >= 97 && code <= 122) {
+            this.registerAttempt(code);
+          } else {
+            console.log('input not alphabetical');
+            this.inputAllowed = true;
           }
         }
       },
-      handleBadLetter: function(code) {
-        var letter = this.getLetter(code);
-        if (this.incorrectLetters.indexOf(letter) == -1) {
-          this.incorrectLetters.push(letter);
-          console.log(letter + ' not in word');
+      registerAttempt: function(code) {
+        if (this.attemptedLetters.includes(code)) {
+          console.log('this letter has been tried');
+          this.inputAllowed = true;
         } else {
-          console.log(letter + ' already tried');
+          this.attemptedLetters.push(code);
+          this.checkWordForLetter(code);
         }
-        this.inputAllowed = true;
+      },
+      checkWordForLetter: function(code) {
+        var letter = this.getLetter(code);
+        if (this.secretWord.array.includes(letter)) {
+          this.processInput(code);
+        } else {
+          console.log('this letter is not in the word');
+          this.inputAllowed = true;
+        }
+      },
+      // validateInputOLD: function(code) {
+      //
+      //     this.inputAllowed = false;
+      //     switch (false) {
+      //       // verify it's a-z
+      //       case (this.isAlphabetical(code)):
+      //         console.log('Not a-z');
+      //         this.inputAllowed = true;
+      //         break;
+      //       case (!this.attemptedLetters.includes(code)):
+      //         console.log('This letter has been attmpted. Doing nothing.');
+      //       // verify letter exists in word
+      //       case (this.isInWord(code)):
+      //         this.handleBadLetter(code);
+      //         break;
+      //       default:
+      //         // input is good, proceed
+      //         this.processInput(code);
+      //     }
+      //
+      // },
+      // handleBadLetter: function(code) {
+      //   var letter = this.getLetter(code);
+      //   if (this.incorrectLetters.indexOf(letter) == -1) {
+      //     this.incorrectLetters.push(letter);
+      //     console.log(letter + ' not in word');
+      //   } else {
+      //     console.log(letter + ' already tried');
+      //   }
+      //   this.inputAllowed = true;
+      // },
+      handleError: function(error) {
+        console.log(error);
       },
       init: function() {
         console.clear();
@@ -254,6 +293,7 @@
         this.ready = false;
         this.backgroundLightness = 100;
         this.secretWord.used = [];
+        this.attemptedLetters = [];
         // this.secretWord.string = '';
         this.getSecretWord();
       },
@@ -261,7 +301,7 @@
         var self = this;
         // remove it from array
         this.secretWordArray = this.secretWordArray.filter(function(a) { return a !== self.getLetter(code) });
-
+        this.attemptedLetters.push(code);
         this.revealLetters(code);
         this.updateBackgroundLightness();
         this.inputAllowed = true;
@@ -278,6 +318,7 @@
       processSecretWord: function() {
         // console.log('Processing secret word…');
         this.secretWord.array = this.secretWord.string.split('');
+        // console.log(this.secretWord.array);
         // populate worker array
         this.secretWordArray = this.secretWord.array;
         this.readyReady();
@@ -294,23 +335,13 @@
         this.ready = true;
         this.inputAllowed = true;
         console.log(this.secretWord.string);
-      },
-      isInWord: function(code) {
-        var letter = this.getLetter(code);
-        return (this.secretWord.string.indexOf(letter) > -1);
-      },
-      isAlphabetical: function(code) {
-        return (code >= 97 && code <= 122) ? true : false;
-      },
-      wasAttempted: function(code) {
-
       }
     },
     mounted: function() {
       this.init();
       var self = this;
       window.addEventListener('keypress', function(e) {
-        self.verifyInput(e.which);
+        self.validateInput(e.which);
       });
     }
   }
@@ -412,17 +443,18 @@
         align-self: flex-end;
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         font-size: 50px;
+        letter-spacing: 12px;
         transition: all .15s cubic-bezier(0.29, 0.74, 0.04, 1.04);
         &:first-child {
           text-transform: uppercase;
         }
-        &:last-child {
-          margin-right: 0;
-        }
+        // &:last-child {
+        //   margin-right: 0;
+        // }
         &.highlight {
           font-family: 'HouseMovements-Sign';
           font-size: 100px;
-
+          letter-spacing: 0;
           // custom kerning for T* (except l and i)
           &:first-child[data-character-code="116"] + *:not([data-character-code="104"]):not([data-character-code="105"]) {
             margin-left: -9px;
