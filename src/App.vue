@@ -99,9 +99,7 @@
             'sodomy',
             'dildo'
         ],
-        debug: false,
         definition: '',
-        errors: 0,
         gameScore: 0,
         incorrectLetters: [],
         inputAllowed: true,
@@ -109,8 +107,7 @@
         ready: false,
         secretWord: {
           string: '',
-          array: [],
-          used: []
+          array: []
         },
         secretWordArray: [],
         wins: 0,
@@ -126,12 +123,10 @@
           // console.log(this.backgroundLightness);
       },
       calculatePotentialWordScore: function() {
-        // var uniqueLetters = _.uniq(this.secretWord.array).length;
         this.potentialWordScore = this.uniqueLetters() * 10;
-        // 26 letters
         console.log('Unique letters: ' + this.uniqueLetters());
       },
-      filterDefinition: function() {
+      filterDefinitionOLD: function() {
         // console.log('Filtering defintion…');
         // the word is in the defintion, run it again
         if (this.definition.toUpperCase().indexOf(this.secretWord.string.toUpperCase()) != -1) {
@@ -148,6 +143,22 @@
           this.processSecretWord();
 
           // console.log('definition: ' + this.definition);
+        }
+      },
+      filterDefinition: function() {
+        switch (true) {
+          case (this.definition.toUpperCase().indexOf(this.secretWord.string.toUpperCase()) != -1):
+            console.log('Definition filter: Word in definition. Getting Again.');
+            this.getSecretWord();
+          case (this.definition.length > 150):
+            console.log('Definition filter: Too long. Getting Again.');
+            this.getSecretWord();
+            break;
+          default:
+            // remove category, if present. Splitting at three spaces '   ' and returning the end portion
+            this.definition = this.definition.split(/ {3,}/).pop();
+            // this.requestCount = 0;
+            this.processSecretWord();
         }
       },
       filterSecretWord: function() {
@@ -208,7 +219,7 @@
           }
         })
         .then(function(response) {
-          self.secretWord.string = response.data.word;
+          self.secretWord.string = response.data.word.toLowerCase();
           // console.log(self.secretWord.string);
           self.filterSecretWord();
         })
@@ -251,56 +262,25 @@
           this.inputAllowed = true;
         }
       },
-      // validateInputOLD: function(code) {
-      //
-      //     this.inputAllowed = false;
-      //     switch (false) {
-      //       // verify it's a-z
-      //       case (this.isAlphabetical(code)):
-      //         console.log('Not a-z');
-      //         this.inputAllowed = true;
-      //         break;
-      //       case (!this.attemptedLetters.includes(code)):
-      //         console.log('This letter has been attmpted. Doing nothing.');
-      //       // verify letter exists in word
-      //       case (this.isInWord(code)):
-      //         this.handleBadLetter(code);
-      //         break;
-      //       default:
-      //         // input is good, proceed
-      //         this.processInput(code);
-      //     }
-      //
-      // },
-      // handleBadLetter: function(code) {
-      //   var letter = this.getLetter(code);
-      //   if (this.incorrectLetters.indexOf(letter) == -1) {
-      //     this.incorrectLetters.push(letter);
-      //     console.log(letter + ' not in word');
-      //   } else {
-      //     console.log(letter + ' already tried');
-      //   }
-      //   this.inputAllowed = true;
-      // },
       handleError: function(error) {
         console.log(error);
       },
       init: function() {
         console.clear();
-        // console.log('Init');
         this.isWin = false;
         this.incorrectLetters = [];
         this.ready = false;
         this.backgroundLightness = 100;
-        this.secretWord.used = [];
         this.attemptedLetters = [];
-        // this.secretWord.string = '';
+        this.secretWord.array = [];
+        this.secretWord.string = '';
         this.getSecretWord();
       },
       processInput: function(code) {
         var self = this;
         // remove it from array
         this.secretWordArray = this.secretWordArray.filter(function(a) { return a !== self.getLetter(code) });
+        console.log(this.secretWordArray);
         this.attemptedLetters.push(code);
         this.revealLetters(code);
         this.updateBackgroundLightness();
@@ -318,11 +298,9 @@
       processSecretWord: function() {
         // console.log('Processing secret word…');
         this.secretWord.array = this.secretWord.string.split('');
-        // console.log(this.secretWord.array);
         // populate worker array
         this.secretWordArray = this.secretWord.array;
         this.readyReady();
-        // this.filterSecretWord();
       },
       revealLetters: function(code) {
         var self = this;
