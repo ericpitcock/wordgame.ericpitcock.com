@@ -24,8 +24,7 @@
 </template>
 
 <script>
-  import $ from 'jquery'
-  import _ from 'lodash'
+  import { uniq } from 'lodash'
 
   export default {
     name: 'app',
@@ -151,7 +150,7 @@
       filterSecretWord: function() {
         // console.log('Filtering secret word…');
         switch (true) {
-          case ($.inArray(this.secretWord.string, this.blacklist) > -1):
+          case (this.blacklist.includes(this.secretWord.string)):
             console.log('Word filter: Blacklisted');
             this.init();
             break;
@@ -292,8 +291,11 @@
       },
       revealLetters: function(code) {
         var self = this;
-        $('.secret-word span[data-character-code="' + code + '"]').each(function() {
-          $(this).html(self.getLetter(code)).addClass('highlight');
+        var spans = document.querySelectorAll('.secret-word span[data-character-code="' + code + '"]');
+        [].forEach.call(spans, function(span) {
+          // div.style.color = "red";
+          span.innerHTML = self.getLetter(code);
+          span.className += ' highlight'
         });
       },
       start: function() {
