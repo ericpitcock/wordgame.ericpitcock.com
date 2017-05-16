@@ -20,6 +20,7 @@
     <div class="selections">
       <div class="no" v-for="letter in incorrectLetters">{{ letter }}</div>
     </div>
+    {{ potentialWordScore }}
   </div>
 </template>
 
@@ -38,6 +39,7 @@
         incorrectLetters: [],
         inputAllowed: false,
         isWin: false,
+        potentialWordScore: 0,
         ready: false,
         secretWord: {
           string: '',
@@ -50,7 +52,10 @@
     },
     watch: {
       inputAllowed: function() {
-        console.log('Input: ' + this.inputAllowed);
+        console.log('Input allowed: ' + this.inputAllowed);
+      },
+      secretWord: function() {
+        this.calculatePotentialWordScore();
       }
     },
     methods: {
@@ -63,7 +68,14 @@
       },
       calculatePotentialWordScore: function() {
         this.potentialWordScore = this.uniqueLetters() * 10;
-        console.log('Unique letters: ' + this.uniqueLetters());
+        // console.log('Unique letters: ' + this.uniqueLetters());
+      },
+      updateWordScore: function(direction) {
+        if (direction == 'up') {
+          this.potentialWordScore += 5;
+        } else {
+          this.potentialWordScore -= 5;
+        }
       },
       filterDefinition: function() {
         switch (true) {
@@ -178,9 +190,11 @@
         var letter = this.getLetter(code);
         if (this.secretWord.array.includes(letter)) {
           this.processInput(code);
+          this.updateWordScore('up');
         } else {
           console.log('this letter is not in the word');
           this.inputAllowed = true;
+          this.updateWordScore('down');
         }
       },
       handleError: function(error) {
@@ -223,6 +237,7 @@
         this.secretWord.array = this.secretWord.string.split('');
         // populate worker array
         this.secretWord.arrayClone = this.secretWord.array;
+        this.calculatePotentialWordScore();
         this.start();
       },
       revealLetters: function(code) {
