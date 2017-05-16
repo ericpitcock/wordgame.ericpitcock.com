@@ -114,6 +114,11 @@
         wordScore: 0,
       }
     },
+    watch: {
+      inputAllowed: function() {
+        console.log('Input: ' + this.inputAllowed);
+      }
+    },
     methods: {
       uniqueLetters: function() {
         return _.uniq(this.secretWord.array).length;
@@ -252,7 +257,7 @@
         this.attemptedLetters = [];
         this.backgroundLightness = 100;
         this.incorrectLetters = [];
-        this.inputAllowed = false;
+        // this.inputAllowed = false;
         this.isWin = false;
         this.ready = false;
         this.secretWord.array = [];
@@ -274,7 +279,7 @@
         if (this.secretWordArray.length == 0) {
           console.log('YOU WIN');
           this.isWin = true;
-
+          this.inputAllowed = false;
           var self = this;
           setTimeout(function() { self.init() }, 1300);
         }
@@ -299,7 +304,7 @@
         var self = this;
         setTimeout(function() {
           self.inputAllowed = true;
-          console.log('Ready: Input allowed');
+          // console.log('Ready: Input allowed');
         }, 800);
       }
     },
@@ -348,7 +353,6 @@
     text-align: center;
     font-size: 14px;
     color: $black;
-    // overflow: hidden;
     user-select: none;
     cursor: default;
     -webkit-font-smoothing: antialiased;
@@ -392,11 +396,9 @@
   }
 
   .secret-word-container {
-    // background: lighten(red, 40%);
     flex: 1;
     display: flex;
     justify-content: center;
-    // line-height: 0;
     position: relative;
     z-index: 10;
     width: 100%;
@@ -416,9 +418,6 @@
         &:first-child {
           text-transform: uppercase;
         }
-        // &:last-child {
-        //   margin-right: 0;
-        // }
         &.highlight {
           font-family: 'HouseMovements-Sign';
           font-size: 100px;
@@ -445,7 +444,6 @@
     div {
       width: 30px;
       height: 30px;
-      // border: 1px solid $dark-gray;
       line-height: 28px;
       text-transform: uppercase;
       color: $white;
@@ -475,13 +473,12 @@
       max-width: 600px;
       p {
         padding-top: 30px;
-        // text-align: center;
         font-size: 26px;
         line-height: 32px;
         font-family: 'News Cycle', sans-serif;
         font-weight: 400;
         &:first-letter {
-          // text-transform: capitalize;
+          text-transform: capitalize;
         }
       }
     }
