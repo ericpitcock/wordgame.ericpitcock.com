@@ -107,9 +107,9 @@
         ready: false,
         secretWord: {
           string: '',
-          array: []
+          array: [],
+          arrayClone: []
         },
-        secretWordArray: [],
         wins: 0,
         wordScore: 0,
       }
@@ -261,21 +261,21 @@
         this.ready = false;
         this.secretWord.array = [];
         this.secretWord.string = '';
-        this.secretWordArray = [];
+        this.secretWord.arrayClone = [];
         this.getSecretWord();
       },
       processInput: function(code) {
         var self = this;
         // remove it from array
-        this.secretWordArray = this.secretWordArray.filter(function(a) { return a !== self.getLetter(code) });
-        // console.log(this.secretWordArray);
+        this.secretWord.arrayClone = this.secretWord.arrayClone.filter(function(a) { return a !== self.getLetter(code) });
+        // console.log(this.secretWord.arrayClone);
         this.attemptedLetters.push(code);
         this.revealLetters(code);
         this.updateBackgroundLightness();
         this.inputAllowed = true;
 
         // if it's a win
-        if (this.secretWordArray.length == 0) {
+        if (this.secretWord.arrayClone.length == 0) {
           console.log('YOU WIN');
           this.isWin = true;
           this.inputAllowed = false;
@@ -287,7 +287,7 @@
         // console.log('Processing secret word…');
         this.secretWord.array = this.secretWord.string.split('');
         // populate worker array
-        this.secretWordArray = this.secretWord.array;
+        this.secretWord.arrayClone = this.secretWord.array;
         this.start();
       },
       revealLetters: function(code) {
