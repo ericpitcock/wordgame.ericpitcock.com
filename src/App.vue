@@ -257,7 +257,6 @@
         this.attemptedLetters = [];
         this.backgroundLightness = 100;
         this.incorrectLetters = [];
-        // this.inputAllowed = false;
         this.isWin = false;
         this.ready = false;
         this.secretWord.array = [];
