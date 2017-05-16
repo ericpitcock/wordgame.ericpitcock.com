@@ -102,7 +102,7 @@
         definition: '',
         gameScore: 0,
         incorrectLetters: [],
-        inputAllowed: true,
+        inputAllowed: false,
         isWin: false,
         ready: false,
         secretWord: {
@@ -126,32 +126,13 @@
         this.potentialWordScore = this.uniqueLetters() * 10;
         console.log('Unique letters: ' + this.uniqueLetters());
       },
-      filterDefinitionOLD: function() {
-        // console.log('Filtering defintion…');
-        // the word is in the defintion, run it again
-        if (this.definition.toUpperCase().indexOf(this.secretWord.string.toUpperCase()) != -1) {
-          console.log('Definition filter: Word in definition. Getting Again.');
-          this.getSecretWord();
-        } else if (this.definition.length > 150) {
-          console.log('Definition filter: Too long. Getting Again.');
-          this.getSecretWord();
-        // they passed, play on
-        } else {
-          // remove category, if present. Splitting at three spaces '   ' and returning the end portion
-          this.definition = this.definition.split(/ {3,}/).pop();
-          // this.requestCount = 0;
-          this.processSecretWord();
-
-          // console.log('definition: ' + this.definition);
-        }
-      },
       filterDefinition: function() {
         switch (true) {
           case (this.definition.toUpperCase().indexOf(this.secretWord.string.toUpperCase()) != -1):
-            console.log('Definition filter: Word in definition. Getting Again.');
+            console.log(this.secretWord.string + ' is in definition. \n ' + this.definition);
             this.getSecretWord();
           case (this.definition.length > 150):
-            console.log('Definition filter: Too long. Getting Again.');
+            console.log('Definition is over 150 characters.');
             this.getSecretWord();
             break;
           default:
@@ -191,7 +172,7 @@
         .then(function(response) {
           self.definition = '';
           if (response.data[0].text == 'undefined') {
-            this.handleError('Definition undefined');
+            self.handleError('Definition undefined');
           } else {
             self.definition = response.data[0].text;
             // console.log(self.definition);
@@ -199,7 +180,7 @@
           }
         })
         .catch(function(error) {
-          this.handleError(error);
+          self.handleError(error);
         });
       },
       getSecretWord: function() {
@@ -224,7 +205,7 @@
           self.filterSecretWord();
         })
         .catch(function(error) {
-          this.handleError(error);
+          self.handleError(error);
         });
       },
       getCharacterCode: function(letter) {
@@ -267,20 +248,22 @@
       },
       init: function() {
         console.clear();
-        this.isWin = false;
-        this.incorrectLetters = [];
-        this.ready = false;
-        this.backgroundLightness = 100;
         this.attemptedLetters = [];
+        this.backgroundLightness = 100;
+        this.incorrectLetters = [];
+        this.inputAllowed = false;
+        this.isWin = false;
+        this.ready = false;
         this.secretWord.array = [];
         this.secretWord.string = '';
+        this.secretWordArray = [];
         this.getSecretWord();
       },
       processInput: function(code) {
         var self = this;
         // remove it from array
         this.secretWordArray = this.secretWordArray.filter(function(a) { return a !== self.getLetter(code) });
-        console.log(this.secretWordArray);
+        // console.log(this.secretWordArray);
         this.attemptedLetters.push(code);
         this.revealLetters(code);
         this.updateBackgroundLightness();
@@ -290,7 +273,7 @@
         if (this.secretWordArray.length == 0) {
           console.log('YOU WIN');
           this.isWin = true;
-          this.inputAllowed = false;
+
           var self = this;
           setTimeout(function() { self.init() }, 1300);
         }
@@ -300,7 +283,7 @@
         this.secretWord.array = this.secretWord.string.split('');
         // populate worker array
         this.secretWordArray = this.secretWord.array;
-        this.readyReady();
+        this.start();
       },
       revealLetters: function(code) {
         var self = this;
@@ -308,19 +291,25 @@
           $(this).html(self.getLetter(code)).addClass('highlight');
         });
       },
-      readyReady: function() {
+      start: function() {
         // console.log('Ready');
         this.ready = true;
-        this.inputAllowed = true;
+        var self = this;
+        setTimeout(function() {
+          self.inputAllowed = true;
+          console.log('input allowed');
+        }, 800);
         console.log(this.secretWord.string);
       }
     },
-    mounted: function() {
-      this.init();
+    created: function() {
       var self = this;
       window.addEventListener('keypress', function(e) {
         self.validateInput(e.which);
       });
+    },
+    mounted: function() {
+      this.init();
     }
   }
 </script>
