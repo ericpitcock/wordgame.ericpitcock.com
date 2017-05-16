@@ -24,6 +24,7 @@
 </template>
 
 <script>
+  import config from './config'
   import { uniq } from 'lodash'
 
   export default {
@@ -32,72 +33,6 @@
       return {
         attemptedLetters: [],
         backgroundLightness: 100,
-        blacklist: [
-            'skank',
-            'wetback',
-            'bitch',
-            'cunt',
-            'dick',
-            'douchebag',
-            'dyke',
-            'fag',
-            'nigger',
-            'tranny',
-            'trannies',
-            'paki',
-            'pussy',
-            'retard',
-            'slut',
-            'titt',
-            'tits',
-            'wop',
-            'whore',
-            'chink',
-            'fatass',
-            'shemale',
-            'daygo',
-            'dego',
-            'dago',
-            'gook',
-            'kike',
-            'kraut',
-            'spic',
-            'twat',
-            'lesbo',
-            'homo',
-            'fatso',
-            'lardass',
-            'jap',
-            'biatch',
-            'tard',
-            'gimp',
-            'gyp',
-            'chinaman',
-            'chinamen',
-            'golliwog',
-            'crip',
-            'raghead',
-            'negro',
-            'darky',
-            'hooker',
-            'honky',
-            'coolie',
-            'bastard',
-            'douche',
-            'penis',
-            'vagina',
-            'blowjob',
-            'popery',
-            'fuck',
-            'mulatto',
-            'faggot',
-            'jew',
-            'femme',
-            'nads',
-            'semen',
-            'sodomy',
-            'dildo'
-        ],
         definition: '',
         gameScore: 0,
         incorrectLetters: [],
@@ -150,7 +85,7 @@
       filterSecretWord: function() {
         // console.log('Filtering secret word…');
         switch (true) {
-          case (this.blacklist.includes(this.secretWord.string)):
+          case (config.blacklist.includes(this.secretWord.string)):
             console.log('Word filter: Blacklisted');
             this.init();
             break;
@@ -167,7 +102,7 @@
         var self = this;
         self.$http.get('http://api.wordnik.com:80/v4/word.json/' + self.secretWord.string + '/definitions', {
           params: {
-            api_key: '65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a',
+            api_key: config.apiKey,
             limit: 2,
             includeRelated: false,
             useCanonical: true,
@@ -193,7 +128,7 @@
         var self = this;
         self.$http.get('http://api.wordnik.com:80/v4/words.json/randomWord', {
           params: {
-            api_key: '65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a',
+            api_key: config.apiKey,
             hasDictionaryDef: true,
             excludePartOfSpeech: 'family-name, given-name, noun-plural, proper-noun, proper-noun-plural, proper-noun-posessive, suffix',
             minCorpusCount: 2000,
@@ -252,6 +187,7 @@
         console.log(error);
       },
       init: function() {
+        // console.log(config.apiKey);
         // console.clear();
         this.attemptedLetters = [];
         this.backgroundLightness = 100;
