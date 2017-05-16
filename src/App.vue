@@ -130,10 +130,11 @@
         switch (true) {
           case (this.definition.toUpperCase().indexOf(this.secretWord.string.toUpperCase()) != -1):
             console.log(this.secretWord.string + ' is in definition. \n ' + this.definition);
-            this.getSecretWord();
+            this.init();
+            break;
           case (this.definition.length > 150):
             console.log('Definition is over 150 characters.');
-            this.getSecretWord();
+            this.init();
             break;
           default:
             // remove category, if present. Splitting at three spaces '   ' and returning the end portion
@@ -147,11 +148,11 @@
         switch (true) {
           case ($.inArray(this.secretWord.string, this.blacklist) > -1):
             console.log('Word filter: Blacklisted');
-            this.getSecretWord();
+            this.init();
             break;
           case (this.secretWord.string.search(/\W/g) != -1):
             console.log('Word filter: Special characters');
-            this.getSecretWord();
+            this.init();
             break;
           default:
             this.getDefinition();
@@ -247,7 +248,7 @@
         console.log(error);
       },
       init: function() {
-        console.clear();
+        // console.clear();
         this.attemptedLetters = [];
         this.backgroundLightness = 100;
         this.incorrectLetters = [];
@@ -293,13 +294,13 @@
       },
       start: function() {
         // console.log('Ready');
+        console.log('Ready: ' + this.secretWord.string);
         this.ready = true;
         var self = this;
         setTimeout(function() {
           self.inputAllowed = true;
-          console.log('input allowed');
+          console.log('Ready: Input allowed');
         }, 800);
-        console.log(this.secretWord.string);
       }
     },
     created: function() {
