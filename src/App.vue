@@ -18,7 +18,7 @@
       </div>
     </div>
     <div class="selections">
-      <div class="no" v-for="letter in incorrectLetters">{{ letter }}</div>
+      <div v-for="letter in incorrectLetters">{{ letter }}</div>
     </div>
   </div>
 </template>
@@ -391,6 +391,7 @@
     right: 0;
     bottom: 0;
     left: 0;
+    padding-top: 14px;
     background: rgba(0,0,0,0.05);
     border-top: 1px solid rgba(0,0,0,0.05);
     display: flex;
@@ -402,12 +403,7 @@
       text-transform: uppercase;
       color: $white;
       font-weight: 600;
-      &.yes {
-        border-color: $green;
-      }
-      &.no {
-        background: $error-red;
-      }
+      background: $error-red;
       & + div {
         margin-left: 10px;
       }
