@@ -4,7 +4,7 @@
       <svg width="20" height="20" viewBox="0 0 20 20"><path d="M0,0V20H20V0H0ZM14,6H7V9h4v2H7v3h7v2H5V4h9V6Z"/></svg>
       <span>Word Game</span>
     </div>
-    <div class="game-score">Score: <span class="score-value">{{ gameScore }}</span></div>
+    <div class="game-score">Game Score: <span class="score-value">{{ gameScore }} Word Score: {{ potentialWordScore }}</span></div>
     <div class="secret-word-container">
       <div class="secret-word" :class="{ 'secret-word--win': isWin }">
         <span class="secret-word__letter" v-if="ready" v-for="letter in secretWord.array" v-bind:data-character-code="getCharacterCode(letter)">&bull;</span>
@@ -20,7 +20,6 @@
     <div class="selections">
       <div class="no" v-for="letter in incorrectLetters">{{ letter }}</div>
     </div>
-    {{ potentialWordScore }}
   </div>
 </template>
 
@@ -193,6 +192,7 @@
           this.updateWordScore('up');
         } else {
           console.log('this letter is not in the word');
+          this.incorrectLetters.push(this.getLetter(code));
           this.inputAllowed = true;
           this.updateWordScore('down');
         }
@@ -387,10 +387,12 @@
   }
 
   .selections {
-    position: absolute;
-    width: 100%;
-    bottom: 20px;
-    padding: 0 20px;
+    height: 60px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0,0,0,0.05);
+    border-top: 1px solid rgba(0,0,0,0.05);
     display: flex;
     justify-content: center;
     div {
