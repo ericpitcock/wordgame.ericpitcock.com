@@ -268,66 +268,66 @@
     },
     watch: {
       inputAllowed: function() {
-        console.log('Input allowed: ' + this.inputAllowed);
+        console.log('Input allowed: ' + this.inputAllowed)
       },
       secretWord: function() {
-        this.calculatePotentialWordScore();
+        this.calculatePotentialWordScore()
       }
     },
     methods: {
       uniqueLetters: function() {
-        return _.uniq(this.secretWord.array).length;
+        return _.uniq(this.secretWord.array).length
       },
       updateBackgroundLightness: function() {
-          this.backgroundLightness -= 40 / this.uniqueLetters();
-          // console.log(this.backgroundLightness);
+          this.backgroundLightness -= 40 / this.uniqueLetters()
+          // console.log(this.backgroundLightness)
       },
       calculatePotentialWordScore: function() {
-        this.potentialWordScore = this.uniqueLetters() * 10;
-        // console.log('Unique letters: ' + this.uniqueLetters());
+        this.potentialWordScore = this.uniqueLetters() * 10
+        // console.log('Unique letters: ' + this.uniqueLetters())
       },
       updateWordScore: function(direction) {
         if (direction == 'up') {
-          this.potentialWordScore += 5;
+          this.potentialWordScore += 5
         } else {
-          this.potentialWordScore -= 5;
+          this.potentialWordScore -= 5
         }
       },
       filterDefinition: function() {
         switch (true) {
           case (this.definition.toUpperCase().indexOf(this.secretWord.string.toUpperCase()) != -1):
-            console.log(this.secretWord.string + ' is in definition. \n ' + this.definition);
-            this.init();
-            break;
+            console.log(this.secretWord.string + ' is in definition. \n ' + this.definition)
+            this.init()
+            break
           case (this.definition.length > 150):
-            console.log('Definition is over 150 characters.');
-            this.init();
-            break;
+            console.log('Definition is over 150 characters.')
+            this.init()
+            break
           default:
             // remove category, if present. Splitting at three spaces '   ' and returning the end portion
-            this.definition = this.definition.split(/ {3,}/).pop();
-            // this.requestCount = 0;
-            this.processSecretWord();
+            this.definition = this.definition.split(/ {3,}/).pop()
+            // this.requestCount = 0
+            this.processSecretWord()
         }
       },
       filterSecretWord: function() {
-        // console.log('Filtering secret word…');
+        // console.log('Filtering secret word…')
         switch (true) {
           case (config.blacklist.includes(this.secretWord.string)):
-            console.log('Word filter: Blacklisted');
-            this.init();
-            break;
+            console.log('Word filter: Blacklisted')
+            this.init()
+            break
           case (this.secretWord.string.search(/\W/g) != -1):
-            console.log('Word filter: Special characters');
-            this.init();
-            break;
+            console.log('Word filter: Special characters')
+            this.init()
+            break
           default:
-            this.getDefinition();
+            this.getDefinition()
         }
       },
       getDefinition: function() {
-        // console.log('Getting definition…');
-        var self = this;
+        // console.log('Getting definition…')
+        var self = this
         self.$http.get('http://api.wordnik.com:80/v4/word.json/' + self.secretWord.string + '/definitions', {
           params: {
             api_key: config.apiKey,
@@ -338,22 +338,22 @@
           }
         })
         .then(function(response) {
-          self.definition = '';
+          self.definition = ''
           if (response.data[0].text == 'undefined') {
-            self.handleError('Definition undefined');
+            self.handleError('Definition undefined')
           } else {
-            self.definition = response.data[0].text;
-            // console.log(self.definition);
-            self.filterDefinition();
+            self.definition = response.data[0].text
+            // console.log(self.definition)
+            self.filterDefinition()
           }
         })
         .catch(function(error) {
-          self.handleError(error);
-        });
+          self.handleError(error)
+        })
       },
       getSecretWord: function() {
-        // console.log('Getting secret word…');
-        var self = this;
+        // console.log('Getting secret word…')
+        var self = this
         self.$http.get('http://api.wordnik.com:80/v4/words.json/randomWord', {
           params: {
             api_key: config.apiKey,
@@ -368,123 +368,123 @@
           }
         })
         .then(function(response) {
-          self.secretWord.string = response.data.word.toLowerCase();
-          // console.log(self.secretWord.string);
-          self.filterSecretWord();
+          self.secretWord.string = response.data.word.toLowerCase()
+          // console.log(self.secretWord.string)
+          self.filterSecretWord()
         })
         .catch(function(error) {
-          self.handleError(error);
-        });
+          self.handleError(error)
+        })
       },
       getCharacterCode: function(letter) {
-        return letter.charCodeAt();
+        return letter.charCodeAt()
       },
       getLetter: function(code) {
-        return String.fromCharCode(code);
+        return String.fromCharCode(code)
       },
       validateInput: function(code) {
         if (this.inputAllowed === true) {
-          this.inputAllowed = false;
+          this.inputAllowed = false
           if (code >= 97 && code <= 122) {
-            this.registerAttempt(code);
+            this.registerAttempt(code)
           } else {
-            console.log('input not alphabetical');
-            this.inputAllowed = true;
+            console.log('input not alphabetical')
+            this.inputAllowed = true
           }
         }
       },
       registerAttempt: function(code) {
         if (this.attemptedLetters.includes(code)) {
-          console.log('this letter has been tried');
-          this.inputAllowed = true;
+          console.log('this letter has been tried')
+          this.inputAllowed = true
         } else {
-          this.attemptedLetters.push(code);
-          this.checkWordForLetter(code);
+          this.attemptedLetters.push(code)
+          this.checkWordForLetter(code)
         }
       },
       checkWordForLetter: function(code) {
-        var letter = this.getLetter(code);
+        var letter = this.getLetter(code)
         if (this.secretWord.array.includes(letter)) {
-          this.processInput(code);
-          this.updateWordScore('up');
+          this.processInput(code)
+          this.updateWordScore('up')
         } else {
-          console.log('this letter is not in the word');
-          this.incorrectLetters.push(this.getLetter(code));
-          this.inputAllowed = true;
-          this.updateWordScore('down');
+          console.log('this letter is not in the word')
+          this.incorrectLetters.push(this.getLetter(code))
+          this.inputAllowed = true
+          this.updateWordScore('down')
         }
       },
       handleError: function(error) {
-        console.log(error);
+        console.log(error)
       },
       init: function() {
-        // console.log(config.apiKey);
-        // console.clear();
-        this.attemptedLetters = [];
-        this.backgroundLightness = 100;
-        this.incorrectLetters = [];
-        this.isWin = false;
-        this.ready = false;
-        this.secretWord.array = [];
-        this.secretWord.string = '';
-        this.secretWord.arrayClone = [];
-        this.getSecretWord();
+        // console.log(config.apiKey)
+        // console.clear()
+        this.attemptedLetters = []
+        this.backgroundLightness = 100
+        this.incorrectLetters = []
+        this.isWin = false
+        this.ready = false
+        this.secretWord.array = []
+        this.secretWord.string = ''
+        this.secretWord.arrayClone = []
+        this.getSecretWord()
       },
       processInput: function(code) {
-        var self = this;
+        var self = this
         // remove it from array
-        this.secretWord.arrayClone = this.secretWord.arrayClone.filter(function(a) { return a !== self.getLetter(code) });
-        // console.log(this.secretWord.arrayClone);
-        this.attemptedLetters.push(code);
-        this.revealLetters(code);
-        this.updateBackgroundLightness();
-        this.inputAllowed = true;
+        this.secretWord.arrayClone = this.secretWord.arrayClone.filter(function(a) { return a !== self.getLetter(code) })
+        // console.log(this.secretWord.arrayClone)
+        this.attemptedLetters.push(code)
+        this.revealLetters(code)
+        this.updateBackgroundLightness()
+        this.inputAllowed = true
 
         // if it's a win
         if (this.secretWord.arrayClone.length == 0) {
-          console.log('YOU WIN');
-          this.isWin = true;
-          this.inputAllowed = false;
-          var self = this;
-          setTimeout(function() { self.init() }, 1300);
+          console.log('YOU WIN')
+          this.isWin = true
+          this.inputAllowed = false
+          var self = this
+          setTimeout(function() { self.init() }, 1300)
         }
       },
       processSecretWord: function() {
-        // console.log('Processing secret word…');
-        this.secretWord.array = this.secretWord.string.split('');
+        // console.log('Processing secret word…')
+        this.secretWord.array = this.secretWord.string.split('')
         // populate worker array
-        this.secretWord.arrayClone = this.secretWord.array;
-        this.calculatePotentialWordScore();
-        this.start();
+        this.secretWord.arrayClone = this.secretWord.array
+        this.calculatePotentialWordScore()
+        this.start()
       },
       revealLetters: function(code) {
-        var self = this;
-        var spans = document.querySelectorAll('.secret-word span[data-character-code="' + code + '"]');
-        [].forEach.call(spans, function(span) {
-          // div.style.color = "red";
-          span.innerHTML = self.getLetter(code);
+        var self = this
+        var spans = document.querySelectorAll('.secret-word span[data-character-code="' + code + '"]')
+        Array.prototype.forEach.call(spans, function(span) {
+          // div.style.color = "red"
+          span.innerHTML = self.getLetter(code)
           span.className += ' highlight'
-        });
+        })
       },
       start: function() {
-        // console.log('Ready');
-        console.log('Ready: ' + this.secretWord.string);
-        this.ready = true;
-        var self = this;
+        // console.log('Ready')
+        console.log('Ready: ' + this.secretWord.string)
+        this.ready = true
+        var self = this
         setTimeout(function() {
-          self.inputAllowed = true;
-          // console.log('Ready: Input allowed');
-        }, 800);
+          self.inputAllowed = true
+          // console.log('Ready: Input allowed')
+        }, 800)
       }
     },
     created: function() {
-      var self = this;
+      var self = this
       window.addEventListener('keypress', function(e) {
-        self.validateInput(e.which);
-      });
+        self.validateInput(e.which)
+      })
     },
     mounted: function() {
-      this.init();
+      this.init()
     }
   }
 </script>
