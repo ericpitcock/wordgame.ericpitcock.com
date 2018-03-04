@@ -24,7 +24,7 @@
 </template>
 
 <script>
-  import config from './config'
+  import config from '../static/config'
   import { uniq } from 'lodash'
 
   export default {
@@ -58,25 +58,25 @@
       }
     },
     methods: {
-      uniqueLetters: function() {
+      uniqueLetters() {
         return _.uniq(this.secretWord.array).length
       },
-      updateBackgroundLightness: function() {
+      updateBackgroundLightness() {
           this.backgroundLightness -= 40 / this.uniqueLetters()
           // console.log(this.backgroundLightness)
       },
-      calculatePotentialWordScore: function() {
+      calculatePotentialWordScore() {
         this.potentialWordScore = this.uniqueLetters() * 10
         // console.log('Unique letters: ' + this.uniqueLetters())
       },
-      updateWordScore: function(direction) {
+      updateWordScore(direction) {
         if (direction == 'up') {
           this.potentialWordScore += 5
         } else {
           this.potentialWordScore -= 5
         }
       },
-      filterDefinition: function() {
+      filterDefinition() {
         switch (true) {
           case (this.definition.toUpperCase().indexOf(this.secretWord.string.toUpperCase()) != -1):
             console.log(this.secretWord.string + ' is in definition. \n ' + this.definition)
@@ -93,7 +93,7 @@
             this.processSecretWord()
         }
       },
-      filterSecretWord: function() {
+      filterSecretWord() {
         // console.log('Filtering secret word…')
         switch (true) {
           case (config.blacklist.includes(this.secretWord.string)):
@@ -108,7 +108,7 @@
             this.getDefinition()
         }
       },
-      getDefinition: function() {
+      getDefinition() {
         // console.log('Getting definition…')
         var self = this
         self.$http.get('http://api.wordnik.com:80/v4/word.json/' + self.secretWord.string + '/definitions', {
@@ -134,7 +134,7 @@
           self.handleError(error)
         })
       },
-      getSecretWord: function() {
+      getSecretWord() {
         // console.log('Getting secret word…')
         var self = this
         self.$http.get('http://api.wordnik.com:80/v4/words.json/randomWord', {
@@ -159,13 +159,13 @@
           self.handleError(error)
         })
       },
-      getCharacterCode: function(letter) {
+      getCharacterCode(letter) {
         return letter.charCodeAt()
       },
-      getLetter: function(code) {
+      getLetter(code) {
         return String.fromCharCode(code)
       },
-      validateInput: function(code) {
+      validateInput(code) {
         if (this.inputAllowed === true) {
           this.inputAllowed = false
           if (code >= 97 && code <= 122) {
@@ -176,7 +176,7 @@
           }
         }
       },
-      registerAttempt: function(code) {
+      registerAttempt(code) {
         if (this.attemptedLetters.includes(code)) {
           console.log('this letter has been tried')
           this.inputAllowed = true
@@ -185,7 +185,7 @@
           this.checkWordForLetter(code)
         }
       },
-      checkWordForLetter: function(code) {
+      checkWordForLetter(code) {
         var letter = this.getLetter(code)
         if (this.secretWord.array.includes(letter)) {
           this.processInput(code)
@@ -197,7 +197,7 @@
           this.updateWordScore('down')
         }
       },
-      handleError: function(error) {
+      handleError(error) {
         console.log(error)
       },
       init: function() {
@@ -213,7 +213,7 @@
         this.secretWord.arrayClone = []
         this.getSecretWord()
       },
-      processInput: function(code) {
+      processInput(code) {
         var self = this
         // remove it from array
         this.secretWord.arrayClone = this.secretWord.arrayClone.filter(function(a) { return a !== self.getLetter(code) })
@@ -232,7 +232,7 @@
           setTimeout(function() { self.init() }, 1300)
         }
       },
-      processSecretWord: function() {
+      processSecretWord() {
         // console.log('Processing secret word…')
         this.secretWord.array = this.secretWord.string.split('')
         // populate worker array
@@ -240,7 +240,7 @@
         this.calculatePotentialWordScore()
         this.start()
       },
-      revealLetters: function(code) {
+      revealLetters(code) {
         var self = this
         var spans = document.querySelectorAll('.secret-word span[data-character-code="' + code + '"]')
         Array.prototype.forEach.call(spans, function(span) {
@@ -249,7 +249,7 @@
           span.className += ' highlight'
         })
       },
-      start: function() {
+      start() {
         // console.log('Ready')
         console.log('Ready: ' + this.secretWord.string)
         this.ready = true
@@ -260,13 +260,13 @@
         }, 800)
       }
     },
-    created: function() {
+    created() {
       var self = this
       window.addEventListener('keypress', function(e) {
         self.validateInput(e.which)
       })
     },
-    mounted: function() {
+    mounted() {
       this.init()
     }
   }
