@@ -5,11 +5,6 @@
       <span>Word Game</span>
     </div>
     <div class="game-score">Game Score: <span class="score-value">{{ gameScore }} Word Score: {{ potentialWordScore }}</span></div>
-    <div class="secret-word-container">
-      <div class="secret-word" :class="{ 'secret-word--win': isWin }">
-        <span class="secret-word__letter" v-if="ready" v-for="letter in secretWord.array" v-bind:data-character-code="getCharacterCode(letter)">&bull;</span>
-      </div>
-    </div>
     <div class="definition-container">
       <div class="definition">
         <transition name="bounce">
@@ -17,8 +12,14 @@
         </transition>
       </div>
     </div>
+    <div class="secret-word-container">
+      <div class="secret-word" :class="{ 'secret-word--win': isWin }">
+        <span class="secret-word__letter" v-if="ready" v-for="letter in secretWord.array" v-bind:data-character-code="getCharacterCode(letter)">&bull;</span>
+      </div>
+    </div>
     <div class="selections">
-      <div v-for="letter in incorrectLetters">{{ letter }}</div>
+      <!-- <div v-for="letter in incorrectLetters">{{ letter }}</div> -->
+      <div v-for="letter in alphabet" :class="">{{ letter }}</div>
     </div>
   </div>
 </template>
@@ -31,6 +32,7 @@
     name: 'app',
     data: function() {
       return {
+        alphabet: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
         attemptedLetters: [],
         backgroundLightness: 100,
         definition: '',
@@ -38,6 +40,7 @@
         incorrectLetters: [],
         inputAllowed: false,
         isWin: false,
+        qwerty: ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm'],
         potentialWordScore: 0,
         ready: false,
         secretWord: {
@@ -356,13 +359,13 @@
     width: 100%;
     .secret-word {
       display: flex;
-      align-self: flex-end;
+      align-self: flex-start;
       &--win {
         transform: scale(1.5);
       }
       &__letter {
         position: relative;
-        align-self: flex-end;
+        align-self: center;
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         font-size: 50px;
         letter-spacing: 12px;
@@ -419,7 +422,7 @@
       display: none;
     }
     .definition {
-      align-self: flex-start;
+      align-self: center;
       max-width: 600px;
       p {
         padding-top: 30px;
