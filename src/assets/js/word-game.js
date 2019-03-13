@@ -1,7 +1,72 @@
 /// WORD GAME /////////////////////////////////////////////////////////
 
 var WordGame = {
-
+    blacklist: [
+      'skank',
+      'wetback',
+      'bitch',
+      'cunt',
+      'dick',
+      'douchebag',
+      'dyke',
+      'fag',
+      'nigger',
+      'tranny',
+      'trannies',
+      'paki',
+      'pussy',
+      'retard',
+      'slut',
+      'titt',
+      'tits',
+      'wop',
+      'whore',
+      'chink',
+      'fatass',
+      'shemale',
+      'daygo',
+      'dego',
+      'dago',
+      'gook',
+      'kike',
+      'kraut',
+      'spic',
+      'twat',
+      'lesbo',
+      'homo',
+      'fatso',
+      'lardass',
+      'jap',
+      'biatch',
+      'tard',
+      'gimp',
+      'gyp',
+      'chinaman',
+      'chinamen',
+      'golliwog',
+      'crip',
+      'raghead',
+      'negro',
+      'darky',
+      'hooker',
+      'honky',
+      'coolie',
+      'bastard',
+      'douche',
+      'penis',
+      'vagina',
+      'blowjob',
+      'popery',
+      'fuck',
+      'mulatto',
+      'faggot',
+      'jew',
+      'femme',
+      'nads',
+      'semen',
+      'sodomy',
+      'dildo'
+    ],
     errorCount: 0,
     firstRun: true,
     debug: false,
@@ -190,7 +255,7 @@ var WordGame = {
                         maxDictionaryCount: -1,
                         minLength: 3,
                         maxLength: 7,
-                        api_key: config.apiKey
+                        api_key: '65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a'
                     },
                     success: function(data) {
                         if (data.word === undefined) {
@@ -226,7 +291,7 @@ var WordGame = {
 
     filterSecretWord: function() {
         // secret word is naughty, run it again
-        if ($.inArray(secretWord, config.excludeWords) > -1) {
+        if ($.inArray(secretWord, WordGame.excludeWords) > -1) {
 
             WordGame.getSecretWord();
 
@@ -251,7 +316,7 @@ var WordGame = {
                 includeRelated: false,
                 useCanonical: true,
                 includeTags: false,
-                api_key: config.apiKey
+                api_key: '65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a'
             },
             success: function(data) {
                 if (data[0].text === undefined) {

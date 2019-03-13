@@ -19,7 +19,7 @@ var pluginConfig = {
     },
     browserSync: {
         port: 3004,
-        proxy: 'wordgame.ericpitcock.dev',
+        proxy: 'wordgame.ericpitcock.test',
         notify: false
     },
     notify: {
@@ -84,23 +84,24 @@ gulp.task('jshint', function() {
 /// JS /////////////////////////////////////////////////////////
 
 gulp.task('js', function() {
-    gulp.src([
-        'src/assets/bower/jquery/dist/jquery.js',
-        'src/assets/bower/jquery-color/jquery.color.js',
-        'src/assets/bower/jquery-animateNumber/jquery.animateNumber.js',
-        'src/assets/bower/fastclick/lib/fastclick.js',
-        'src/assets/js/jquery.widowFix-1.3.2.min.js',
-        'src/assets/js/modernizr.custom.76225.js',
-        'config.js',
-        'src/assets/js/word-game.js'
-    ])
-    .pipe(sourcemaps.init())
-    .pipe(plumber(pluginConfig.plumber))
-    .pipe(concat('word-game.js'))
-    .pipe(rename(pluginConfig.rename))
-    .pipe(uglify())
-    .pipe(sourcemaps.write('../maps'))
-    .pipe(gulp.dest('dist/assets/js'));
+    gulp
+      .src([
+        "node_modules/jquery/dist/jquery.js",
+        "node_modules/jquery-color/jquery.color.js",
+        "node_modules/jquery.animate-number/jquery.animateNumber.js",
+        "node_modules/fastclick/lib/fastclick.js",
+        "src/assets/js/jquery.widowFix-1.3.2.min.js",
+        "src/assets/js/modernizr.custom.76225.js",
+        // "config.js",
+        "src/assets/js/word-game.js"
+      ])
+      .pipe(sourcemaps.init())
+      .pipe(plumber(pluginConfig.plumber))
+      .pipe(concat("word-game.js"))
+      .pipe(rename(pluginConfig.rename))
+      .pipe(uglify())
+      .pipe(sourcemaps.write("../maps"))
+      .pipe(gulp.dest("dist/assets/js"));
 });
 
 /// WATCH /////////////////////////////////////////////////////////
