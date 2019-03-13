@@ -245,7 +245,7 @@ var WordGame = {
                 // get the secret word
                 $.ajax({
                     type: 'GET',
-                    url: 'http://api.wordnik.com:80/v4/words.json/randomWord',
+                    url: 'https://api.wordnik.com:80/v4/words.json/randomWord',
                     data: {
                         hasDictionaryDef: true,
                         excludePartOfSpeech: 'family-name, given-name, noun-plural, proper-noun, proper-noun-plural, proper-noun-posessive, suffix',
@@ -310,7 +310,7 @@ var WordGame = {
         // get definition(s)
         $.ajax({
             type: 'GET',
-            url: 'http://api.wordnik.com:80/v4/word.json/' + secretWord + '/definitions',
+            url: 'https://api.wordnik.com:80/v4/word.json/' + secretWord + '/definitions',
             data: {
                 limit: 2,
                 includeRelated: false,
