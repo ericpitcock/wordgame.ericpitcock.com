@@ -104,6 +104,13 @@ gulp.task('js', function() {
       .pipe(gulp.dest("dist/assets/js"));
 });
 
+// Fonts
+gulp.task('fonts', function() {
+  gulp
+    .src(["src/assets/fonts/HouseMovements-Sign.*"])
+    .pipe(gulp.dest("dist/assets/fonts/"));
+});
+
 /// WATCH /////////////////////////////////////////////////////////
 
 gulp.task('watch', function() {
@@ -115,10 +122,10 @@ gulp.task('watch', function() {
 
 /// BUILD AND SERVE /////////////////////////////////////////////////////////
 
-gulp.task('build', ['jade', 'jshint', 'sass', 'js']);
+gulp.task('build', ['jade', 'jshint', 'sass', 'js', 'fonts']);
 
 gulp.task('serve', ['browser-sync', 'watch']);
 
 /// DEFAULT /////////////////////////////////////////////////////////
 
-gulp.task('default', ['jade', 'jshint', 'sass', 'js', 'browser-sync', 'watch']);
+gulp.task('default', ['jade', 'jshint', 'sass', 'js', 'fonts', 'browser-sync', 'watch']);
