@@ -243,32 +243,52 @@ var WordGame = {
             } else {
 
                 // get the secret word
-                $.ajax({
-                    type: 'GET',
-                    url: '//api.wordnik.com/v4/words.json/randomWord',
-                    data: {
-                        hasDictionaryDef: true,
-                        excludePartOfSpeech: 'family-name, given-name, noun-plural, proper-noun, proper-noun-plural, proper-noun-posessive, suffix',
-                        minCorpusCount: 2000,
-                        maxCorpusCount: -1,
-                        minDictionaryCount: 3,
-                        maxDictionaryCount: -1,
-                        minLength: 3,
-                        maxLength: 7,
-                        api_key: '65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a'
-                    },
-                    success: function(data) {
-                        if (data.word === undefined) {
-                            WordGame.getSecretWord();
-                        } else {
-                            secretWord = data.word;
-                            WordGame.filterSecretWord();
-                        }
-                    },
-                    error: function() {
-                        WordGame.handleError('Noooooooooo!', 'There was an error grabbing the word');
-                    }
+                // $.ajax({
+                //     type: 'GET',
+                //     url: '//api.wordnik.com/v4/words.json/randomWord',
+                //     data: {
+                //         hasDictionaryDef: true,
+                //         excludePartOfSpeech: 'family-name, given-name, noun-plural, proper-noun, proper-noun-plural, proper-noun-posessive, suffix',
+                //         minCorpusCount: 2000,
+                //         maxCorpusCount: -1,
+                //         minDictionaryCount: 3,
+                //         maxDictionaryCount: -1,
+                //         minLength: 3,
+                //         maxLength: 7,
+                //         api_key: '65bc764390b4030e69a110bbfb408a56d163ce85ef94ff62a'
+                //     },
+                //     success: function(data) {
+                //         if (data.word === undefined) {
+                //             WordGame.getSecretWord();
+                //         } else {
+                //             secretWord = data.word;
+                //             WordGame.filterSecretWord();
+                //         }
+                //     },
+                //     error: function() {
+                //         WordGame.handleError('Noooooooooo!', 'There was an error grabbing the word');
+                //     }
+                // });
+              fetch('https://wordsapiv1.p.rapidapi.com/words/?random=true&lettersMin=3&lettersMax=7&hasDetails=definitions', {
+                method: 'GET',
+                headers: {
+                  'x-rapidapi-host': 'wordsapiv1.p.rapidapi.com',
+                  'x-rapidapi-key': 'bdd437dd2fmsh2e329e4673b085cp1bbabfjsnff92e1c4f99e'
+                }
+              })
+              .then(function(response) {
+                response.json().then(function(data) {
+                  console.log(data.word);
+                  secretWord = data.word;
+                  console.log(data.results[0].definition);
+                  definition = data.results[0].definition;
+                  WordGame.filterSecretWord();
                 });
+              })
+              .catch(function(err) {
+                // console.log(err);
+                WordGame.handleError('Whoa!', 'The most unknown error has occurred');
+              });
             }
         // throw error
         } else {
@@ -302,7 +322,8 @@ var WordGame = {
 
         // secret word is good to go, get definition
         } else {
-            WordGame.getDefinition();
+            // WordGame.getDefinition();
+          WordGame.filterDefinition();
         }
     },
 
