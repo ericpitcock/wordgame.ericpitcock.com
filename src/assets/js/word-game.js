@@ -278,9 +278,9 @@ var WordGame = {
               })
               .then(function(response) {
                 response.json().then(function(data) {
-                  console.log(data.word);
+                  // console.log(data.word);
                   secretWord = data.word;
-                  console.log(data.results[0].definition);
+                  // console.log(data.results[0].definition);
                   definition = data.results[0].definition;
                   WordGame.filterSecretWord();
                 });
