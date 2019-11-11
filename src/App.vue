@@ -56,8 +56,7 @@
           string: '',
           // array: [],
           arrayClone: []
-        },
-        wins: 0
+        }
       }
     },
     computed: {
@@ -66,9 +65,15 @@
       secretWordArray() { return [...this.secretWord.string] }
     },
     methods: {
-      uniqueLetters() {
-        // return _.uniq(this.secretWord.array).length
-        return [...new Set(this.secretWord.array)].length
+      checkWordForLetter(code) {
+        var letter = this.getLetter(code)
+        if (this.secretWordArray.includes(letter)) {
+          this.processInput(code)
+        } else {
+          console.log('this letter is not in the word')
+          this.incorrectLetters.push(this.getLetter(code))
+          this.inputAllowed = true
+        }
       },
       filterSecretWord() {
         return blacklist.includes(this.secretWord.string)
@@ -102,36 +107,6 @@
       },
       getLetter(code) {
         return String.fromCharCode(code)
-      },
-      validateInput(code) {
-        if (this.inputAllowed === true) {
-          this.inputAllowed = false
-          if (code >= 97 && code <= 122) {
-            this.registerAttempt(code)
-          } else {
-            console.log('input not alphabetical')
-            this.inputAllowed = true
-          }
-        }
-      },
-      registerAttempt(code) {
-        if (this.attemptedLetters.includes(code)) {
-          console.log('this letter has been tried')
-          this.inputAllowed = true
-        } else {
-          this.attemptedLetters.push(code)
-          this.checkWordForLetter(code)
-        }
-      },
-      checkWordForLetter(code) {
-        var letter = this.getLetter(code)
-        if (this.secretWordArray.includes(letter)) {
-          this.processInput(code)
-        } else {
-          console.log('this letter is not in the word')
-          this.incorrectLetters.push(this.getLetter(code))
-          this.inputAllowed = true
-        }
       },
       handleError(error) {
         console.log(error)
@@ -172,6 +147,15 @@
         this.secretWord.arrayClone = this.secretWordArray
         this.start()
       },
+      registerAttempt(code) {
+        if (this.attemptedLetters.includes(code)) {
+          console.log('this letter has been tried')
+          this.inputAllowed = true
+        } else {
+          this.attemptedLetters.push(code)
+          this.checkWordForLetter(code)
+        }
+      },
       revealLetters(code) {
         var spans = document.querySelectorAll('.secret-word span[data-character-code="' + code + '"]')
         Array.prototype.forEach.call(spans, span => {
@@ -188,6 +172,21 @@
           this.inputAllowed = true
           // console.log('Ready: Input allowed')
         }, 800)
+      },
+      uniqueLetters() {
+        // return _.uniq(this.secretWord.array).length
+        return [...new Set(this.secretWord.array)].length
+      },
+      validateInput(code) {
+        if (this.inputAllowed === true) {
+          this.inputAllowed = false
+          if (code >= 97 && code <= 122) {
+            this.registerAttempt(code)
+          } else {
+            console.log('input not alphabetical')
+            this.inputAllowed = true
+          }
+        }
       }
     },
     watch: {
