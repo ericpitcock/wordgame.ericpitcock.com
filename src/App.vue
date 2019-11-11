@@ -15,11 +15,11 @@
       <div class="secret-word" :class="{ 'secret-word--win': isWin }">
         <span class="secret-word__letter"
               v-if="ready"
-              v-for="(letter, index) in secretWord.array"
+              v-for="(letter, index) in secretWordArray"
               :key="index"
               :data-character-code="getCharacterCode(letter)"
+              v-html="'&bull;'"
         >
-          &bull;
         </span>
       </div>
     </div>
@@ -36,72 +36,42 @@
 </template>
 
 <script>
+  import blacklist from '../static/blacklist'
   import { deburr } from 'lodash'
 
   export default {
     name: 'app',
     data() {
       return {
-        alphabet: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
+        // alphabet: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
         attemptedLetters: [],
         // blacklist,
         definition: '',
         incorrectLetters: [],
         inputAllowed: false,
         isWin: false,
-        qwerty: ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm'],
+        // qwerty: ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm'],
         ready: false,
         secretWord: {
           string: '',
-          array: [],
+          // array: [],
           arrayClone: []
         },
         wins: 0
       }
     },
-    watch: {
-      inputAllowed() {
-        console.log(`Input allowed: ${this.inputAllowed}`)
-      },
-      // secretWord() {
-      // }
+    computed: {
+      alphabet() { return [...'abcdefghijklmnopqrstuvwxyz'] },
+      qwerty() { return [...'qwertyuiopasdfghjklzxcvbnm'] },
+      secretWordArray() { return [...this.secretWord.string] }
     },
     methods: {
       uniqueLetters() {
         // return _.uniq(this.secretWord.array).length
         return [...new Set(this.secretWord.array)].length
       },
-      filterDefinition() {
-        switch (true) {
-          case (this.definition.toUpperCase().indexOf(this.secretWord.string.toUpperCase()) != -1):
-            console.log(this.secretWord.string + ' is in definition. \n ' + this.definition)
-            this.init()
-            break
-          case (this.definition.length > 150):
-            console.log('Definition is over 150 characters.')
-            this.init()
-            break
-          default:
-            // remove category, if present. Splitting at three spaces '   ' and returning the end portion
-            this.definition = this.definition.split(/ {3,}/).pop()
-            // this.requestCount = 0
-            this.processSecretWord()
-        }
-      },
       filterSecretWord() {
-        // console.log('Filtering secret word…')
-        switch (true) {
-          case (config.blacklist.includes(this.secretWord.string)):
-            console.log('Word filter: Blacklisted')
-            this.init()
-            break
-          case (this.secretWord.string.search(/\W/g) != -1):
-            console.log('Word filter: Special characters')
-            this.init()
-            break
-          default:
-            this.getDefinition()
-        }
+        return blacklist.includes(this.secretWord.string)
       },
       getSecretWord() {
         //^[a-z]+$ encodes to %5E%5Ba-z%5D%2B%24
@@ -155,7 +125,7 @@
       },
       checkWordForLetter(code) {
         var letter = this.getLetter(code)
-        if (this.secretWord.array.includes(letter)) {
+        if (this.secretWordArray.includes(letter)) {
           this.processInput(code)
         } else {
           console.log('this letter is not in the word')
@@ -174,7 +144,7 @@
         this.incorrectLetters = []
         this.isWin = false
         this.ready = false
-        this.secretWord.array = []
+        // this.secretWord.array = []
         this.secretWord.string = ''
         this.secretWord.arrayClone = []
         this.getSecretWord()
@@ -197,9 +167,9 @@
       },
       processSecretWord() {
         // console.log('Processing secret word…')
-        this.secretWord.array = this.secretWord.string.split('')
+        // this.secretWord.array = this.secretWord.string.split('')
         // populate worker array
-        this.secretWord.arrayClone = this.secretWord.array
+        this.secretWord.arrayClone = this.secretWordArray
         this.start()
       },
       revealLetters(code) {
@@ -219,6 +189,13 @@
           // console.log('Ready: Input allowed')
         }, 800)
       }
+    },
+    watch: {
+      inputAllowed() {
+        console.log(`Input allowed: ${this.inputAllowed}`)
+      },
+      // secretWord() {
+      // }
     },
     created() {
       window.addEventListener('keypress', event => {
