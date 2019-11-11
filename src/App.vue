@@ -25,7 +25,7 @@
 </template>
 
 <script>
-  import config from '../static/config'
+  // import config from '../static/config'
   import { uniq } from 'lodash'
 
   export default {
@@ -139,28 +139,48 @@
       },
       getSecretWord() {
         // console.log('Getting secret word…')
-        var self = this
-        self.$http.get('http://api.wordnik.com:80/v4/words.json/randomWord', {
-          params: {
-            api_key: config.apiKey,
-            hasDictionaryDef: true,
-            excludePartOfSpeech: 'family-name, given-name, noun-plural, proper-noun, proper-noun-plural, proper-noun-posessive, suffix',
-            minCorpusCount: 2000,
-            maxCorpusCount: -1,
-            minDictionaryCount: 3,
-            maxDictionaryCount: -1,
-            minLength: 3,
-            maxLength: 7
+        // var self = this
+        // self.$http.get('http://api.wordnik.com:80/v4/words.json/randomWord', {
+        //   params: {
+        //     api_key: config.apiKey,
+        //     hasDictionaryDef: true,
+        //     excludePartOfSpeech: 'family-name, given-name, noun-plural, proper-noun, proper-noun-plural, proper-noun-posessive, suffix',
+        //     minCorpusCount: 2000,
+        //     maxCorpusCount: -1,
+        //     minDictionaryCount: 3,
+        //     maxDictionaryCount: -1,
+        //     minLength: 3,
+        //     maxLength: 7
+        //   }
+        // })
+        // .then(function(response) {
+        //   self.secretWord.string = response.data.word.toLowerCase()
+        //   // console.log(self.secretWord.string)
+        //   self.filterSecretWord()
+        // })
+        // .catch(function(error) {
+        //   self.handleError(error)
+        // })
+        fetch('https://wordsapiv1.p.rapidapi.com/words/?random=true&lettersMin=3&lettersMax=7&hasDetails=definitions', {
+          method: 'GET',
+          headers: {
+            'x-rapidapi-host': 'wordsapiv1.p.rapidapi.com',
+            'x-rapidapi-key': 'bdd437dd2fmsh2e329e4673b085cp1bbabfjsnff92e1c4f99e'
           }
         })
-        .then(function(response) {
-          self.secretWord.string = response.data.word.toLowerCase()
-          // console.log(self.secretWord.string)
-          self.filterSecretWord()
+        .then(response => {
+          response.json().then(data => {
+            console.log(data.word)
+            this.secretWord.string = data.word.toLowerCase()
+            console.log(data.results[0].definition)
+            this.definition = data.results[0].definition
+            this.processSecretWord()
+          });
         })
-        .catch(function(error) {
-          self.handleError(error)
-        })
+        .catch(err => {
+          // console.log(err);
+          this.handleError('Whoa!', 'The most unknown error has occurred')
+        });
       },
       getCharacterCode(letter) {
         return letter.charCodeAt()
