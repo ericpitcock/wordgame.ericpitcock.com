@@ -307,9 +307,9 @@
     .secret-word {
       display: flex;
       align-self: flex-start;
-      &--win {
-        transform: scale(1.5);
-      }
+      // &--win {
+      //   transform: scale(1.5);
+      // }
       &__letter {
         position: relative;
         align-self: center;
@@ -322,7 +322,7 @@
         }
         &.highlight {
           font-family: 'HouseMovements-Sign';
-          font-size: 100px;
+          font-size: 150px;
           letter-spacing: 0;
           // custom kerning for T* (except l and i)
           &:first-child[data-character-code="116"] + *:not([data-character-code="104"]):not([data-character-code="105"]) {
