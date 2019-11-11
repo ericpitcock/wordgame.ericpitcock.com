@@ -1,10 +1,9 @@
 <template>
-  <div id="app" :style="{ background: 'hsla(140, 40%, ' + backgroundLightness + '%, 1)' }">
+  <div id="app">
     <div class="title">
       <svg width="20" height="20" viewBox="0 0 20 20"><path d="M0,0V20H20V0H0ZM14,6H7V9h4v2H7v3h7v2H5V4h9V6Z"/></svg>
       <span>Word Game</span>
     </div>
-    <div class="game-score">Game Score: <span class="score-value">{{ gameScore }} Word Score: {{ potentialWordScore }}</span></div>
     <div class="definition-container">
       <div class="definition">
         <transition name="bounce">
@@ -14,70 +13,63 @@
     </div>
     <div class="secret-word-container">
       <div class="secret-word" :class="{ 'secret-word--win': isWin }">
-        <span class="secret-word__letter" v-if="ready" v-for="letter in secretWord.array" v-bind:data-character-code="getCharacterCode(letter)">&bull;</span>
+        <span class="secret-word__letter"
+              v-if="ready"
+              v-for="(letter, index) in secretWord.array"
+              :key="index"
+              :data-character-code="getCharacterCode(letter)"
+        >
+          &bull;
+        </span>
       </div>
     </div>
     <div class="selections">
       <!-- <div v-for="letter in incorrectLetters">{{ letter }}</div> -->
-      <div v-for="letter in alphabet" :class="">{{ letter }}</div>
+      <div v-for="(letter, index) in alphabet"
+           :key="index"
+           :class=""
+      >
+        {{ letter }}
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-  // import config from '../static/config'
-  import { uniq } from 'lodash'
+  import { deburr } from 'lodash'
 
   export default {
     name: 'app',
-    data: function() {
+    data() {
       return {
         alphabet: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
         attemptedLetters: [],
-        backgroundLightness: 100,
+        // blacklist,
         definition: '',
-        gameScore: 0,
         incorrectLetters: [],
         inputAllowed: false,
         isWin: false,
         qwerty: ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm'],
-        potentialWordScore: 0,
         ready: false,
         secretWord: {
           string: '',
           array: [],
           arrayClone: []
         },
-        wins: 0,
-        wordScore: 0,
+        wins: 0
       }
     },
     watch: {
-      inputAllowed: function() {
-        console.log('Input allowed: ' + this.inputAllowed)
+      inputAllowed() {
+        console.log(`Input allowed: ${this.inputAllowed}`)
       },
-      secretWord: function() {
-        this.calculatePotentialWordScore()
-      }
+      // secretWord() {
+      // }
     },
     methods: {
       uniqueLetters() {
-        return _.uniq(this.secretWord.array).length
-      },
-      updateBackgroundLightness() {
-          this.backgroundLightness -= 40 / this.uniqueLetters()
-          // console.log(this.backgroundLightness)
-      },
-      calculatePotentialWordScore() {
-        this.potentialWordScore = this.uniqueLetters() * 10
-        // console.log('Unique letters: ' + this.uniqueLetters())
-      },
-      updateWordScore(direction) {
-        if (direction == 'up') {
-          this.potentialWordScore += 5
-        } else {
-          this.potentialWordScore -= 5
-        }
+        // return _.uniq(this.secretWord.array).length
+        return [...new Set(this.secretWord.array)].length
       },
       filterDefinition() {
         switch (true) {
@@ -111,57 +103,10 @@
             this.getDefinition()
         }
       },
-      getDefinition() {
-        // console.log('Getting definition…')
-        var self = this
-        self.$http.get('http://api.wordnik.com:80/v4/word.json/' + self.secretWord.string + '/definitions', {
-          params: {
-            api_key: config.apiKey,
-            limit: 2,
-            includeRelated: false,
-            useCanonical: true,
-            includeTags: false
-          }
-        })
-        .then(function(response) {
-          self.definition = ''
-          if (response.data[0].text == 'undefined') {
-            self.handleError('Definition undefined')
-          } else {
-            self.definition = response.data[0].text
-            // console.log(self.definition)
-            self.filterDefinition()
-          }
-        })
-        .catch(function(error) {
-          self.handleError(error)
-        })
-      },
       getSecretWord() {
-        // console.log('Getting secret word…')
-        // var self = this
-        // self.$http.get('http://api.wordnik.com:80/v4/words.json/randomWord', {
-        //   params: {
-        //     api_key: config.apiKey,
-        //     hasDictionaryDef: true,
-        //     excludePartOfSpeech: 'family-name, given-name, noun-plural, proper-noun, proper-noun-plural, proper-noun-posessive, suffix',
-        //     minCorpusCount: 2000,
-        //     maxCorpusCount: -1,
-        //     minDictionaryCount: 3,
-        //     maxDictionaryCount: -1,
-        //     minLength: 3,
-        //     maxLength: 7
-        //   }
-        // })
-        // .then(function(response) {
-        //   self.secretWord.string = response.data.word.toLowerCase()
-        //   // console.log(self.secretWord.string)
-        //   self.filterSecretWord()
-        // })
-        // .catch(function(error) {
-        //   self.handleError(error)
-        // })
-        fetch('https://wordsapiv1.p.rapidapi.com/words/?random=true&lettersMin=3&lettersMax=7&hasDetails=definitions', {
+        //^[a-z]+$ encodes to %5E%5Ba-z%5D%2B%24
+        // https://www.url-encode-decode.com/
+        fetch('https://wordsapiv1.p.rapidapi.com/words/?random=true&partOfSpeech=noun&letterPattern=%5E%5Ba-z%5D%2B%24&lettersMin=3&lettersMax=7&hasDetails=definitions', {
           method: 'GET',
           headers: {
             'x-rapidapi-host': 'wordsapiv1.p.rapidapi.com',
@@ -170,9 +115,9 @@
         })
         .then(response => {
           response.json().then(data => {
-            console.log(data.word)
-            this.secretWord.string = data.word.toLowerCase()
-            console.log(data.results[0].definition)
+            // console.log(data.word)
+            this.secretWord.string = _.deburr(data.word.toLowerCase())
+            // console.log(data.results[0].definition)
             this.definition = data.results[0].definition
             this.processSecretWord()
           });
@@ -212,18 +157,16 @@
         var letter = this.getLetter(code)
         if (this.secretWord.array.includes(letter)) {
           this.processInput(code)
-          this.updateWordScore('up')
         } else {
           console.log('this letter is not in the word')
           this.incorrectLetters.push(this.getLetter(code))
           this.inputAllowed = true
-          this.updateWordScore('down')
         }
       },
       handleError(error) {
         console.log(error)
       },
-      init: function() {
+      init() {
         // console.log(config.apiKey)
         // console.clear()
         this.attemptedLetters = []
@@ -237,13 +180,11 @@
         this.getSecretWord()
       },
       processInput(code) {
-        var self = this
         // remove it from array
-        this.secretWord.arrayClone = this.secretWord.arrayClone.filter(function(a) { return a !== self.getLetter(code) })
+        this.secretWord.arrayClone = this.secretWord.arrayClone.filter(a => { return a !== this.getLetter(code) })
         // console.log(this.secretWord.arrayClone)
         this.attemptedLetters.push(code)
         this.revealLetters(code)
-        this.updateBackgroundLightness()
         this.inputAllowed = true
 
         // if it's a win
@@ -251,8 +192,7 @@
           console.log('YOU WIN')
           this.isWin = true
           this.inputAllowed = false
-          var self = this
-          setTimeout(function() { self.init() }, 1300)
+          setTimeout(() => { this.init() }, 1300)
         }
       },
       processSecretWord() {
@@ -260,15 +200,13 @@
         this.secretWord.array = this.secretWord.string.split('')
         // populate worker array
         this.secretWord.arrayClone = this.secretWord.array
-        this.calculatePotentialWordScore()
         this.start()
       },
       revealLetters(code) {
-        var self = this
         var spans = document.querySelectorAll('.secret-word span[data-character-code="' + code + '"]')
-        Array.prototype.forEach.call(spans, function(span) {
+        Array.prototype.forEach.call(spans, span => {
           // div.style.color = "red"
-          span.innerHTML = self.getLetter(code)
+          span.innerHTML = this.getLetter(code)
           span.className += ' highlight'
         })
       },
@@ -276,17 +214,15 @@
         // console.log('Ready')
         console.log('Ready: ' + this.secretWord.string)
         this.ready = true
-        var self = this
-        setTimeout(function() {
-          self.inputAllowed = true
+        setTimeout(() => {
+          this.inputAllowed = true
           // console.log('Ready: Input allowed')
         }, 800)
       }
     },
     created() {
-      var self = this
-      window.addEventListener('keypress', function(e) {
-        self.validateInput(e.which)
+      window.addEventListener('keypress', event => {
+        this.validateInput(event.which)
       })
     },
     mounted() {
@@ -359,15 +295,6 @@
     span {
       padding-left: 8px;
     }
-  }
-
-  .game-score {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    height: 20px;
-    font-weight: 600;
-    line-height: 20px;
   }
 
   .secret-word-container {
