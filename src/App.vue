@@ -12,7 +12,7 @@
       </div>
     </div>
     <div class="secret-word-container">
-      <div v-if="ready" class="secret-word" :class="{ 'secret-word--win animated tada': isWin, 'animated shake faster': shakeWord }">
+      <div v-if="ready" class="secret-word" :class="{ 'secret-word--win': isWin, 'animated shake faster': shakeWord,  'animated tada': tadaWord }">
         <span class="secret-word__letter"
               v-for="(letter, index) in secretWordArray"
               :key="index"
@@ -52,8 +52,8 @@
         ready: false,
         secretWord: '',
         secretWordArrayClone: [],
-        shakeWord: false
-        // tadaWord: false
+        shakeWord: false,
+        tadaWord: false
       }
     },
     computed: {
@@ -63,6 +63,20 @@
       uniqueLetters() { return [...new Set(this.secretWord.array)].length }
     },
     methods: {
+      animateWord(type, duration='1000') {
+        switch (type) {
+          case 'shake':
+            this.shakeWord = true
+            setTimeout(() => { this.shakeWord = false }, duration)
+            break
+          case 'tada':
+            this.tadaWord = true
+            setTimeout(() => { this.tadaWord = false }, duration)
+            break
+          default:
+            break
+        }
+      },
       checkWordForLetter(code) {
         var letter = this.getLetter(code)
         // if word contains letter
@@ -118,7 +132,6 @@
         console.log(error)
       },
       init() {
-        // console.log(config.apiKey)
         console.clear()
         this.attemptedLetters = []
         this.correctLetters = []
@@ -126,7 +139,6 @@
         this.incorrectLetters = []
         this.isWin = false
         this.ready = false
-        // this.secretWord.array = []
         this.secretWord = ''
         this.secretWordArrayClone = []
         this.getSecretWord()
@@ -143,7 +155,7 @@
         // if it's a win
         if (this.secretWordArrayClone.length == 0) {
           console.log('YOU WIN')
-          // this.isWin = true
+          this.isWin = true
           this.animateWord('tada')
           this.inputAllowed = false
           setTimeout(() => { this.init() }, 1300)
@@ -185,20 +197,6 @@
           this.inputAllowed = true
           // console.log('Ready: Input allowed')
         }, 800)
-      },
-      animateWord(type, duration='1000') {
-        switch (type) {
-          case 'shake':
-            this.shakeWord = true
-            setTimeout(() => { this.shakeWord = false }, duration)
-            break;
-          case 'tada':
-            this.isWin = true
-            setTimeout(() => { this.isWin = false }, duration)
-            break
-          default:
-            break;
-        }
       },
       validateInput(code) {
         // if input isn't allowed, return
