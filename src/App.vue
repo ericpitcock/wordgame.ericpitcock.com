@@ -12,12 +12,19 @@
       </div>
     </div>
     <div class="secret-word-container">
-      <div v-if="ready" class="secret-word" :class="{ 'secret-word--win': isWin, 'animated shake faster': shakeWord,  'animated tada': tadaWord }">
-        <span class="secret-word__letter"
+      <div v-if="ready"
+           :class="['secret-word',
+           { 'secret-word--win': isWin,
+             'animated pulse faster': pulseWord,
+             'animated shake faster': shakeWord,
+             'animated tada': tadaWord
+           }]"
+      >
+        <span :class="['secret-word__letter', { 'highlight': correctLetters.includes(letter) }]"
               v-for="(letter, index) in secretWordArray"
               :key="index"
               :data-character-code="getCharacterCode(letter)"
-              v-html="'&bull;'"
+              v-html="displayCharacter(letter)"
         >
         </span>
       </div>
@@ -50,6 +57,7 @@
         inputAllowed: false,
         isWin: false,
         ready: false,
+        pulseWord: false,
         secretWord: '',
         secretWordArrayClone: [],
         shakeWord: false,
@@ -65,6 +73,10 @@
     methods: {
       animateWord(type, duration='1000') {
         switch (type) {
+          case 'pulse':
+            this.pulseWord = true
+            setTimeout(() => { this.pulseWord = false }, duration)
+            break
           case 'shake':
             this.shakeWord = true
             setTimeout(() => { this.shakeWord = false }, duration)
@@ -90,6 +102,9 @@
           this.incorrectLetters.push(letter)
           this.inputAllowed = true
         }
+      },
+      displayCharacter(letter) {
+        return (this.correctLetters.includes(letter)) ? letter : '&bull;'
       },
       filterSecretWord(word) {
         console.log('filtering secret word')
@@ -149,7 +164,7 @@
         // console.log(this.secretWordArrayClone)
         // this.attemptedLetters.push(code)
         // console.log('attemptedLetters processInput')
-        this.revealLetters(code)
+        // this.revealLetters(code)
         this.inputAllowed = true
 
         // if it's a win
@@ -172,7 +187,7 @@
         // if it's already been tried, do nothing
         if (this.attemptedLetters.includes(code)) {
           console.log('this letter has been tried')
-          this.animateWord()
+          this.animateWord('pulse', 500)
           this.inputAllowed = true
         // if this is the first try, register the attempt and check the word
         } else {
@@ -180,14 +195,6 @@
           // console.log('attemptedLetters registerAttempt')
           this.checkWordForLetter(code)
         }
-      },
-      revealLetters(code) {
-        var spans = document.querySelectorAll('.secret-word span[data-character-code="' + code + '"]')
-        Array.prototype.forEach.call(spans, span => {
-          // div.style.color = "red"
-          span.innerHTML = this.getLetter(code)
-          span.className += ' highlight'
-        })
       },
       start() {
         // console.log('Ready')
