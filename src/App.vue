@@ -45,6 +45,7 @@
       return {
         attemptedLetters: [],
         // blacklist,
+        correctLetters: [],
         definition: '',
         incorrectLetters: [],
         inputAllowed: false,
@@ -63,8 +64,11 @@
     methods: {
       checkWordForLetter(code) {
         var letter = this.getLetter(code)
+        // if word contains letter
         if (this.secretWordArray.includes(letter)) {
+          this.correctLetters.push(letter)
           this.processInput(code)
+        // if word doesn't contain letter
         } else {
           // console.log('this letter is not in the word')
           this.incorrectLetters.push(letter)
@@ -109,6 +113,7 @@
         // console.log(config.apiKey)
         // console.clear()
         this.attemptedLetters = []
+        console.log('attemptedLetters init')
         this.definition = ''
         this.incorrectLetters = []
         this.isWin = false
@@ -122,7 +127,8 @@
         // remove it from array
         this.secretWordArrayClone = this.secretWordArrayClone.filter(letter => { return letter !== this.getLetter(code) })
         // console.log(this.secretWordArrayClone)
-        this.attemptedLetters.push(code)
+        // this.attemptedLetters.push(code)
+        // console.log('attemptedLetters processInput')
         this.revealLetters(code)
         this.inputAllowed = true
 
@@ -142,11 +148,14 @@
         this.start()
       },
       registerAttempt(code) {
+        // if it's already been tried, do nothing
         if (this.attemptedLetters.includes(code)) {
-          // console.log('this letter has been tried')
+          console.log('this letter has been tried')
           this.inputAllowed = true
+        // if this is the first try, register the attempt and check the word
         } else {
           this.attemptedLetters.push(code)
+          console.log('attemptedLetters registerAttempt')
           this.checkWordForLetter(code)
         }
       },
@@ -183,6 +192,15 @@
       // inputAllowed() {
       //   console.log(`Input allowed: ${this.inputAllowed}`)
       // },
+      attemptedLetters() {
+        console.log(`Attempted: ${this.attemptedLetters}`)
+      },
+      correctLetters() {
+        console.log(`Correct: ${this.correctLetters}`)
+      },
+      incorrectLetters() {
+        console.log(`Incorrect: ${this.incorrectLetters}`)
+      },
       secretWord() {
         this.processSecretWord()
       }
@@ -193,7 +211,8 @@
       })
     },
     mounted() {
-      this.init()
+      // this.init()
+      this.getSecretWord()
     }
   }
 </script>
