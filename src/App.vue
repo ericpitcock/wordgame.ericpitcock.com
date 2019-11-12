@@ -12,7 +12,7 @@
       </div>
     </div>
     <div class="secret-word-container">
-      <div v-if="ready" class="secret-word" :class="{ 'secret-word--win': isWin, 'shake animated': shakeWord }">
+      <div v-if="ready" class="secret-word" :class="{ 'secret-word--win animated tada': isWin, 'animated shake faster': shakeWord }">
         <span class="secret-word__letter"
               v-for="(letter, index) in secretWordArray"
               :key="index"
@@ -53,6 +53,7 @@
         secretWord: '',
         secretWordArrayClone: [],
         shakeWord: false
+        // tadaWord: false
       }
     },
     computed: {
@@ -71,7 +72,7 @@
         // if word doesn't contain letter
         } else {
           // console.log('this letter is not in the word')
-          this.animateWord()
+          this.animateWord('shake', 500)
           this.incorrectLetters.push(letter)
           this.inputAllowed = true
         }
@@ -142,7 +143,8 @@
         // if it's a win
         if (this.secretWordArrayClone.length == 0) {
           console.log('YOU WIN')
-          this.isWin = true
+          // this.isWin = true
+          this.animateWord('tada')
           this.inputAllowed = false
           setTimeout(() => { this.init() }, 1300)
         }
@@ -158,6 +160,7 @@
         // if it's already been tried, do nothing
         if (this.attemptedLetters.includes(code)) {
           console.log('this letter has been tried')
+          this.animateWord()
           this.inputAllowed = true
         // if this is the first try, register the attempt and check the word
         } else {
@@ -183,9 +186,19 @@
           // console.log('Ready: Input allowed')
         }, 800)
       },
-      animateWord(type='shake') {
-        this.shakeWord = true
-        setTimeout(() => { this.shakeWord = false }, 1000)
+      animateWord(type, duration='1000') {
+        switch (type) {
+          case 'shake':
+            this.shakeWord = true
+            setTimeout(() => { this.shakeWord = false }, duration)
+            break;
+          case 'tada':
+            this.isWin = true
+            setTimeout(() => { this.isWin = false }, duration)
+            break
+          default:
+            break;
+        }
       },
       validateInput(code) {
         // if input isn't allowed, return
@@ -213,15 +226,15 @@
       inputAllowed() {
         console.log(`Input allowed: ${this.inputAllowed}`)
       },
-      attemptedLetters() {
-        if (this.attemptedLetters) console.log(`Attempted: ${this.attemptedLetters}`)
-      },
-      correctLetters() {
-        if (this.correctLetters) console.log(`Correct: ${this.correctLetters}`)
-      },
-      incorrectLetters() {
-        if (this.incorrectLetters) console.log(`Incorrect: ${this.incorrectLetters}`)
-      },
+      // attemptedLetters() {
+      //   if (this.attemptedLetters) console.log(`Attempted: ${this.attemptedLetters}`)
+      // },
+      // correctLetters() {
+      //   if (this.correctLetters) console.log(`Correct: ${this.correctLetters}`)
+      // },
+      // incorrectLetters() {
+      //   if (this.incorrectLetters) console.log(`Incorrect: ${this.incorrectLetters}`)
+      // },
       secretWord() {
         this.processSecretWord()
       }
@@ -240,7 +253,7 @@
 <style lang="scss">
   @import '/assets/sass/_reset';
   @import '/assets/sass/_variables';
-  @import '/assets/sass/_animation';
+  @import '../node_modules/animate.css/animate.min.css';
 
   @import url('https://fonts.googleapis.com/css?family=News+Cycle|Source+Sans+Pro:400,600');
 
@@ -314,10 +327,10 @@
       display: flex;
       align-self: flex-start;
       &--win {
-        color: green;
+        color: $green;
       }
       &--loss {
-        color: red;
+        color: $red-orange;
       }
       &__letter {
         position: relative;
