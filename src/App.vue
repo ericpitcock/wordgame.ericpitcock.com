@@ -12,9 +12,8 @@
       </div>
     </div>
     <div class="secret-word-container">
-      <div class="secret-word" :class="{ 'secret-word--win': isWin }">
+      <div v-if="ready" class="secret-word" :class="{ 'secret-word--win': isWin, 'shake animated': shakeWord }">
         <span class="secret-word__letter"
-              v-if="ready"
               v-for="(letter, index) in secretWordArray"
               :key="index"
               :data-character-code="getCharacterCode(letter)"
@@ -52,7 +51,8 @@
         isWin: false,
         ready: false,
         secretWord: '',
-        secretWordArrayClone: []
+        secretWordArrayClone: [],
+        shakeWord: false
       }
     },
     computed: {
@@ -71,12 +71,14 @@
         // if word doesn't contain letter
         } else {
           // console.log('this letter is not in the word')
+          this.animateWord()
           this.incorrectLetters.push(letter)
           this.inputAllowed = true
         }
       },
-      filterSecretWord() {
-        return blacklist.includes(this.secretWord)
+      filterSecretWord(word) {
+        console.log('filtering secret word')
+        return blacklist.includes(word)
       },
       getSecretWord() {
         //^[a-z]+$ encodes to %5E%5Ba-z%5D%2B%24
@@ -90,13 +92,18 @@
         })
         .then(response => {
           response.json().then(data => {
-            this.secretWord = _.deburr(data.word.toLowerCase())
-            this.definition = data.results[0].definition
-            // this.processSecretWord()
+            let secretWord = _.deburr(data.word.toLowerCase())
+            // if not in blacklist, proceed
+            if (!this.filterSecretWord(secretWord)) {
+              this.secretWord = secretWord
+              this.definition = data.results[0].definition
+            } else {
+              console.log(`Word, ${secretWord}, blacklisted`)
+              this.getSecretWord
+            }
           });
         })
         .catch(err => {
-          // console.log(err);
           this.handleError('Whoa!', 'The most unknown error has occurred')
         });
       },
@@ -111,9 +118,9 @@
       },
       init() {
         // console.log(config.apiKey)
-        // console.clear()
+        console.clear()
         this.attemptedLetters = []
-        console.log('attemptedLetters init')
+        this.correctLetters = []
         this.definition = ''
         this.incorrectLetters = []
         this.isWin = false
@@ -155,7 +162,7 @@
         // if this is the first try, register the attempt and check the word
         } else {
           this.attemptedLetters.push(code)
-          console.log('attemptedLetters registerAttempt')
+          // console.log('attemptedLetters registerAttempt')
           this.checkWordForLetter(code)
         }
       },
@@ -176,30 +183,44 @@
           // console.log('Ready: Input allowed')
         }, 800)
       },
+      animateWord(type='shake') {
+        this.shakeWord = true
+        setTimeout(() => { this.shakeWord = false }, 1000)
+      },
       validateInput(code) {
-        if (this.inputAllowed) {
-          this.inputAllowed = false
-          if (code >= 97 && code <= 122) {
-            this.registerAttempt(code)
-          } else {
-            // console.log('input not alphabetical')
-            this.inputAllowed = true
-          }
+        // if input isn't allowed, return
+        if (!this.inputAllowed) return
+        // if input is allowed, carry on
+        this.inputAllowed = false
+        if (code >= 97 && code <= 122) {
+          this.registerAttempt(code)
+        } else {
+          // console.log('input not alphabetical')
+          this.inputAllowed = true
         }
+        // if (this.inputAllowed) {
+        //   this.inputAllowed = false
+        //   if (code >= 97 && code <= 122) {
+        //     this.registerAttempt(code)
+        //   } else {
+        //     // console.log('input not alphabetical')
+        //     this.inputAllowed = true
+        //   }
+        // }
       }
     },
     watch: {
-      // inputAllowed() {
-      //   console.log(`Input allowed: ${this.inputAllowed}`)
-      // },
+      inputAllowed() {
+        console.log(`Input allowed: ${this.inputAllowed}`)
+      },
       attemptedLetters() {
-        console.log(`Attempted: ${this.attemptedLetters}`)
+        if (this.attemptedLetters) console.log(`Attempted: ${this.attemptedLetters}`)
       },
       correctLetters() {
-        console.log(`Correct: ${this.correctLetters}`)
+        if (this.correctLetters) console.log(`Correct: ${this.correctLetters}`)
       },
       incorrectLetters() {
-        console.log(`Incorrect: ${this.incorrectLetters}`)
+        if (this.incorrectLetters) console.log(`Incorrect: ${this.incorrectLetters}`)
       },
       secretWord() {
         this.processSecretWord()
@@ -211,7 +232,6 @@
       })
     },
     mounted() {
-      // this.init()
       this.getSecretWord()
     }
   }
