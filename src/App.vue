@@ -43,26 +43,22 @@
     name: 'app',
     data() {
       return {
-        // alphabet: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
         attemptedLetters: [],
         // blacklist,
         definition: '',
         incorrectLetters: [],
         inputAllowed: false,
         isWin: false,
-        // qwerty: ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm'],
         ready: false,
-        secretWord: {
-          string: '',
-          // array: [],
-          arrayClone: []
-        }
+        secretWord: '',
+        secretWordArrayClone: []
       }
     },
     computed: {
       alphabet() { return [...'abcdefghijklmnopqrstuvwxyz'] },
       qwerty() { return [...'qwertyuiopasdfghjklzxcvbnm'] },
-      secretWordArray() { return [...this.secretWord.string] }
+      secretWordArray() { return [...this.secretWord] },
+      uniqueLetters() { return [...new Set(this.secretWord.array)].length }
     },
     methods: {
       checkWordForLetter(code) {
@@ -70,13 +66,13 @@
         if (this.secretWordArray.includes(letter)) {
           this.processInput(code)
         } else {
-          console.log('this letter is not in the word')
-          this.incorrectLetters.push(this.getLetter(code))
+          // console.log('this letter is not in the word')
+          this.incorrectLetters.push(letter)
           this.inputAllowed = true
         }
       },
       filterSecretWord() {
-        return blacklist.includes(this.secretWord.string)
+        return blacklist.includes(this.secretWord)
       },
       getSecretWord() {
         //^[a-z]+$ encodes to %5E%5Ba-z%5D%2B%24
@@ -90,11 +86,9 @@
         })
         .then(response => {
           response.json().then(data => {
-            // console.log(data.word)
-            this.secretWord.string = _.deburr(data.word.toLowerCase())
-            // console.log(data.results[0].definition)
+            this.secretWord = _.deburr(data.word.toLowerCase())
             this.definition = data.results[0].definition
-            this.processSecretWord()
+            // this.processSecretWord()
           });
         })
         .catch(err => {
@@ -115,25 +109,25 @@
         // console.log(config.apiKey)
         // console.clear()
         this.attemptedLetters = []
-        this.backgroundLightness = 100
+        this.definition = ''
         this.incorrectLetters = []
         this.isWin = false
         this.ready = false
         // this.secretWord.array = []
-        this.secretWord.string = ''
-        this.secretWord.arrayClone = []
+        this.secretWord = ''
+        this.secretWordArrayClone = []
         this.getSecretWord()
       },
       processInput(code) {
         // remove it from array
-        this.secretWord.arrayClone = this.secretWord.arrayClone.filter(a => { return a !== this.getLetter(code) })
-        // console.log(this.secretWord.arrayClone)
+        this.secretWordArrayClone = this.secretWordArrayClone.filter(letter => { return letter !== this.getLetter(code) })
+        // console.log(this.secretWordArrayClone)
         this.attemptedLetters.push(code)
         this.revealLetters(code)
         this.inputAllowed = true
 
         // if it's a win
-        if (this.secretWord.arrayClone.length == 0) {
+        if (this.secretWordArrayClone.length == 0) {
           console.log('YOU WIN')
           this.isWin = true
           this.inputAllowed = false
@@ -142,14 +136,14 @@
       },
       processSecretWord() {
         // console.log('Processing secret word…')
-        // this.secretWord.array = this.secretWord.string.split('')
+        // this.secretWord.array = this.secretWord.split('')
         // populate worker array
-        this.secretWord.arrayClone = this.secretWordArray
+        this.secretWordArrayClone = this.secretWordArray
         this.start()
       },
       registerAttempt(code) {
         if (this.attemptedLetters.includes(code)) {
-          console.log('this letter has been tried')
+          // console.log('this letter has been tried')
           this.inputAllowed = true
         } else {
           this.attemptedLetters.push(code)
@@ -166,35 +160,32 @@
       },
       start() {
         // console.log('Ready')
-        console.log('Ready: ' + this.secretWord.string)
+        console.log('Ready: ' + this.secretWord)
         this.ready = true
         setTimeout(() => {
           this.inputAllowed = true
           // console.log('Ready: Input allowed')
         }, 800)
       },
-      uniqueLetters() {
-        // return _.uniq(this.secretWord.array).length
-        return [...new Set(this.secretWord.array)].length
-      },
       validateInput(code) {
-        if (this.inputAllowed === true) {
+        if (this.inputAllowed) {
           this.inputAllowed = false
           if (code >= 97 && code <= 122) {
             this.registerAttempt(code)
           } else {
-            console.log('input not alphabetical')
+            // console.log('input not alphabetical')
             this.inputAllowed = true
           }
         }
       }
     },
     watch: {
-      inputAllowed() {
-        console.log(`Input allowed: ${this.inputAllowed}`)
-      },
-      // secretWord() {
-      // }
+      // inputAllowed() {
+      //   console.log(`Input allowed: ${this.inputAllowed}`)
+      // },
+      secretWord() {
+        this.processSecretWord()
+      }
     },
     created() {
       window.addEventListener('keypress', event => {
@@ -283,9 +274,12 @@
     .secret-word {
       display: flex;
       align-self: flex-start;
-      // &--win {
-      //   transform: scale(1.5);
-      // }
+      &--win {
+        color: green;
+      }
+      &--loss {
+        color: red;
+      }
       &__letter {
         position: relative;
         align-self: center;
