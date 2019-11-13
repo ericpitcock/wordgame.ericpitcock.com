@@ -25,8 +25,7 @@
               :key="index"
               :data-character-code="getCharacterCode(letter)"
               v-html="displayCharacter(letter)"
-        >
-        </span>
+        />
       </div>
     </div>
     <div class="selections">
@@ -34,6 +33,7 @@
       <div v-for="(letter, index) in alphabet"
            :key="index"
            :class=""
+           @click="registerAttempt(getCharacterCode(letter))"
       >
         {{ letter }}
       </div>
@@ -50,7 +50,6 @@
     data() {
       return {
         attemptedLetters: [],
-        // blacklist,
         correctLetters: [],
         definition: '',
         incorrectLetters: [],
@@ -68,7 +67,7 @@
       alphabet() { return [...'abcdefghijklmnopqrstuvwxyz'] },
       qwerty() { return [...'qwertyuiopasdfghjklzxcvbnm'] },
       secretWordArray() { return [...this.secretWord] },
-      uniqueLetters() { return [...new Set(this.secretWord.array)].length }
+      uniqueLetters() { return [...new Set(this.secretWordArray)].length }
     },
     methods: {
       animateWord(type, duration='1000') {
@@ -107,7 +106,7 @@
         return (this.correctLetters.includes(letter)) ? letter : '&bull;'
       },
       filterSecretWord(word) {
-        console.log('filtering secret word')
+        // console.log('filtering secret word')
         return blacklist.includes(word)
       },
       getSecretWord() {
@@ -161,10 +160,6 @@
       processInput(code) {
         // remove it from array
         this.secretWordArrayClone = this.secretWordArrayClone.filter(letter => { return letter !== this.getLetter(code) })
-        // console.log(this.secretWordArrayClone)
-        // this.attemptedLetters.push(code)
-        // console.log('attemptedLetters processInput')
-        // this.revealLetters(code)
         this.inputAllowed = true
 
         // if it's a win
@@ -175,13 +170,6 @@
           this.inputAllowed = false
           setTimeout(() => { this.init() }, 1300)
         }
-      },
-      processSecretWord() {
-        // console.log('Processing secret word…')
-        // this.secretWord.array = this.secretWord.split('')
-        // populate worker array
-        this.secretWordArrayClone = this.secretWordArray
-        this.start()
       },
       registerAttempt(code) {
         // if it's already been tried, do nothing
@@ -198,7 +186,7 @@
       },
       start() {
         // console.log('Ready')
-        console.log('Ready: ' + this.secretWord)
+        console.log(`Ready: ${this.secretWord}`)
         this.ready = true
         setTimeout(() => {
           this.inputAllowed = true
@@ -216,15 +204,6 @@
           // console.log('input not alphabetical')
           this.inputAllowed = true
         }
-        // if (this.inputAllowed) {
-        //   this.inputAllowed = false
-        //   if (code >= 97 && code <= 122) {
-        //     this.registerAttempt(code)
-        //   } else {
-        //     // console.log('input not alphabetical')
-        //     this.inputAllowed = true
-        //   }
-        // }
       }
     },
     watch: {
@@ -241,7 +220,8 @@
       //   if (this.incorrectLetters) console.log(`Incorrect: ${this.incorrectLetters}`)
       // },
       secretWord() {
-        this.processSecretWord()
+        this.secretWordArrayClone = this.secretWordArray
+        this.start()
       }
     },
     created() {
@@ -330,7 +310,7 @@
     width: 100%;
     .secret-word {
       display: flex;
-      align-self: flex-start;
+      // align-self: flex-start;
       &--win {
         color: $green;
       }
@@ -343,7 +323,7 @@
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         font-size: 50px;
         letter-spacing: 12px;
-        transition: all .15s cubic-bezier(0.29, 0.74, 0.04, 1.04);
+        transition: all .4s cubic-bezier(0.29, 0.74, 0.04, 1.04);
         &:first-child {
           text-transform: uppercase;
         }
@@ -364,10 +344,11 @@
   }
 
   .selections {
-    height: 60px;
-    right: 0;
-    bottom: 0;
-    left: 0;
+    // height: 60px;
+    // right: 0;
+    // bottom: 0;
+    // left: 0;
+    flex: 1;
     padding-top: 14px;
     background: rgba(0,0,0,0.05);
     border-top: 1px solid rgba(0,0,0,0.05);
