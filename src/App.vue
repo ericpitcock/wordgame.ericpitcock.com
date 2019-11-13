@@ -71,7 +71,7 @@
     },
     methods: {
       animateWord(type, duration='1000') {
-        switch (type) {
+        switch(type) {
           case 'pulse':
             this.pulseWord = true
             setTimeout(() => { this.pulseWord = false }, duration)
