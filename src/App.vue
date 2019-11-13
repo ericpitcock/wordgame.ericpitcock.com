@@ -359,9 +359,10 @@
       height: 30px;
       line-height: 28px;
       text-transform: uppercase;
-      color: $white;
+      color: $dark-gray;
       font-weight: 600;
-      background: $error-red;
+      background: $white;
+      border: 1px solid #e6e6e6;
       & + div {
         margin-left: 10px;
       }
