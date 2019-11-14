@@ -37,7 +37,7 @@
       <!-- <div v-for="letter in incorrectLetters">{{ letter }}</div> -->
       <div v-for="(letter, index) in alphabet"
            :key="index"
-           :class=""
+           :class="getLetterClass(letter)"
            @click="registerAttempt(getCharacterCode(letter))"
       >
         {{ letter }}
@@ -147,6 +147,13 @@
       },
       getLetter(code) {
         return String.fromCharCode(code)
+      },
+      getLetterClass(letter) {
+        if (this.correctLetters.includes(letter)) {
+          return 'correct'
+        } else if (this.incorrectLetters.includes(letter)) {
+          return 'incorrect'
+        }
       },
       handleError(error) {
         console.log(error)
@@ -375,6 +382,12 @@
       border: 1px solid #e6e6e6;
       & + div {
         margin-left: 10px;
+      }
+      &.correct {
+        background: green;
+      }
+      &.incorrect {
+        background: red;
       }
     }
   }
