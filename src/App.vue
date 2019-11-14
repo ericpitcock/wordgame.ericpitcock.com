@@ -13,14 +13,19 @@
     </div>
     <div class="secret-word-container">
       <div v-if="ready"
-           :class="['secret-word',
+           :class="[
+           'secret-word',
            { 'secret-word--win': isWin,
              'animated pulse faster': pulseWord,
              'animated shake faster': shakeWord,
              'animated tada': tadaWord
            }]"
       >
-        <span :class="['secret-word__letter', { 'highlight': correctLetters.includes(letter) }]"
+        <span :class="[
+              'secret-word__letter',
+              { 'highlight': correctLetters.includes(letter),
+                'animated bounceInUp': secretWordEntrace
+              }]"
               v-for="(letter, index) in secretWordArray"
               :key="index"
               :data-character-code="getCharacterCode(letter)"
@@ -59,6 +64,7 @@
         pulseWord: false,
         secretWord: '',
         secretWordArrayClone: [],
+        secretWordEntrace: false,
         shakeWord: false,
         tadaWord: false
       }
@@ -188,6 +194,7 @@
         // console.log('Ready')
         console.log(`Ready: ${this.secretWord}`)
         this.ready = true
+        this.secretWordEntrace = true
         setTimeout(() => {
           this.inputAllowed = true
           // console.log('Ready: Input allowed')
@@ -308,6 +315,8 @@
     position: relative;
     z-index: 10;
     width: 100%;
+    overflow: hidden;
+    // z-index: 1;
     .secret-word {
       display: flex;
       // align-self: flex-start;
@@ -338,9 +347,9 @@
         }
       }
     }
-    &.animated.shake {
-      -webkit-animation-duration: .5s;
-    }
+    // &.animated.shake {
+    //   -webkit-animation-duration: .5s;
+    // }
   }
 
   .selections {
@@ -354,6 +363,7 @@
     border-top: 1px solid rgba(0,0,0,0.05);
     display: flex;
     justify-content: center;
+    // z-index: 2;
     div {
       width: 30px;
       height: 30px;
