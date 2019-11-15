@@ -42,6 +42,7 @@
       >
         {{ letter }}
       </div>
+      <div @click="checkWordForLetter(getCharacterCode(getRandomLetter()))">freebie</div>
     </div>
   </div>
 </template>
@@ -154,6 +155,9 @@
         } else if (this.incorrectLetters.includes(letter)) {
           return 'incorrect'
         }
+      },
+      getRandomLetter() {
+        return this.secretWordArrayClone[Math.floor(Math.random() * this.secretWordArrayClone.length)]
       },
       handleError(error) {
         console.log(error)
@@ -384,7 +388,7 @@
         margin-left: 10px;
       }
       &.correct {
-        background: green;
+        background: $green;
       }
       &.incorrect {
         background: red;
