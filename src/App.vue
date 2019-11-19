@@ -100,7 +100,7 @@
         // if word contains letter
         if (this.secretWordArray.includes(letter)) {
           this.correctLetters.push(letter)
-          this.processInput(code)
+          // this.processInput(code)
         // if word doesn't contain letter
         } else {
           // console.log('this letter is not in the word')
@@ -162,6 +162,14 @@
       handleError(error) {
         console.log(error)
       },
+      handleKeypress(code) {
+        // validate input
+        if (!this.validateInput(code)) return
+        // if valid, go ahead
+        this.registerAttempt(code)
+        this.checkWordForLetter(code)
+        this.processInput(code)
+      },
       init() {
         console.clear()
         this.attemptedLetters = []
@@ -212,16 +220,7 @@
         }, 800)
       },
       validateInput(code) {
-        // if input isn't allowed, return
-        if (!this.inputAllowed) return
-        // if input is allowed, carry on
-        this.inputAllowed = false
-        if (code >= 97 && code <= 122) {
-          this.registerAttempt(code)
-        } else {
-          // console.log('input not alphabetical')
-          this.inputAllowed = true
-        }
+        return (code >= 97 && code <= 122) ? true : false
       }
     },
     watch: {
@@ -244,7 +243,7 @@
     },
     created() {
       window.addEventListener('keypress', event => {
-        this.validateInput(event.which)
+        this.handleKeypress(event.which)
       })
     },
     mounted() {
