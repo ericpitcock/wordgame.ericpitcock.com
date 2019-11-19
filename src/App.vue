@@ -38,11 +38,11 @@
       <div v-for="(letter, index) in alphabet"
            :key="index"
            :class="getLetterClass(letter)"
-           @click="registerAttempt(getCharacterCode(letter))"
+           @click="handleKeypress(getCharacterCode(letter))"
       >
         {{ letter }}
       </div>
-      <div @click="checkWordForLetter(getCharacterCode(getRandomLetter()))">freebie</div>
+      <div @click="handleKeypress(getCharacterCode(getRandomLetter()))">freebie</div>
     </div>
   </div>
 </template>
@@ -383,6 +383,8 @@
       font-weight: 600;
       background: $white;
       border: 1px solid #e6e6e6;
+      transition: position .2s ease-in-out;
+      cursor: pointer;
       & + div {
         margin-left: 10px;
       }
@@ -390,7 +392,9 @@
         background: $green;
       }
       &.incorrect {
-        background: red;
+        position: relative;
+        top: 10px;
+        opacity: 0.5;
       }
     }
   }
