@@ -210,13 +210,10 @@
         }
       },
       start() {
-        // console.log('Ready')
-        console.log(`Ready: ${this.secretWord}`)
         this.ready = true
         this.secretWordEntrace = true
         setTimeout(() => {
           this.inputAllowed = true
-          // console.log('Ready: Input allowed')
         }, 800)
       },
       validateInput(code) {
@@ -224,9 +221,9 @@
       }
     },
     watch: {
-      inputAllowed() {
-        console.log(`Input allowed: ${this.inputAllowed}`)
-      },
+      // inputAllowed() {
+      //   console.log(`Input allowed: ${this.inputAllowed}`)
+      // },
       // attemptedLetters() {
       //   if (this.attemptedLetters) console.log(`Attempted: ${this.attemptedLetters}`)
       // },
@@ -236,9 +233,13 @@
       // incorrectLetters() {
       //   if (this.incorrectLetters) console.log(`Incorrect: ${this.incorrectLetters}`)
       // },
+      ready() {
+        if (this.ready) console.log('ready')
+      },
       secretWord() {
         this.secretWordArrayClone = this.secretWordArray
         this.start()
+        if (this.secretWord) console.log(this.secretWord)
       }
     },
     created() {
