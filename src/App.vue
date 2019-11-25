@@ -1,7 +1,12 @@
 <template>
   <div id="app">
     <div class="title">
-      <svg width="20" height="20" viewBox="0 0 20 20"><path d="M0,0V20H20V0H0ZM14,6H7V9h4v2H7v3h7v2H5V4h9V6Z"/></svg>
+      <svg width="20"
+           height="20"
+           viewBox="0 0 20 20"
+      >
+        <path d="M0,0V20H20V0H0ZM14,6H7V9h4v2H7v3h7v2H5V4h9V6Z"/>
+      </svg>
       <span>Word Game</span>
     </div>
     <div class="definition-container">
@@ -34,7 +39,6 @@
       </div>
     </div>
     <div class="selections">
-      <!-- <div v-for="letter in incorrectLetters">{{ letter }}</div> -->
       <div v-for="(letter, index) in alphabet"
            :key="index"
            :class="getLetterClass(letter)"
@@ -42,7 +46,15 @@
       >
         {{ letter }}
       </div>
-      <div @click="handleKeypress(getCharacterCode(getRandomLetter()))">freebie</div>
+      <div :class="[
+           'freebie',
+           { 'freebie--disabled': !freebieAvailable }
+           ]"
+           @click="getFreebie()"
+      >
+        freebie
+      </div>
+      <div @click="skip()">Just show me</div>
     </div>
   </div>
 </template>
@@ -58,6 +70,7 @@
         attemptedLetters: [],
         correctLetters: [],
         definition: '',
+        freebieAvailable: true,
         incorrectLetters: [],
         inputAllowed: false,
         isWin: false,
@@ -110,7 +123,7 @@
         }
       },
       displayCharacter(letter) {
-        return (this.correctLetters.includes(letter)) ? letter : '&bull;'
+        return (this.correctLetters.includes(letter)) ? letter : '&lowbar;'
       },
       filterSecretWord(word) {
         // console.log('filtering secret word')
@@ -146,6 +159,12 @@
       getCharacterCode(letter) {
         return letter.charCodeAt()
       },
+      getFreebie() {
+        if (!this.freebieAvailable) return
+        let randomLetter = this.secretWordArrayClone[Math.floor(Math.random() * this.secretWordArrayClone.length)]
+        this.handleKeypress(this.getCharacterCode(randomLetter))
+        this.freebieAvailable = false
+      },
       getLetter(code) {
         return String.fromCharCode(code)
       },
@@ -155,9 +174,6 @@
         } else if (this.incorrectLetters.includes(letter)) {
           return 'incorrect'
         }
-      },
-      getRandomLetter() {
-        return this.secretWordArrayClone[Math.floor(Math.random() * this.secretWordArrayClone.length)]
       },
       handleError(error) {
         console.log(error)
@@ -175,6 +191,7 @@
         this.attemptedLetters = []
         this.correctLetters = []
         this.definition = ''
+        this.freebieAvailable = true
         this.incorrectLetters = []
         this.isWin = false
         this.ready = false
@@ -208,6 +225,10 @@
           // console.log('attemptedLetters registerAttempt')
           this.checkWordForLetter(code)
         }
+      },
+      skip() {
+        this.secretWordArrayClone.forEach(letter => this.correctLetters.push(letter))
+        setTimeout(() => { this.init() }, 1300)
       },
       start() {
         this.ready = true
@@ -254,11 +275,12 @@
 </script>
 
 <style lang="scss">
-  @import '/assets/sass/_reset';
+  // @import '/assets/sass/_reset';
+  @import '../node_modules/html5-reset/assets/css/reset.css';
   @import '/assets/sass/_variables';
   @import '../node_modules/animate.css/animate.min.css';
 
-  @import url('https://fonts.googleapis.com/css?family=News+Cycle|Source+Sans+Pro:400,600');
+  @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600');
 
   @font-face {
     font-family: 'HouseMovements-Sign';
@@ -340,7 +362,7 @@
       &__letter {
         position: relative;
         align-self: center;
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        // font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         font-size: 50px;
         letter-spacing: 12px;
         transition: all .4s cubic-bezier(0.29, 0.74, 0.04, 1.04);
@@ -398,6 +420,11 @@
         opacity: 0.5;
       }
     }
+    .freebie {
+      &--disabled {
+        opacity: 0.25;
+      }
+    }
   }
 
   .definition-container {
@@ -415,7 +442,7 @@
         padding-top: 30px;
         font-size: 26px;
         line-height: 32px;
-        font-family: 'News Cycle', sans-serif;
+        // font-family: 'News Cycle', sans-serif;
         font-weight: 400;
         &:first-letter {
           text-transform: capitalize;
