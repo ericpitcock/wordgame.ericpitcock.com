@@ -179,6 +179,7 @@
         console.log(error)
       },
       handleKeypress(code) {
+        if (!this.inputAllowed) return
         // validate input
         if (!this.validateInput(code)) return
         // if valid, go ahead
@@ -258,7 +259,7 @@
         if (this.ready) console.log('ready')
       },
       secretWord() {
-        this.secretWordArrayClone = this.secretWordArray
+        this.secretWordArrayClone = [...this.secretWordArray]
         this.start()
         if (this.secretWord) console.log(this.secretWord)
       }
