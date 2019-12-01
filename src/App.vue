@@ -91,22 +91,8 @@
     },
     methods: {
       animateWord(type, duration='1000') {
-        switch(type) {
-          case 'pulse':
-            this.pulseWord = true
-            setTimeout(() => { this.pulseWord = false }, duration)
-            break
-          case 'shake':
-            this.shakeWord = true
-            setTimeout(() => { this.shakeWord = false }, duration)
-            break
-          case 'tada':
-            this.tadaWord = true
-            setTimeout(() => { this.tadaWord = false }, duration)
-            break
-          default:
-            break
-        }
+        this[`${type}Word`] = true
+        setTimeout(() => { this[`${type}Word`] = false }, duration)
       },
       checkWordForLetter(code) {
         var letter = this.getLetter(code)
@@ -188,17 +174,19 @@
         this.processInput(code)
       },
       init() {
-        console.clear()
-        this.attemptedLetters = []
-        this.correctLetters = []
-        this.definition = ''
-        this.freebieAvailable = true
-        this.incorrectLetters = []
-        this.isWin = false
-        this.ready = false
-        this.secretWord = ''
-        this.secretWordArrayClone = []
-        this.getSecretWord()
+        setTimeout(() => {
+          console.clear()
+          this.attemptedLetters = []
+          this.correctLetters = []
+          this.definition = ''
+          this.freebieAvailable = true
+          this.incorrectLetters = []
+          this.isWin = false
+          this.ready = false
+          this.secretWord = ''
+          this.secretWordArrayClone = []
+          this.getSecretWord()
+        }, 1300)
       },
       processInput(code) {
         // remove it from array
@@ -207,11 +195,7 @@
 
         // if it's a win
         if (this.secretWordArrayClone.length == 0) {
-          console.log('YOU WIN')
-          this.isWin = true
-          this.animateWord('tada')
-          this.inputAllowed = false
-          setTimeout(() => { this.init() }, 1300)
+          this.winner()
         }
       },
       registerAttempt(code) {
@@ -229,7 +213,7 @@
       },
       skip() {
         this.secretWordArrayClone.forEach(letter => this.correctLetters.push(letter))
-        setTimeout(() => { this.init() }, 1300)
+        this.init()
       },
       start() {
         this.ready = true
@@ -240,6 +224,13 @@
       },
       validateInput(code) {
         return (code >= 97 && code <= 122) ? true : false
+      },
+      winner() {
+        console.log('YOU WIN')
+        this.isWin = true
+        this.animateWord('tada')
+        this.inputAllowed = false
+        this.init()
       }
     },
     watch: {
