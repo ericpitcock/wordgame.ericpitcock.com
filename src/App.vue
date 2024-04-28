@@ -16,8 +16,8 @@
           'animate__animated',
           {
             'secret-word--win': isWin,
-            'animate__pulse animate__faster': pulseWord,
-            'animate__shake animate__faster': shakeWord,
+            'animate__heartBeat animate__faster': pulseWord,
+            'animate__shakeX animate__faster': shakeWord,
             'animate__tada': tadaWord
           }]"
       >
@@ -100,7 +100,7 @@
           // console.log('this letter is not in the word')
           this.animateWord('shake', 500)
           this.incorrectLetters.push(letter)
-          this.inputAllowed = true
+          // this.inputAllowed = true
         }
       },
       displayCharacter(letter) {
@@ -142,14 +142,20 @@
                 .normalize('NFD')
                 .replace(/[\u0300-\u036f]/g, '')
 
-              if (!this.filterSecretWord(secretWord)) {
-                this.secretWord = secretWord
-                this.definition = data.results[0].definition
-                console.log('results', data.results)
-              } else {
+              // if the word is in the bad list, get another
+              if (this.filterSecretWord(secretWord)) {
                 console.log(`Word, ${secretWord}, filtered out. Getting another...`)
-                this.getSecretWord
+                this.getSecretWord()
+                return
               }
+
+              this.secretWord = secretWord
+              this.definition = data.results[0].definition
+
+              this.secretWordArrayClone = [...this.secretWordArray]
+              this.startGame()
+
+              console.log('results', data)
             })
           })
           .catch(error => {
@@ -196,7 +202,7 @@
       processInput(charCode) {
         // remove it from array
         this.secretWordArrayClone = this.secretWordArrayClone.filter(letter => { return letter !== this.getLetter(charCode) })
-        this.inputAllowed = true
+        // this.inputAllowed = true
 
         // if it's a win
         if (this.secretWordArrayClone.length == 0) {
@@ -208,19 +214,16 @@
         if (this.attemptedLetters.includes(charCode)) {
           console.log('this letter has been tried', charCode)
           this.animateWord('pulse', 500)
-          this.inputAllowed = true
-          // if this is the first try, register the attempt and check the word
-        } else {
-          this.attemptedLetters.push(charCode)
-          // console.log('attemptedLetters registerAttempt')
-          // this.checkWordForLetter(charCode)
+          return
         }
+
+        this.attemptedLetters.push(charCode)
       },
       // skip() {
       //   this.secretWordArrayClone.forEach(letter => this.correctLetters.push(letter))
       //   this.init()
       // },
-      start() {
+      startGame() {
         this.ready = true
         this.secretWordEntrace = true
 
@@ -258,11 +261,11 @@
       ready() {
         if (this.ready) console.log('ready')
       },
-      secretWord() {
-        this.secretWordArrayClone = [...this.secretWordArray]
-        this.start()
-        if (this.secretWord) console.log(this.secretWord)
-      }
+      // secretWord() {
+      //   this.secretWordArrayClone = [...this.secretWordArray]
+      //   this.start()
+      //   if (this.secretWord) console.log(this.secretWord)
+      // }
     },
     created() {
       window.addEventListener('keypress', event => {
@@ -339,7 +342,11 @@
 
       // align-self: flex-start;
       &--win {
-        color: $green;
+
+        // color: $green !important;
+        .secret-word__letter {
+          color: $green !important;
+        }
       }
 
       &--loss {
