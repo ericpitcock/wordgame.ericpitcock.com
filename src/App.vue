@@ -6,7 +6,10 @@
         height="20"
         viewBox="0 0 20 20"
       >
-        <path d="M0,0V20H20V0H0ZM14,6H7V9h4v2H7v3h7v2H5V4h9V6Z" />
+        <path
+          fill="black"
+          d="M0,0V20H20V0H0ZM14,6H7V9h4v2H7v3h7v2H5V4h9V6Z"
+        />
       </svg>
       <span>Word Game</span>
     </div>
@@ -33,9 +36,10 @@
         <span
           :class="[
             'secret-word__letter',
+            'animate__animated',
             {
               'highlight': correctLetters.includes(letter),
-              'animated bounceInUp': secretWordEntrace
+              'animate__bounceInUp': secretWordEntrace
             }]"
           v-for="(letter, index) in secretWordArray"
           :key="index"
@@ -44,7 +48,7 @@
         />
       </div>
     </div>
-    <!-- <div class="selections">
+    <div class="selections">
       <div
         v-for="(letter, index) in alphabet"
         :key="index"
@@ -53,22 +57,14 @@
       >
         {{ letter }}
       </div>
-      <div
-        :class="[
-          'freebie',
-          { 'freebie--disabled': !freebieAvailable }
-        ]"
-        @click="getFreebie()"
-      >
-        freebie
-      </div>
-      <div @click="skip()">Just show me</div>
-    </div> -->
+      <!-- <div>slider down here from no points to max points. it gets smaller as you
+        choose
+        the wrong letters</div> -->
+    </div>
   </div>
 </template>
 
 <script>
-  import blacklist from './static/blacklist'
   import _ from 'lodash'
 
   export default {
@@ -78,7 +74,6 @@
         attemptedLetters: [],
         correctLetters: [],
         definition: '',
-        freebieAvailable: true,
         incorrectLetters: [],
         inputAllowed: false,
         isWin: false,
@@ -120,17 +115,35 @@
         return (this.correctLetters.includes(letter)) ? letter : '&lowbar;'
       },
       filterSecretWord(word) {
-        // console.log('filtering secret word')
-        return blacklist.includes(word)
+        // eslint-disable-next-line no-undef
+        const badlist = import.meta.env.VITE_APP_BAD_WORDS.split(',')
+        return badlist.includes(word)
       },
       getSecretWord() {
         //^[a-z]+$ encodes to %5E%5Ba-z%5D%2B%24
         // https://www.url-encode-decode.com/
-        fetch('https://wordsapiv1.p.rapidapi.com/words/?random=true&partOfSpeech=noun&letterPattern=%5E%5Ba-z%5D%2B%24&lettersMin=3&lettersMax=7&hasDetails=definitions', {
+        // 'https://wordsapiv1.p.rapidapi.com/words/?random=true&partOfSpeech=noun&letterPattern=%5E%5Ba-z%5D%2B%24&lettersMin=3&lettersMax=7&hasDetails=definitions'
+        const apiUrl = 'https://wordsapiv1.p.rapidapi.com/words/'
+        const queryParams = {
+          random: true,
+          partOfSpeech: 'noun',
+          letterPattern: '^([a-z]+)$',
+          lettersMin: 5,
+          lettersMax: 5,
+          hasDetails: 'definitions,typeOf'
+        }
+
+        const queryString = Object.keys(queryParams)
+          .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(queryParams[key])}`)
+          .join('&')
+
+        const url = `${apiUrl}?${queryString}`
+
+        fetch(url, {
           method: 'GET',
           headers: {
             'x-rapidapi-host': 'wordsapiv1.p.rapidapi.com',
-            'x-rapidapi-key': 'bdd437dd2fmsh2e329e4673b085cp1bbabfjsnff92e1c4f99e'
+            'x-rapidapi-key': import.meta.env.VITE_APP_WORDS_API_KEY
           }
         })
           .then(response => {
@@ -153,12 +166,6 @@
       },
       getCharacterCode(letter) {
         return letter.charCodeAt()
-      },
-      getFreebie() {
-        if (!this.freebieAvailable) return
-        let randomLetter = this.secretWordArrayClone[Math.floor(Math.random() * this.secretWordArrayClone.length)]
-        this.handleKeypress(this.getCharacterCode(randomLetter))
-        this.freebieAvailable = false
       },
       getLetter(code) {
         return String.fromCharCode(code)
@@ -220,10 +227,10 @@
           this.checkWordForLetter(code)
         }
       },
-      skip() {
-        this.secretWordArrayClone.forEach(letter => this.correctLetters.push(letter))
-        this.init()
-      },
+      // skip() {
+      //   this.secretWordArrayClone.forEach(letter => this.correctLetters.push(letter))
+      //   this.init()
+      // },
       start() {
         this.ready = true
         this.secretWordEntrace = true
@@ -294,17 +301,18 @@
   body,
   input,
   button {
-    font-family: 'Source Sans Pro', sans-serif;
-    font-weight: 400;
+    font-family: 'AstridGrotesk-Bd', sans-serif;
+    // font-weight: 400;
   }
 
   body {
     height: 100%;
     transform: translateZ(0);
     -webkit-transform: translate3d(0, 0, 0);
-    background: #fff;
+    background: #d2a637;
     text-align: center;
     font-size: 14px;
+    font-family: 'AstridGrotesk-Bd', sans-serif;
     color: $black;
     user-select: none;
     cursor: default;
@@ -328,18 +336,9 @@
     top: 20px;
     left: 20px;
     height: 20px;
-
-    svg {
-      vertical-align: text-top;
-
-      path {
-        fill: $black;
-      }
-    }
-
-    span {
-      padding-left: 8px;
-    }
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   .secret-word-container {
@@ -380,6 +379,10 @@
           font-family: 'HouseMovements-Sign';
           font-size: 150px;
           letter-spacing: 0;
+          color: white;
+          text-shadow: -5px 7px 0px black;
+          -webkit-text-stroke: 2px black;
+          text-stroke: 1px black;
 
           // custom kerning for T* (except l and i)
           &:first-child[data-character-code="116"] + *:not([data-character-code="104"]):not([data-character-code="105"]) {
@@ -401,8 +404,8 @@
     // left: 0;
     flex: 1;
     padding-top: 14px;
-    background: rgba(0, 0, 0, 0.05);
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    // background: rgba(0, 0, 0, 0.05);
+    // border-top: 1px solid rgba(0, 0, 0, 0.05);
     display: flex;
     justify-content: center;
 
@@ -412,10 +415,13 @@
       height: 30px;
       line-height: 28px;
       text-transform: uppercase;
-      color: $dark-gray;
+      color: $black;
       font-weight: 600;
       background: $white;
-      border: 1px solid #e6e6e6;
+      border: 1px solid $black;
+      border-radius: 4px;
+      // dark black drop shadow
+      box-shadow: -2px 2px 0 $black;
       transition: position .2s ease-in-out;
       cursor: pointer;
 
@@ -528,5 +534,4 @@
         }
       }
     }
-  }
-</style>
+  }</style>
