@@ -11,26 +11,12 @@
     <div class="secret-word-container">
       <div
         v-if="ready"
-        :class="[
-          'secret-word',
-          'animate__animated',
-          {
-            'secret-word--win': isWin,
-            'animate__heartBeat animate__faster': pulseWord,
-            'animate__shakeX animate__faster': shakeWord,
-            'animate__tada': tadaWord
-          }]"
+        :class="secretWordClasses"
       >
         <span
-          :class="[
-            'secret-word__letter',
-            'animate__animated',
-            {
-              'highlight': correctLetters.includes(letter),
-              'animate__bounceInUp': secretWordEntrace
-            }]"
           v-for="(letter, index) in secretWordArray"
           :key="index"
+          :class="secretWordLetterClasses(letter)"
           :data-character-code="getCharacterCode(letter)"
           v-html="displayCharacter(letter)"
         />
@@ -40,7 +26,7 @@
       <div
         v-for="(letter, index) in alphabet"
         :key="index"
-        :class="getLetterClass(letter)"
+        :class="letterClasses(letter)"
         @click="handleInput(getCharacterCode(letter))"
       >
         {{ letter }}
@@ -73,7 +59,7 @@
         pulseWord: false,
         secretWord: '',
         secretWordArrayClone: [],
-        secretWordEntrace: false,
+        secretWordEntrance: false,
         shakeWord: false,
         tadaWord: false
       }
@@ -82,6 +68,18 @@
       alphabet() { return [...'abcdefghijklmnopqrstuvwxyz'] },
       qwerty() { return [...'qwertyuiopasdfghjklzxcvbnm'] },
       secretWordArray() { return [...this.secretWord] },
+      secretWordClasses() {
+        return [
+          'secret-word',
+          'animate__animated',
+          {
+            'secret-word--win': this.isWin,
+            'animate__heartBeat animate__faster': this.pulseWord,
+            'animate__shakeX animate__faster': this.shakeWord,
+            'animate__tada': this.tadaWord
+          }
+        ]
+      },
       uniqueLetters() { return [...new Set(this.secretWordArray)].length }
     },
     methods: {
@@ -168,13 +166,6 @@
       getLetter(charCode) {
         return String.fromCharCode(charCode)
       },
-      getLetterClass(letter) {
-        if (this.correctLetters.includes(letter)) {
-          return 'correct'
-        } else if (this.incorrectLetters.includes(letter)) {
-          return 'incorrect'
-        }
-      },
       handleInput(charCode) {
         if (!this.inputAllowed) return
         // validate input
@@ -198,6 +189,15 @@
           this.secretWordArrayClone = []
           this.getSecretWord()
         }, 1300)
+      },
+      letterClasses(letter) {
+        return [
+          'selections__letter',
+          {
+            'correct': this.correctLetters.includes(letter),
+            'incorrect': this.incorrectLetters.includes(letter)
+          }
+        ]
       },
       processInput(charCode) {
         // remove it from array
@@ -223,9 +223,19 @@
       //   this.secretWordArrayClone.forEach(letter => this.correctLetters.push(letter))
       //   this.init()
       // },
+      secretWordLetterClasses(letter) {
+        return [
+          'secret-word__letter',
+          'animate__animated',
+          {
+            'highlight': this.correctLetters.includes(letter),
+            'animate__bounceInUp': this.secretWordEntrance
+          }
+        ]
+      },
       startGame() {
         this.ready = true
-        this.secretWordEntrace = true
+        this.secretWordEntrance = true
 
         setTimeout(() => {
           this.inputAllowed = true
@@ -246,30 +256,13 @@
       }
     },
     watch: {
-      // inputAllowed() {
-      //   console.log(`Input allowed: ${this.inputAllowed}`)
-      // },
-      // attemptedLetters() {
-      //   if (this.attemptedLetters) console.log(`Attempted: ${this.attemptedLetters}`)
-      // },
-      // correctLetters() {
-      //   if (this.correctLetters) console.log(`Correct: ${this.correctLetters}`)
-      // },
-      // incorrectLetters() {
-      //   if (this.incorrectLetters) console.log(`Incorrect: ${this.incorrectLetters}`)
-      // },
       ready() {
         if (this.ready) console.log('ready')
       },
-      // secretWord() {
-      //   this.secretWordArrayClone = [...this.secretWordArray]
-      //   this.start()
-      //   if (this.secretWord) console.log(this.secretWord)
-      // }
     },
     created() {
       window.addEventListener('keypress', event => {
-        this.handleInput(event.which)
+        this.handleInput(event.key.charCodeAt(0))
       })
     },
     mounted() {
@@ -281,6 +274,13 @@
 <style lang="scss">
   @import '../node_modules/the-new-css-reset/css/reset.css';
   @import '../node_modules/animate.css/animate.min.css';
+
+  :root {
+    --black: hsl(0 0% 0%);
+    --green: hsl(86 42% 61%);
+    --red-orange: hsl(13, 63%, 57%);
+    --white: hsl(0 0% 100%);
+  }
 
   @font-face {
     font-family: 'HouseMovements-Sign';
@@ -306,7 +306,7 @@
     text-align: center;
     font-size: 14px;
     font-family: 'AstridGrotesk-Bd', sans-serif;
-    color: $black;
+    color: var(--black);
     user-select: none;
     cursor: default;
     -webkit-font-smoothing: antialiased;
@@ -332,31 +332,26 @@
     display: flex;
     justify-content: center;
     position: relative;
-    z-index: 10;
-    width: 100%;
+    // z-index: 10;
+    // width: 100%;
     overflow: hidden;
 
-    // z-index: 1;
     .secret-word {
       display: flex;
 
-      // align-self: flex-start;
       &--win {
-
-        // color: $green !important;
         .secret-word__letter {
-          color: $green !important;
+          color: var(--green) !important;
         }
       }
 
       &--loss {
-        color: $red-orange;
+        color: var(--red-orange);
       }
 
       &__letter {
         position: relative;
         align-self: center;
-        // font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         font-size: 50px;
         letter-spacing: 12px;
         transition: all .4s cubic-bezier(0.29, 0.74, 0.04, 1.04);
@@ -381,47 +376,32 @@
         }
       }
     }
-
-    // &.animated.shake {
-    //   -webkit-animation-duration: .5s;
-    // }
   }
 
   .selections {
-    // height: 60px;
-    // right: 0;
-    // bottom: 0;
-    // left: 0;
     flex: 1;
-    padding-top: 14px;
-    // background: rgba(0, 0, 0, 0.05);
-    // border-top: 1px solid rgba(0, 0, 0, 0.05);
+    // padding-top: 14px;
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 10px;
 
-    // z-index: 2;
-    div {
+    &__letter {
       width: 30px;
       height: 30px;
       line-height: 28px;
       text-transform: uppercase;
-      color: $black;
+      color: var(--black);
       font-weight: 600;
-      background: $white;
-      border: 1px solid $black;
+      background: var(--white);
+      border: 1px solid var(--black);
       border-radius: 4px;
-      // dark black drop shadow
-      box-shadow: -2px 2px 0 $black;
+      box-shadow: -2px 2px 0 var(--black);
       transition: position .2s ease-in-out;
       cursor: pointer;
 
-      & + div {
-        margin-left: 10px;
-      }
-
       &.correct {
-        background: $green;
+        background: var(--green);
       }
 
       &.incorrect {
@@ -439,7 +419,7 @@
   }
 
   .definition-container {
-    height: 200px;
+    // height: 200px;
     display: flex;
     flex: 1;
     justify-content: center;
@@ -456,7 +436,6 @@
         padding-top: 30px;
         font-size: 26px;
         line-height: 32px;
-        // font-family: 'News Cycle', sans-serif;
         font-weight: 400;
 
         &:first-letter {
