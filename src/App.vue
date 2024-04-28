@@ -1,18 +1,6 @@
 <template>
   <div class="word-game">
-    <div class="title">
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 20 20"
-      >
-        <path
-          fill="black"
-          d="M0,0V20H20V0H0ZM14,6H7V9h4v2H7v3h7v2H5V4h9V6Z"
-        />
-      </svg>
-      <span>Word Game</span>
-    </div>
+    <wg-title />
     <div class="definition-container">
       <div class="definition">
         <transition name="bounce">
@@ -53,7 +41,7 @@
         v-for="(letter, index) in alphabet"
         :key="index"
         :class="getLetterClass(letter)"
-        @click="handleKeypress(getCharacterCode(letter))"
+        @click="handleInput(getCharacterCode(letter))"
       >
         {{ letter }}
       </div>
@@ -65,10 +53,14 @@
 </template>
 
 <script>
-  import _ from 'lodash'
+  // import _ from 'lodash'
+  import WgTitle from '@/components/WgTitle.vue'
 
   export default {
     name: 'app',
+    components: {
+      WgTitle
+    },
     data() {
       return {
         attemptedLetters: [],
@@ -97,8 +89,8 @@
         this[`${type}Word`] = true
         setTimeout(() => { this[`${type}Word`] = false }, duration)
       },
-      checkWordForLetter(code) {
-        var letter = this.getLetter(code)
+      checkWordForLetter(charCode) {
+        var letter = this.getLetter(charCode)
         // if word contains letter
         if (this.secretWordArray.includes(letter)) {
           this.correctLetters.push(letter)
@@ -120,9 +112,6 @@
         return badlist.includes(word)
       },
       getSecretWord() {
-        //^[a-z]+$ encodes to %5E%5Ba-z%5D%2B%24
-        // https://www.url-encode-decode.com/
-        // 'https://wordsapiv1.p.rapidapi.com/words/?random=true&partOfSpeech=noun&letterPattern=%5E%5Ba-z%5D%2B%24&lettersMin=3&lettersMax=7&hasDetails=definitions'
         const apiUrl = 'https://wordsapiv1.p.rapidapi.com/words/'
         const queryParams = {
           random: true,
@@ -148,27 +137,30 @@
         })
           .then(response => {
             response.json().then(data => {
-              let secretWord = _.deburr(data.word.toLowerCase())
-              // if not in blacklist, proceed
+              let secretWord = data.word
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+
               if (!this.filterSecretWord(secretWord)) {
                 this.secretWord = secretWord
                 this.definition = data.results[0].definition
                 console.log('results', data.results)
               } else {
-                console.log(`Word, ${secretWord}, blacklisted`)
+                console.log(`Word, ${secretWord}, filtered out. Getting another...`)
                 this.getSecretWord
               }
             })
           })
-          .catch(err => {
-            this.handleError('Whoa!', 'The most unknown error has occurred', err)
+          .catch(error => {
+            console.log(error)
           })
       },
       getCharacterCode(letter) {
         return letter.charCodeAt()
       },
-      getLetter(code) {
-        return String.fromCharCode(code)
+      getLetter(charCode) {
+        return String.fromCharCode(charCode)
       },
       getLetterClass(letter) {
         if (this.correctLetters.includes(letter)) {
@@ -177,17 +169,14 @@
           return 'incorrect'
         }
       },
-      handleError(error) {
-        console.log(error)
-      },
-      handleKeypress(code) {
+      handleInput(charCode) {
         if (!this.inputAllowed) return
         // validate input
-        if (!this.validateInput(code)) return
+        if (!this.validateInput(charCode)) return
         // if valid, go ahead
-        this.registerAttempt(code)
-        this.checkWordForLetter(code)
-        this.processInput(code)
+        this.registerAttempt(charCode)
+        this.checkWordForLetter(charCode)
+        this.processInput(charCode)
       },
       init() {
         setTimeout(() => {
@@ -204,9 +193,9 @@
           this.getSecretWord()
         }, 1300)
       },
-      processInput(code) {
+      processInput(charCode) {
         // remove it from array
-        this.secretWordArrayClone = this.secretWordArrayClone.filter(letter => { return letter !== this.getLetter(code) })
+        this.secretWordArrayClone = this.secretWordArrayClone.filter(letter => { return letter !== this.getLetter(charCode) })
         this.inputAllowed = true
 
         // if it's a win
@@ -214,17 +203,17 @@
           this.winner()
         }
       },
-      registerAttempt(code) {
-        // if it's already been tried, do nothing
-        if (this.attemptedLetters.includes(code)) {
-          console.log('this letter has been tried')
+      registerAttempt(charCode) {
+        // if it's already been tried, animate the word
+        if (this.attemptedLetters.includes(charCode)) {
+          console.log('this letter has been tried', charCode)
           this.animateWord('pulse', 500)
           this.inputAllowed = true
           // if this is the first try, register the attempt and check the word
         } else {
-          this.attemptedLetters.push(code)
+          this.attemptedLetters.push(charCode)
           // console.log('attemptedLetters registerAttempt')
-          this.checkWordForLetter(code)
+          // this.checkWordForLetter(charCode)
         }
       },
       // skip() {
@@ -234,12 +223,16 @@
       start() {
         this.ready = true
         this.secretWordEntrace = true
+
         setTimeout(() => {
           this.inputAllowed = true
+
+          this.handleInput(this.getCharacterCode(this.secretWord[1]))
+          this.handleInput(this.getCharacterCode(this.secretWord[3]))
         }, 800)
       },
-      validateInput(code) {
-        return (code >= 97 && code <= 122) ? true : false
+      validateInput(charCode) {
+        return (charCode >= 97 && charCode <= 122) ? true : false
       },
       winner() {
         console.log('YOU WIN')
@@ -273,7 +266,7 @@
     },
     created() {
       window.addEventListener('keypress', event => {
-        this.handleKeypress(event.which)
+        this.handleInput(event.which)
       })
     },
     mounted() {
@@ -283,9 +276,8 @@
 </script>
 
 <style lang="scss">
-  @import '../node_modules/html5-reset/assets/css/reset.css';
+  @import '../node_modules/the-new-css-reset/css/reset.css';
   @import '../node_modules/animate.css/animate.min.css';
-  @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600');
 
   @font-face {
     font-family: 'HouseMovements-Sign';
@@ -294,6 +286,7 @@
     font-style: normal;
   }
 
+  // import AstridGrotesk if I use it
   html {
     height: 100%;
   }
@@ -302,13 +295,10 @@
   input,
   button {
     font-family: 'AstridGrotesk-Bd', sans-serif;
-    // font-weight: 400;
   }
 
   body {
     height: 100%;
-    transform: translateZ(0);
-    -webkit-transform: translate3d(0, 0, 0);
     background: #d2a637;
     text-align: center;
     font-size: 14px;
@@ -317,6 +307,9 @@
     user-select: none;
     cursor: default;
     -webkit-font-smoothing: antialiased;
+    // this is supposed to help with the flicker
+    transform: translateZ(0);
+    -webkit-transform: translate3d(0, 0, 0);
   }
 
   .word-game {
@@ -329,16 +322,6 @@
     flex-direction: column;
     overflow: hidden;
     transition: background-color 0.5s ease;
-  }
-
-  .title {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
   }
 
   .secret-word-container {
@@ -408,6 +391,7 @@
     // border-top: 1px solid rgba(0, 0, 0, 0.05);
     display: flex;
     justify-content: center;
+    align-items: center;
 
     // z-index: 2;
     div {
@@ -474,64 +458,4 @@
       }
     }
   }
-
-  .error {
-    display: none;
-    position: absolute;
-    width: 340px;
-    top: 120px;
-    left: 50%;
-    padding: 40px 30px 30px;
-    border-radius: 3px;
-    margin-left: -170px;
-    background: $error-red;
-    color: $white;
-    font-weight: 600;
-
-    h1 {
-      font-size: 30px;
-      margin-bottom: 10px;
-    }
-
-    p {
-      margin-bottom: 30px;
-    }
-
-    button {
-      height: 22px;
-      display: inline-block;
-      padding: 0 10px 1px 10px;
-      border: 0;
-      background: #fff;
-      color: $dark-gray;
-      border-radius: 3px;
-      font-size: 11px;
-      font-weight: 600;
-      text-align: center;
-      text-transform: uppercase;
-      white-space: nowrap;
-      vertical-align: middle;
-      letter-spacing: 1px;
-      cursor: pointer;
-      user-select: none;
-      background-image: none;
-      box-shadow: 2px 2px 0 rgb(185, 76, 76);
-      -webkit-transition: background .2s ease-in-out;
-      transition: background .2s ease-in-out;
-      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-
-      &:focus,
-      &:active {
-        outline: 0;
-      }
-
-      &[disabled] {
-        opacity: 0.5;
-        cursor: default;
-
-        &:hover {
-          background: transparent;
-        }
-      }
-    }
-  }</style>
+</style>
