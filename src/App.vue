@@ -1,6 +1,8 @@
 <template>
   <div class="word-game">
-    <wg-loading v-if="!ready" />
+    <transition name="fade">
+      <wg-loading v-if="!ready" />
+    </transition>
     <wg-title />
     <div class="definition-container">
       <div class="definition">
@@ -317,6 +319,7 @@
 <style lang="scss">
   @import '../node_modules/the-new-css-reset/css/reset.css';
   @import '../node_modules/animate.css/animate.min.css';
+  @import './assets/scss/fonts.scss';
 
   :root {
     --black: hsl(0 0% 0%);
@@ -327,13 +330,6 @@
     --yellow-dark: hsl(43, 63%, 42%);
   }
 
-  @font-face {
-    font-family: 'HouseMovements-Sign';
-    src: url('/fonts/HouseMovements-Sign.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-  }
-
   // import AstridGrotesk if I use it
   html {
     height: 100%;
@@ -342,7 +338,7 @@
   body,
   input,
   button {
-    font-family: 'AstridGrotesk-Bd', sans-serif;
+    font-family: 'AstridGroteskExtraBold', sans-serif;
   }
 
   body {
@@ -350,8 +346,6 @@
     background: var(--yellow);
     text-align: center;
     font-size: 14px;
-    // font-family: 'AstridGrotesk-Bd', sans-serif;
-    font-family: 'AstridGrotesk-Hv', sans-serif;
     color: var(--black);
     user-select: none;
     cursor: default;
@@ -494,5 +488,15 @@
         }
       }
     }
+  }
+
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity 0.5s;
+  }
+
+  .fade-enter,
+  .fade-leave-to {
+    opacity: 0;
   }
 </style>
