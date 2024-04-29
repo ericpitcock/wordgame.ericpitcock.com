@@ -1,35 +1,6 @@
 <template>
   <div class="word-game">
-    <div
-      v-if="!ready"
-      class="loading"
-    >
-      <svg
-        width="100px"
-        height="100px"
-        viewBox="0 0 100 100"
-        preserveAspectRatio="xMidYMid"
-      >
-        <circle
-          cx="50"
-          cy="50"
-          fill="none"
-          stroke="var(--black)"
-          stroke-width="5"
-          r="35"
-          stroke-dasharray="164.93361431346415 56.97787143782138"
-        >
-          <animateTransform
-            attributeName="transform"
-            type="rotate"
-            repeatCount="indefinite"
-            dur="1s"
-            keyTimes="0;1"
-            values="0 50 50;360 50 50"
-          ></animateTransform>
-        </circle>
-      </svg>
-    </div>
+    <wg-loading v-if="!ready" />
     <wg-title />
     <div class="definition-container">
       <div class="definition">
@@ -77,11 +48,13 @@
 
 <script>
   // import _ from 'lodash'
+  import WgLoading from '@/components/WgLoading.vue'
   import WgTitle from '@/components/WgTitle.vue'
 
   export default {
     name: 'app',
     components: {
+      WgLoading,
       WgTitle
     },
     data() {
@@ -377,7 +350,8 @@
     background: var(--yellow);
     text-align: center;
     font-size: 14px;
-    font-family: 'AstridGrotesk-Bd', sans-serif;
+    // font-family: 'AstridGrotesk-Bd', sans-serif;
+    font-family: 'AstridGrotesk-Hv', sans-serif;
     color: var(--black);
     user-select: none;
     cursor: default;
@@ -397,19 +371,6 @@
     flex-direction: column;
     overflow: hidden;
     transition: background-color 0.5s ease;
-  }
-
-  .loading {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: var(--yellow);
-    z-index: 2;
   }
 
   .secret-word-container {
@@ -524,8 +485,8 @@
 
       p {
         padding-top: 30px;
-        font-size: 26px;
-        line-height: 32px;
+        font-size: 32px;
+        line-height: 36px;
         font-weight: 400;
 
         &:first-letter {
