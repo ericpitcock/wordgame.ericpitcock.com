@@ -92,7 +92,8 @@
           }
         ]
       },
-      uniqueLetters() { return [...new Set(this.secretWordArray)].length }
+      uniqueLettersCount() { return [...new Set(this.secretWordArray)].length },
+      uniqueLettersArray() { return [...new Set(this.secretWordArray)] }
     },
     methods: {
       animateWord(type, duration = '1000') {
@@ -182,12 +183,16 @@
           this.attemptedLetters = []
           this.correctLetters = []
           this.definition = ''
-          this.freebieAvailable = true
           this.incorrectLetters = []
+          this.inputAllowed = false
           this.isWin = false
           this.ready = false
+          this.pulseWord = false
           this.secretWord = ''
           this.secretWordArrayClone = []
+          this.secretWordEntrance = false
+          this.shakeWord = false
+          this.tadaWord = false
           this.getSecretWord()
         }, 1300)
       },
@@ -203,16 +208,27 @@
         ]
       },
       processFetchedData(data) {
+        // if frequency is missing or too low, get another
         if (!data.frequency || data.frequency < 3) {
           console.log('Word frequency is missing or too low. Getting another...')
           this.getSecretWord()
           return
         }
 
+        // sanitize the word for comparison
         let secretWord = data.word
           .toLowerCase()
           .normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '')
+
+        // check for the secret word in the data.results array definitions and get the index if it's there
+        const indexOfConflict = data.results.findIndex(result => result.definition.includes(secretWord))
+
+        if (indexOfConflict !== -1) {
+          console.log(`Word "${secretWord}" is in a definition: ${data.results[indexOfConflict].definition}. Getting another...`)
+          this.getSecretWord()
+          return
+        }
 
         // if the word is in the bad list, get another
         if (this.filterSecretWord(secretWord)) {
@@ -221,6 +237,7 @@
           return
         }
 
+        // if everything passes, set the secret word and definition
         this.secretWord = secretWord
         this.definition = data.results[0].definition
 
@@ -280,13 +297,71 @@
           this.handleInput(this.getCharacterCode(this.secretWord[1]))
           this.handleInput(this.getCharacterCode(this.secretWord[3]))
 
-          // remove random letters that aren't in the word
-          for (let i = 0; i < 20; i++) {
-            let randomLetter = this.alphabet[Math.floor(Math.random() * this.alphabet.length)]
-            if (!this.secretWordArray.includes(randomLetter)) {
-              this.removeLetter(randomLetter)
+          // filter uniqueLetters from alphabet
+          // Shuffle function to randomize array elements
+          function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [array[i], array[j]] = [array[j], array[i]]
             }
+            return array
           }
+
+          const filteredAlphabet = this.alphabet
+            .filter(letter => !this.uniqueLettersArray.includes(letter))
+            .filter(letter => !this.incorrectLetters.includes(letter))
+
+          console.log('filteredAlphabet', filteredAlphabet)
+
+          // Shuffle the filtered alphabet
+          const shuffledAlphabet = shuffleArray(filteredAlphabet)
+
+          // Remove letters until only 10 remain
+          while (shuffledAlphabet.length > 10 - this.uniqueLettersCount) {
+            const removedLetter = shuffledAlphabet.pop() // Remove the last letter
+            this.removeLetter(removedLetter)
+          }
+
+          console.log('incorrectLetters', this.incorrectLetters)
+
+
+
+
+
+
+
+          // there are 26 letters in the alphabet
+          // calculate how many letters to remove from the filteredAlphabet to leave 10
+          // const alphabetLength = this.alphabet.length
+          // const filteredAlphabetLength = filteredAlphabet.length
+          // const lettersLeft = alphabetLength - filteredAlphabetLength
+          // // const lettersToRemove = 10 - lettersLeft
+          // // make a positive number
+          // const lettersToRemove = Math.abs(10 - lettersLeft)
+
+          // // remove random letters that aren't in the word
+          // for (let i = 0; i < lettersToRemove; i++) {
+          //   let randomLetter = this.alphabet[Math.floor(Math.random() * this.alphabet.length)]
+          //   // if (!this.secretWordArray.includes(randomLetter) && !this.incorrectLetters.includes(randomLetter)) {
+          //   this.removeLetter(randomLetter)
+          //   // }
+          // }
+
+
+
+
+          // // remove all but 10 from filteredAlphabet
+          // for (let i = 0; i < filteredAlphabet.length - 10; i++) {
+          //   this.removeLetter(filteredAlphabet[i])
+          // }
+
+          // remove random letters that aren't in the word
+          // for (let i = 0; i < 20; i++) {
+          //   let randomLetter = this.alphabet[Math.floor(Math.random() * this.alphabet.length)]
+          //   if (!this.secretWordArray.includes(randomLetter) && !this.incorrectLetters.includes(randomLetter)) {
+          //     this.removeLetter(randomLetter)
+          //   }
+          // }
         }, 800)
       },
       validateInput(charCode) {
@@ -296,7 +371,6 @@
         console.log('YOU WIN')
         this.isWin = true
         this.animateWord('tada')
-        this.inputAllowed = false
         this.init()
       }
     },
@@ -326,6 +400,7 @@
     --green: hsl(86 42% 61%);
     --red-orange: hsl(13, 63%, 57%);
     --white: hsl(0 0% 100%);
+    --yellow-light: hsl(80, 65%, 68%);
     --yellow: hsl(43, 63%, 52%);
     --yellow-dark: hsl(43, 63%, 42%);
   }
@@ -381,7 +456,7 @@
 
       &--win {
         .secret-word__letter {
-          color: var(--green) !important;
+          color: var(--yellow-light) !important;
         }
       }
 
@@ -433,7 +508,7 @@
       text-transform: uppercase;
       color: var(--black);
       font-weight: 600;
-      background: var(--white);
+      background: var(--yellow);
       border: 1px solid var(--black);
       border-radius: 4px;
       box-shadow: -2px 2px 0 var(--black);
@@ -441,7 +516,7 @@
       cursor: pointer;
 
       &.correct {
-        background: var(--green);
+        background: var(--white);
       }
 
       &.incorrect {
