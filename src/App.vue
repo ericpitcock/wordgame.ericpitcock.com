@@ -311,7 +311,7 @@
             .filter(letter => !this.uniqueLettersArray.includes(letter))
             .filter(letter => !this.incorrectLetters.includes(letter))
 
-          console.log('filteredAlphabet', filteredAlphabet)
+          // console.log('filteredAlphabet', filteredAlphabet)
 
           // Shuffle the filtered alphabet
           const shuffledAlphabet = shuffleArray(filteredAlphabet)
@@ -322,46 +322,7 @@
             this.removeLetter(removedLetter)
           }
 
-          console.log('incorrectLetters', this.incorrectLetters)
-
-
-
-
-
-
-
-          // there are 26 letters in the alphabet
-          // calculate how many letters to remove from the filteredAlphabet to leave 10
-          // const alphabetLength = this.alphabet.length
-          // const filteredAlphabetLength = filteredAlphabet.length
-          // const lettersLeft = alphabetLength - filteredAlphabetLength
-          // // const lettersToRemove = 10 - lettersLeft
-          // // make a positive number
-          // const lettersToRemove = Math.abs(10 - lettersLeft)
-
-          // // remove random letters that aren't in the word
-          // for (let i = 0; i < lettersToRemove; i++) {
-          //   let randomLetter = this.alphabet[Math.floor(Math.random() * this.alphabet.length)]
-          //   // if (!this.secretWordArray.includes(randomLetter) && !this.incorrectLetters.includes(randomLetter)) {
-          //   this.removeLetter(randomLetter)
-          //   // }
-          // }
-
-
-
-
-          // // remove all but 10 from filteredAlphabet
-          // for (let i = 0; i < filteredAlphabet.length - 10; i++) {
-          //   this.removeLetter(filteredAlphabet[i])
-          // }
-
-          // remove random letters that aren't in the word
-          // for (let i = 0; i < 20; i++) {
-          //   let randomLetter = this.alphabet[Math.floor(Math.random() * this.alphabet.length)]
-          //   if (!this.secretWordArray.includes(randomLetter) && !this.incorrectLetters.includes(randomLetter)) {
-          //     this.removeLetter(randomLetter)
-          //   }
-          // }
+          // console.log('incorrectLetters', this.incorrectLetters)
         }, 800)
       },
       validateInput(charCode) {
@@ -400,7 +361,7 @@
     --green: hsl(86 42% 61%);
     --red-orange: hsl(13, 63%, 57%);
     --white: hsl(0 0% 100%);
-    --yellow-light: hsl(80, 65%, 68%);
+    --yellow-light: hsl(80, 50%, 69%);
     --yellow: hsl(43, 63%, 52%);
     --yellow-dark: hsl(43, 63%, 42%);
   }
@@ -447,10 +408,10 @@
     display: flex;
     justify-content: center;
     position: relative;
+
     // z-index: 10;
     // width: 100%;
-    overflow: hidden;
-
+    // overflow: hidden;
     .secret-word {
       display: flex;
 
