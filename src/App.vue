@@ -104,12 +104,13 @@
         } else {
           // console.log('this letter is not in the word')
           this.animateWord('shake', 500)
-          this.incorrectLetters.push(letter)
+          // this.incorrectLetters.push(letter)
 
-          // add hidden class to letter
-          setTimeout(() => {
-            document.getElementById(letter + '-letter').classList.add('hidden')
-          }, 500)
+          this.removeLetter(letter)
+          // // add hidden class to letter
+          // setTimeout(() => {
+          //   document.getElementById(letter + '-letter').classList.add('hidden')
+          // }, 500)
 
           // this.inputAllowed = true
         }
@@ -234,6 +235,12 @@
 
         this.attemptedLetters.push(charCode)
       },
+      removeLetter(letter) {
+        this.incorrectLetters.push(letter)
+        setTimeout(() => {
+          document.getElementById(letter + '-letter').classList.add('hidden')
+        }, 500)
+      },
       // skip() {
       //   this.secretWordArrayClone.forEach(letter => this.correctLetters.push(letter))
       //   this.init()
@@ -257,6 +264,13 @@
 
           this.handleInput(this.getCharacterCode(this.secretWord[1]))
           this.handleInput(this.getCharacterCode(this.secretWord[3]))
+          // remove ten random letters that aren't in the word
+          for (let i = 0; i < 20; i++) {
+            let randomLetter = this.qwerty[Math.floor(Math.random() * this.qwerty.length)]
+            if (!this.secretWordArray.includes(randomLetter)) {
+              this.removeLetter(randomLetter)
+            }
+          }
         }, 800)
       },
       validateInput(charCode) {
