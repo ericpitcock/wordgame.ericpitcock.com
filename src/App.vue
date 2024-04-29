@@ -35,21 +35,11 @@
       >
         {{ letter }}
       </div>
-      <!-- <div
-        v-for="(letter, index) in incorrectLetters"
-        :key="index"
-      >
-        {{ letter }}
-      </div> -->
-      <!-- <div>slider down here from no points to max points. it gets smaller as you
-        choose
-        the wrong letters</div> -->
     </div>
   </div>
 </template>
 
 <script>
-  // import _ from 'lodash'
   import WgLoading from '@/components/WgLoading.vue'
   import WgTitle from '@/components/WgTitle.vue'
 
@@ -102,23 +92,14 @@
       },
       checkWordForLetter(charCode) {
         var letter = this.getLetter(charCode)
-        // if word contains letter
+
         if (this.secretWordArray.includes(letter)) {
+          // if word contains letter
           this.correctLetters.push(letter)
-          // this.processInput(code)
-          // if word doesn't contain letter
         } else {
-          // console.log('this letter is not in the word')
+          // if word doesn't contain letter
           this.animateWord('shake', 500)
-          // this.incorrectLetters.push(letter)
-
           this.removeLetter(letter)
-          // // add hidden class to letter
-          // setTimeout(() => {
-          //   document.getElementById(letter + '-letter').classList.add('hidden')
-          // }, 500)
-
-          // this.inputAllowed = true
         }
       },
       displayCharacter(letter) {
@@ -366,7 +347,6 @@
     --yellow-dark: hsl(43, 63%, 42%);
   }
 
-  // import AstridGrotesk if I use it
   html {
     height: 100%;
   }
@@ -409,9 +389,6 @@
     justify-content: center;
     position: relative;
 
-    // z-index: 10;
-    // width: 100%;
-    // overflow: hidden;
     .secret-word {
       display: flex;
 
@@ -456,7 +433,6 @@
 
   .selections {
     flex: 1;
-    // padding-top: 14px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -468,7 +444,6 @@
       line-height: 28px;
       text-transform: uppercase;
       color: var(--black);
-      font-weight: 600;
       background: var(--yellow);
       border: 1px solid var(--black);
       border-radius: 4px;
@@ -478,13 +453,6 @@
 
       &.correct {
         background: var(--white);
-      }
-
-      &.incorrect {
-        // display: none;
-        position: relative;
-        top: 10px;
-        opacity: 0.5;
       }
 
       &.hidden {
@@ -500,7 +468,6 @@
   }
 
   .definition-container {
-    // height: 200px;
     display: flex;
     flex: 1;
     justify-content: center;
@@ -511,13 +478,12 @@
 
     .definition {
       align-self: center;
-      max-width: 600px;
+      width: 50%;
+      max-width: 800px;
 
       p {
-        padding-top: 30px;
         font-size: 32px;
         line-height: 36px;
-        font-weight: 400;
 
         &:first-letter {
           text-transform: capitalize;
