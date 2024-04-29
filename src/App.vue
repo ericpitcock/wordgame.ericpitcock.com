@@ -26,11 +26,18 @@
       <div
         v-for="(letter, index) in alphabet"
         :key="index"
+        :id="letter + '-letter'"
         :class="letterClasses(letter)"
         @click="handleInput(getCharacterCode(letter))"
       >
         {{ letter }}
       </div>
+      <!-- <div
+        v-for="(letter, index) in incorrectLetters"
+        :key="index"
+      >
+        {{ letter }}
+      </div> -->
       <!-- <div>slider down here from no points to max points. it gets smaller as you
         choose
         the wrong letters</div> -->
@@ -98,6 +105,12 @@
           // console.log('this letter is not in the word')
           this.animateWord('shake', 500)
           this.incorrectLetters.push(letter)
+
+          // add hidden class to letter
+          setTimeout(() => {
+            document.getElementById(letter + '-letter').classList.add('hidden')
+          }, 500)
+
           // this.inputAllowed = true
         }
       },
@@ -193,9 +206,11 @@
       letterClasses(letter) {
         return [
           'selections__letter',
+          'animate__animated',
+          'animate__faster',
           {
             'correct': this.correctLetters.includes(letter),
-            'incorrect': this.incorrectLetters.includes(letter)
+            'animate__fadeOutDown': this.incorrectLetters.includes(letter)
           }
         ]
       },
@@ -405,9 +420,14 @@
       }
 
       &.incorrect {
+        // display: none;
         position: relative;
         top: 10px;
         opacity: 0.5;
+      }
+
+      &.hidden {
+        display: none;
       }
     }
 
