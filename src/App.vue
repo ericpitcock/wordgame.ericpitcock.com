@@ -1,5 +1,35 @@
 <template>
   <div class="word-game">
+    <div
+      v-if="!ready"
+      class="loading"
+    >
+      <svg
+        width="100px"
+        height="100px"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="xMidYMid"
+      >
+        <circle
+          cx="50"
+          cy="50"
+          fill="none"
+          stroke="var(--black)"
+          stroke-width="5"
+          r="35"
+          stroke-dasharray="164.93361431346415 56.97787143782138"
+        >
+          <animateTransform
+            attributeName="transform"
+            type="rotate"
+            repeatCount="indefinite"
+            dur="1s"
+            keyTimes="0;1"
+            values="0 50 50;360 50 50"
+          ></animateTransform>
+        </circle>
+      </svg>
+    </div>
     <wg-title />
     <div class="definition-container">
       <div class="definition">
@@ -149,25 +179,7 @@
         })
           .then(response => {
             response.json().then(data => {
-              let secretWord = data.word
-                .toLowerCase()
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '')
-
-              // if the word is in the bad list, get another
-              if (this.filterSecretWord(secretWord)) {
-                console.log(`Word, ${secretWord}, filtered out. Getting another...`)
-                this.getSecretWord()
-                return
-              }
-
-              this.secretWord = secretWord
-              this.definition = data.results[0].definition
-
-              this.secretWordArrayClone = [...this.secretWordArray]
-              this.startGame()
-
-              console.log('results', data)
+              this.processFetchedData(data)
             })
           })
           .catch(error => {
@@ -214,6 +226,33 @@
             'animate__fadeOutDown': this.incorrectLetters.includes(letter)
           }
         ]
+      },
+      processFetchedData(data) {
+        if (!data.frequency || data.frequency < 3) {
+          console.log('Word frequency is missing or too low. Getting another...')
+          this.getSecretWord()
+          return
+        }
+
+        let secretWord = data.word
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+
+        // if the word is in the bad list, get another
+        if (this.filterSecretWord(secretWord)) {
+          console.log(`Word, ${secretWord}, filtered out. Getting another...`)
+          this.getSecretWord()
+          return
+        }
+
+        this.secretWord = secretWord
+        this.definition = data.results[0].definition
+
+        this.secretWordArrayClone = [...this.secretWordArray]
+        this.startGame()
+
+        console.log('results', data)
       },
       processInput(charCode) {
         // remove it from array
@@ -262,11 +301,13 @@
         setTimeout(() => {
           this.inputAllowed = true
 
+          // give two freebie letters
           this.handleInput(this.getCharacterCode(this.secretWord[1]))
           this.handleInput(this.getCharacterCode(this.secretWord[3]))
-          // remove ten random letters that aren't in the word
+
+          // remove random letters that aren't in the word
           for (let i = 0; i < 20; i++) {
-            let randomLetter = this.qwerty[Math.floor(Math.random() * this.qwerty.length)]
+            let randomLetter = this.alphabet[Math.floor(Math.random() * this.alphabet.length)]
             if (!this.secretWordArray.includes(randomLetter)) {
               this.removeLetter(randomLetter)
             }
@@ -309,6 +350,8 @@
     --green: hsl(86 42% 61%);
     --red-orange: hsl(13, 63%, 57%);
     --white: hsl(0 0% 100%);
+    --yellow: hsl(43, 63%, 52%);
+    --yellow-dark: hsl(43, 63%, 42%);
   }
 
   @font-face {
@@ -331,7 +374,7 @@
 
   body {
     height: 100%;
-    background: #d2a637;
+    background: var(--yellow);
     text-align: center;
     font-size: 14px;
     font-family: 'AstridGrotesk-Bd', sans-serif;
@@ -354,6 +397,19 @@
     flex-direction: column;
     overflow: hidden;
     transition: background-color 0.5s ease;
+  }
+
+  .loading {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--yellow);
+    z-index: 2;
   }
 
   .secret-word-container {

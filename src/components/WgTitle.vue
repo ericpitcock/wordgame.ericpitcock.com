@@ -23,5 +23,6 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    z-index: 3;
   }
 </style>
