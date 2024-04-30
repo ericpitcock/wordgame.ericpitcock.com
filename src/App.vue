@@ -6,9 +6,7 @@
     <wg-title />
     <div class="definition-container">
       <div class="definition">
-        <transition name="bounce">
-          <p v-if="ready">{{ definition }}</p>
-        </transition>
+        <p v-if="ready">{{ definition }}</p>
       </div>
     </div>
     <div class="secret-word-container">
@@ -54,6 +52,7 @@
         attemptedLetters: [],
         correctLetters: [],
         definition: '',
+        firstRun: true,
         incorrectLetters: [],
         inputAllowed: false,
         isWin: false,
@@ -103,7 +102,7 @@
         }
       },
       displayCharacter(letter) {
-        return (this.correctLetters.includes(letter)) ? letter : '&lowbar;'
+        return (this.correctLetters.includes(letter)) ? letter : '●'
       },
       filterSecretWord(word) {
         // eslint-disable-next-line no-undef
@@ -158,7 +157,7 @@
         this.checkWordForLetter(charCode)
         this.processInput(charCode)
       },
-      init() {
+      restartGame() {
         setTimeout(() => {
           console.clear()
           this.attemptedLetters = []
@@ -255,7 +254,7 @@
       },
       // skip() {
       //   this.secretWordArrayClone.forEach(letter => this.correctLetters.push(letter))
-      //   this.init()
+      //   this.restartGame()
       // },
       secretWordLetterClasses(letter) {
         return [
@@ -313,7 +312,7 @@
         console.log('YOU WIN')
         this.isWin = true
         this.animateWord('tada')
-        this.init()
+        this.restartGame()
       }
     },
     watch: {
@@ -327,7 +326,26 @@
       })
     },
     mounted() {
-      this.getSecretWord()
+      if (localStorage.getItem('firstRun') === 'false') {
+        this.getSecretWord()
+        this.firstRun = false
+        return
+      }
+
+      if (localStorage.getItem('firstRun') === null && this.firstRun) {
+        this.secretWord = 'happy'
+        this.definition = 'Enjoying or characterized by well-being and contentment'
+        this.secretWordArrayClone = [...this.secretWordArray]
+        this.startGame()
+        this.firstRun = false
+        // set local storage
+        localStorage.setItem('firstRun', 'false')
+        return
+      }
+
+      // if (localStorage.getItem('firstRun') === 'false' && !this.firstRun) {
+      //   this.getSecretWord()
+      // }
     }
   }
 </script>
@@ -342,12 +360,14 @@
     --green: hsl(86 42% 61%);
     --red-orange: hsl(13, 63%, 57%);
     --white: hsl(0 0% 100%);
-    --yellow-light: hsl(80, 50%, 69%);
+    --yellow-light: hsl(43 81% 75%);
     --yellow: hsl(43, 63%, 52%);
     --yellow-dark: hsl(43, 63%, 42%);
   }
 
-  html {
+  html,
+  body,
+  #app {
     height: 100%;
   }
 
@@ -358,7 +378,6 @@
   }
 
   body {
-    height: 100%;
     background: var(--yellow);
     text-align: center;
     font-size: 14px;
@@ -379,6 +398,7 @@
     left: 0;
     display: flex;
     flex-direction: column;
+    padding: 2%;
     overflow: hidden;
     transition: background-color 0.5s ease;
   }
@@ -394,7 +414,7 @@
 
       &--win {
         .secret-word__letter {
-          color: var(--yellow-light) !important;
+          color: var(--white) !important;
         }
       }
 
@@ -406,7 +426,7 @@
         position: relative;
         align-self: center;
         font-size: 50px;
-        letter-spacing: 12px;
+        // letter-spacing: 12px;
         transition: all .4s cubic-bezier(0.29, 0.74, 0.04, 1.04);
 
         &:first-child {
@@ -417,7 +437,7 @@
           font-family: 'HouseMovements-Sign';
           font-size: 150px;
           letter-spacing: 0;
-          color: white;
+          color: var(--yellow-light);
           text-shadow: -5px 7px 0px black;
           -webkit-text-stroke: 2px black;
           text-stroke: 1px black;
