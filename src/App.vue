@@ -100,7 +100,6 @@
           // if word contains letter
           this.correctLetters.push(letter)
         } else {
-          // if word doesn't contain letter
           this.animateWord('shake', 500)
           this.removeLetter(letter)
         }
@@ -162,24 +161,6 @@
           this.checkWordForLetter(charCode)
           this.processInput(charCode)
         }
-      },
-      restartGame() {
-        setTimeout(() => {
-          console.clear()
-          this.correctLetters = []
-          this.definition = ''
-          this.incorrectLetters = []
-          this.inputAllowed = false
-          this.isWin = false
-          this.ready = false
-          this.pulseWord = false
-          this.secretWord = ''
-          this.secretWordArrayClone = []
-          this.secretWordEntrance = false
-          this.shakeWord = false
-          this.tadaWord = false
-          this.getSecretWord()
-        }, 1300)
       },
       letterClasses(letter) {
         return [
@@ -255,6 +236,24 @@
         setTimeout(() => {
           document.getElementById(letter + '-letter').classList.add('hidden')
         }, 600)
+      },
+      restartGame() {
+        setTimeout(() => {
+          console.clear()
+          this.correctLetters = []
+          this.definition = ''
+          this.incorrectLetters = []
+          this.inputAllowed = false
+          this.isWin = false
+          this.ready = false
+          this.pulseWord = false
+          this.secretWord = ''
+          this.secretWordArrayClone = []
+          this.secretWordEntrance = false
+          this.shakeWord = false
+          this.tadaWord = false
+          this.getSecretWord()
+        }, 1300)
       },
       // skip() {
       //   this.secretWordArrayClone.forEach(letter => this.correctLetters.push(letter))
