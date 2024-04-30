@@ -195,6 +195,15 @@
           return
         }
 
+        // if the word has the same letter more than once, get another
+        const uniqueLettersCount = [...new Set(data.word)].length
+
+        if (uniqueLettersCount < 5) {
+          console.log(`${data.word} has duplicate letters. Getting another...`)
+          this.getSecretWord()
+          return
+        }
+
         // sanitize the word for comparison
         let secretWord = data.word
           .toLowerCase()
@@ -472,7 +481,7 @@
       cursor: pointer;
 
       &.correct {
-        background: var(--white);
+        background: var(--yellow-light);
       }
 
       &.hidden {
