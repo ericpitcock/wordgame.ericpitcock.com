@@ -83,7 +83,7 @@
         ]
       },
       uniqueLettersCount() { return [...new Set(this.secretWordArray)].length },
-      uniqueLettersArray() { return [...new Set(this.secretWordArray)] }
+      uniqueLettersArray() { return [...new Set(this.secretWordArray)] },
     },
     methods: {
       animateWord(type, duration = '1000') {
@@ -251,7 +251,7 @@
         this.incorrectLetters.push(letter)
         setTimeout(() => {
           document.getElementById(letter + '-letter').classList.add('hidden')
-        }, 500)
+        }, 600)
       },
       // skip() {
       //   this.secretWordArrayClone.forEach(letter => this.correctLetters.push(letter))
