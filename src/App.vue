@@ -53,7 +53,6 @@
     },
     data() {
       return {
-        attemptedLetters: [],
         correctLetters: [],
         definition: '',
         firstRun: true,
@@ -71,6 +70,7 @@
     },
     computed: {
       alphabet() { return [...'abcdefghijklmnopqrstuvwxyz'] },
+      // attemptedLetters() { return [...this.correctLetters, ...this.incorrectLetters] },
       qwerty() { return [...'qwertyuiopasdfghjklzxcvbnm'] },
       secretWordArray() { return [...this.secretWord] },
       secretWordClasses() {
@@ -157,17 +157,15 @@
       },
       handleInput(charCode) {
         if (!this.inputAllowed) return
-        // validate input
-        if (!this.validateInput(charCode)) return
-        // if valid, go ahead
-        this.registerAttempt(charCode)
-        this.checkWordForLetter(charCode)
-        this.processInput(charCode)
+        // if it's a letter, continue
+        if (charCode >= 97 && charCode <= 122) {
+          this.checkWordForLetter(charCode)
+          this.processInput(charCode)
+        }
       },
       restartGame() {
         setTimeout(() => {
           console.clear()
-          this.attemptedLetters = []
           this.correctLetters = []
           this.definition = ''
           this.incorrectLetters = []
@@ -252,16 +250,6 @@
           this.winner()
         }
       },
-      registerAttempt(charCode) {
-        // if it's already been tried, animate the word
-        if (this.attemptedLetters.includes(charCode)) {
-          console.log('this letter has been tried', charCode)
-          this.animateWord('pulse', 500)
-          return
-        }
-
-        this.attemptedLetters.push(charCode)
-      },
       removeLetter(letter) {
         this.incorrectLetters.push(letter)
         setTimeout(() => {
@@ -320,9 +308,6 @@
 
           // console.log('incorrectLetters', this.incorrectLetters)
         }, 800)
-      },
-      validateInput(charCode) {
-        return (charCode >= 97 && charCode <= 122) ? true : false
       },
       winner() {
         console.log('YOU WIN')
@@ -484,6 +469,7 @@
 
       &.correct {
         background: var(--yellow-light);
+        cursor: default;
       }
 
       &.hidden {
