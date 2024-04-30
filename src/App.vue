@@ -1,5 +1,9 @@
 <template>
-  <div class="word-game">
+  <div
+    class="word-game"
+    @keypress="handleKeyPress"
+    tabindex="0"
+  >
     <transition name="fade">
       <wg-loading v-if="!ready" />
     </transition>
@@ -147,6 +151,9 @@
       },
       getLetter(charCode) {
         return String.fromCharCode(charCode)
+      },
+      handleKeyPress(event) {
+        this.handleInput(event.key.charCodeAt(0))
       },
       handleInput(charCode) {
         if (!this.inputAllowed) return
@@ -328,11 +335,6 @@
       ready() {
         if (this.ready) console.log('ready')
       },
-    },
-    created() {
-      window.addEventListener('keypress', event => {
-        this.handleInput(event.key.charCodeAt(0))
-      })
     },
     mounted() {
       if (localStorage.getItem('firstRun') === 'false') {
