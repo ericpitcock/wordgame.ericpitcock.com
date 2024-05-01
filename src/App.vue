@@ -5,10 +5,20 @@
     tabindex="0"
   >
     <transition name="fade">
-      <wg-loading v-if="!ready" />
+      <wg-loading v-show="!ready" />
     </transition>
     <wg-title />
-    {{ currentLevel }}
+    <div class="progress-container">
+      <div class="stage-labels">
+        {{ currentLevel }}
+      </div>
+      <div class="progress-bar">
+        <div
+          class="progress-bar__fill"
+          :style="progressBarFill"
+        />
+      </div>
+    </div>
     <div class="definition-container">
       <div class="definition">
         <p v-if="ready">{{ definition }}</p>
@@ -76,6 +86,13 @@
     computed: {
       alphabet() { return [...'abcdefghijklmnopqrstuvwxyz'] },
       // attemptedLetters() { return [...this.correctLetters, ...this.incorrectLetters] },
+      progressBarFill() {
+        return {
+          width: this.currentStage === 0
+            ? '0%'
+            : `${(this.currentStage) / this.data[this.currentLevel].length * 100}%`
+        }
+      },
       qwerty() { return [...'qwertyuiopasdfghjklzxcvbnm'] },
       secretWordArray() { return [...this.secretWord] },
       secretWordClasses() {
@@ -150,11 +167,6 @@
         // remove it from array
         this.secretWordArrayClone = this.secretWordArrayClone
           .filter(letter => { return letter !== this.getLetter(charCode) })
-
-        // if it's a win
-        // if (this.secretWordArrayClone.length == 0) {
-        //   this.winner()
-        // }
       },
       removeLetter(letter) {
         this.incorrectLetters.push(letter)
@@ -199,7 +211,10 @@
         this.definition = this.data[this.currentLevel][this.currentStage].definition
 
         this.secretWordArrayClone = [...this.secretWordArray]
-        this.ready = true
+
+        setTimeout(() => {
+          this.ready = true
+        }, 1000)
         this.secretWordEntrance = true
 
         setTimeout(() => {
@@ -244,8 +259,12 @@
       winner() {
         console.log('YOU WIN')
         this.isWin = true
-        // this.currentLevel = `Level ` + (parseInt(this.currentLevel.split(' ')[1]) + 1)
         this.currentStage++
+        // if currentStage is the last stage, change Level to the next one
+        if (this.currentStage === this.data[this.currentLevel].length) {
+          this.currentLevel = `Level ${parseInt(this.currentLevel.split(' ')[1]) + 1}`
+          this.currentStage = 0
+        }
         this.animateWord('tada')
         this.restartGame()
       }
@@ -341,8 +360,35 @@
     transition: background-color 0.5s ease;
   }
 
-  .secret-word-container {
+  .progress-container {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    z-index: 3;
+  }
+
+  .progress-bar {
+    position: relative;
+    width: 200px;
+    height: 10px;
+    background: var(--yellow-light);
+    border: 1px solid var(--black);
+    border-radius: 4px;
+    box-shadow: -2px 2px 0 var(--black);
+    overflow: hidden;
+
+    &__fill {
+      height: 100%;
+      background: var(--green);
+      transition: width 0.5s ease;
+    }
+  }
+
+  .secret-word-container {
+    flex: 2;
     display: flex;
     justify-content: center;
     position: relative;
@@ -390,7 +436,7 @@
   }
 
   .selections {
-    flex: 1;
+    flex: 2;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -428,7 +474,7 @@
 
   .definition-container {
     display: flex;
-    flex: 1;
+    flex: 2;
     justify-content: center;
 
     &::-webkit-scrollbar {
