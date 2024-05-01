@@ -99,6 +99,7 @@
         if (this.secretWordArray.includes(letter)) {
           // if word contains letter
           this.correctLetters.push(letter)
+          this.processInput(charCode)
         } else {
           this.animateWord('shake', 500)
           this.removeLetter(letter)
@@ -159,7 +160,7 @@
         // if it's a letter, continue
         if (charCode >= 97 && charCode <= 122) {
           this.checkWordForLetter(charCode)
-          this.processInput(charCode)
+          // this.processInput(charCode)
         }
       },
       letterClasses(letter) {
@@ -223,13 +224,13 @@
       },
       processInput(charCode) {
         // remove it from array
-        this.secretWordArrayClone = this.secretWordArrayClone.filter(letter => { return letter !== this.getLetter(charCode) })
-        // this.inputAllowed = true
+        this.secretWordArrayClone = this.secretWordArrayClone
+          .filter(letter => { return letter !== this.getLetter(charCode) })
 
         // if it's a win
-        if (this.secretWordArrayClone.length == 0) {
-          this.winner()
-        }
+        // if (this.secretWordArrayClone.length == 0) {
+        //   this.winner()
+        // }
       },
       removeLetter(letter) {
         this.incorrectLetters.push(letter)
@@ -318,6 +319,11 @@
     watch: {
       ready() {
         if (this.ready) console.log('ready')
+      },
+      secretWordArrayClone(newVal) {
+        if (newVal.length === 0) {
+          this.winner()
+        }
       },
     },
     mounted() {
