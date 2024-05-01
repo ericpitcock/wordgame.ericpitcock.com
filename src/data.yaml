@@ -24,12 +24,12 @@ Level 2:
   definition: A hard, transparent, yellowish-brown substance that is the fossilized resin of ancient trees.
 - word: lemon
   definition: A yellow, oval citrus fruit with thick skin and fragrant, acidic juice.
-- word: eagle
-  definition: A large bird of prey with a massive hooked bill and long broad wings, renowned for its keen sight and powerful soaring flight.
+- word: flask
+  definition: A narrow-necked container, often cylindrical in shape, used for storing or carrying liquids, especially alcohol.
 - word: maple
   definition: A tree or shrub with lobed leaves, winged fruits, and colorful autumn foliage, typically used for timber and syrup production.
-- word: onion
-  definition: A bulbous plant with a pungent edible bulb composed of several concentric layers.
+- word: brush
+  definition: Vegetation consisting of small plants or shrubs, especially in a woodland or scrubland area.
 - word: snake
   definition: A long limbless reptile that has a long body and tail and typically has a venomous bite.
 - word: peach
@@ -57,8 +57,8 @@ Level 3:
   definition: A hard, lustrous spherical mass, typically white or bluish-gray, formed within the shell of a pearl oyster or other bivalve mollusk and highly prized as a gem.
 - word: coral
   definition: A hard stony substance secreted by certain marine coelenterates as an external skeleton, typically forming large reefs in warm seas.
-- word: maple
-  definition: A tree or shrub with lobed leaves, winged fruits, and colorful autumn foliage, typically used for timber and syrup production.
+- word: larch
+  definition: A coniferous tree with bunches of deciduous bright green needles.
 - word: tiger
   definition: A large carnivorous feline mammal with a yellowish-brown coat striped with black, native to Asia but also found in parts of Africa.
 Level 4: 
@@ -97,8 +97,8 @@ Level 5:
   definition: A device for keeping a door or gate closed, consisting of a metal bar that fits into a staple.
 - word: mirth
   definition: Amusement, especially as expressed in laughter.
-- word: quirk
-  definition: A peculiar aspect of a person's character or behavior.
+- word: habit
+  definition: A settled or regular tendency or practice, especially one that is hard to give up.
 - word: rumba
   definition: A ballroom dance originating in Cuba, notable for its complex rhythms and provocative movements.
 - word: squib
@@ -129,20 +129,20 @@ Level 7:
   definition: A friendly relationship.
 - word: buxom
   definition: (of a woman) plump, especially with large breasts.
-- word: cynic
-  definition: A person who believes that people are motivated purely by self-interest rather than acting for honorable or unselfish reasons.
+- word: scowl
+  definition: An angry or bad-tempered expression.
 - word: divan
   definition: A long low sofa without a back or arms, typically placed against a wall.
-- word: eikon
-  definition: A digital representation of a person or thing.
+- word: glyph
+  definition: A hieroglyphic character or symbol; a pictograph.
 - word: fugue
   definition: A contrapuntal composition in which a short melody or phrase (the subject) is introduced by one part and successively taken up by others and developed by interweaving the parts.
 - word: gauzy
   definition: Light and thin, translucent.
 - word: houri
   definition: A beautiful young woman, especially one of the virgin companions of the faithful in the Muslim paradise.
-- word: inapt
-  definition: Not suitable or appropriate in the circumstances.
+- word: crude
+  definition: In a natural or raw state; not yet processed or refined.
 - word: jocum
   definition: A joke or jest.
 Level 8: 
@@ -158,35 +158,35 @@ Level 8:
   definition: A district outside a city, especially a prosperous one.
 - word: fjord
   definition: A long, narrow, deep inlet of the sea between high cliffs, typically formed by the submergence of a glaciated valley.
-- word: glitz
-  definition: Extravagant but superficial attractiveness, glamour, or excitement.
+- word: azure
+  definition: A bright blue color, resembling the clear sky on a sunny day.
 - word: haunt
   definition: (of a ghost) manifest itself regularly at (a place).
 - word: imago
   definition: An adult insect.
-- word: jupon
-  definition: A sleeveless tunic or coat worn over armor, typically embroidered with heraldic arms.
+- word: camis
+  definition: A loose-fitting undergarment.
 Level 9: 
 - word: bicep
   definition: The large muscle at the front of the upper arm.
 - word: cynic
   definition: A person who believes that people are motivated purely by self-interest rather than acting for honorable or unselfish reasons.
-- word: drupe
-  definition: A fleshy fruit with thin skin and a central stone containing the seed, e.g., a plum, cherry, almond, or olive.
+- word: prune
+  definition: Cut away dead or overgrown branches or stems from (a tree, shrub, or plant) to encourage future growth.
 - word: eikon
   definition: A digital representation of a person or thing.
 - word: fytte
   definition: A division or section of a poem.
 - word: gluon
   definition: A hypothetical elementary particle that mediates the strong interaction between quarks.
-- word: hertz
-  definition: The SI unit of frequency, equal to one cycle per second.
+- word: blunt
+  definition: Having a worn-down edge or point; not sharp.
 - word: inapt
   definition: Not suitable or appropriate in the circumstances.
 - word: junco
   definition: A small American finch with mainly gray plumage and typically a white belly.
-- word: klong
-  definition: A narrow watercourse or canal.
+- word: ditch
+  definition: A narrow channel dug in the ground, typically used for drainage alongside a road or the edge of a field.
 Level 10: 
 - word: abuzz
   definition: Full of excitement or activity.
@@ -194,8 +194,8 @@ Level 10:
   definition: An emperor of Russia before 1917.
 - word: drupe
   definition: A fleshy fruit with thin skin and a central stone containing the seed, e.g., a plum, cherry, almond, or olive.
-- word: eikon
-  definition: A digital representation of a person or thing.
+- word: geist
+  definition: A ghost or disembodied spirit.
 - word: fjeld
   definition: A barren, mountainous plateau in northern Europe, especially in Norway.
 - word: gyoza
