@@ -268,6 +268,12 @@
       }
     },
     watch: {
+      currentLevel() {
+        localStorage.setItem('currentLevel', this.currentLevel)
+      },
+      currentStage() {
+        localStorage.setItem('currentStage', this.currentStage.toString())
+      },
       ready() {
         if (this.ready) console.log('ready')
       },
@@ -279,6 +285,13 @@
     },
     mounted() {
       console.log(this.data)
+      if (localStorage.getItem('currentLevel')) {
+        this.currentLevel = localStorage.getItem('currentLevel')
+      }
+
+      if (localStorage.getItem('currentStage')) {
+        this.currentStage = parseInt(localStorage.getItem('currentStage'))
+      }
       this.startGame()
 
       // if (localStorage.getItem('firstRun') === 'false') {
