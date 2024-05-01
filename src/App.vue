@@ -212,9 +212,7 @@
 
         this.secretWordArrayClone = [...this.secretWordArray]
 
-        setTimeout(() => {
-          this.ready = true
-        }, 1000)
+        this.ready = true
         this.secretWordEntrance = true
 
         setTimeout(() => {
