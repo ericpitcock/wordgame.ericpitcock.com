@@ -8,6 +8,7 @@
       <wg-loading v-if="!ready" />
     </transition>
     <wg-title />
+    {{ currentLevel }}
     <div class="definition-container">
       <div class="definition">
         <p v-if="ready">{{ definition }}</p>
@@ -44,6 +45,7 @@
 <script>
   import WgLoading from '@/components/WgLoading.vue'
   import WgTitle from '@/components/WgTitle.vue'
+  import data from './data.yaml'
 
   export default {
     name: 'app',
@@ -54,6 +56,9 @@
     data() {
       return {
         correctLetters: [],
+        currentLevel: 'Level 1',
+        currentStage: 0,
+        data,
         definition: '',
         firstRun: true,
         incorrectLetters: [],
@@ -113,39 +118,6 @@
         const badlist = import.meta.env.VITE_APP_BAD_WORDS.split(',')
         return badlist.includes(word)
       },
-      getSecretWord() {
-        const apiUrl = 'https://wordsapiv1.p.rapidapi.com/words/'
-        const queryParams = {
-          random: true,
-          partOfSpeech: 'noun',
-          letterPattern: '^([a-z]+)$',
-          lettersMin: 5,
-          lettersMax: 5,
-          hasDetails: 'definitions,typeOf'
-        }
-
-        const queryString = Object.keys(queryParams)
-          .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(queryParams[key])}`)
-          .join('&')
-
-        const url = `${apiUrl}?${queryString}`
-
-        fetch(url, {
-          method: 'GET',
-          headers: {
-            'x-rapidapi-host': 'wordsapiv1.p.rapidapi.com',
-            'x-rapidapi-key': import.meta.env.VITE_APP_WORDS_API_KEY
-          }
-        })
-          .then(response => {
-            response.json().then(data => {
-              this.processFetchedData(data)
-            })
-          })
-          .catch(error => {
-            console.log(error)
-          })
-      },
       getCharacterCode(letter) {
         return letter.charCodeAt()
       },
@@ -173,54 +145,6 @@
             'animate__fadeOutDown': this.incorrectLetters.includes(letter)
           }
         ]
-      },
-      processFetchedData(data) {
-        // if frequency is missing or too low, get another
-        if (!data.frequency || data.frequency < 3) {
-          console.log('Word frequency is missing or too low. Getting another...')
-          this.getSecretWord()
-          return
-        }
-
-        // if the word has the same letter more than once, get another
-        const uniqueLettersCount = [...new Set(data.word)].length
-
-        if (uniqueLettersCount < 5) {
-          console.log(`${data.word} has duplicate letters. Getting another...`)
-          this.getSecretWord()
-          return
-        }
-
-        // sanitize the word for comparison
-        let secretWord = data.word
-          .toLowerCase()
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-
-        // check for the secret word in the data.results array definitions and get the index if it's there
-        const indexOfConflict = data.results.findIndex(result => result.definition.includes(secretWord))
-
-        if (indexOfConflict !== -1) {
-          console.log(`Word "${secretWord}" is in a definition: ${data.results[indexOfConflict].definition}. Getting another...`)
-          this.getSecretWord()
-          return
-        }
-
-        // if the word is in the bad list, get another
-        if (this.filterSecretWord(secretWord)) {
-          console.log(`Word, ${secretWord}, filtered out. Getting another...`)
-          this.getSecretWord()
-          return
-        }
-
-        // if everything passes, set the secret word and definition
-        this.secretWord = secretWord
-        this.definition = data.results[0].definition
-
-        this.secretWordArrayClone = [...this.secretWordArray]
-        this.startGame()
-
-        console.log('results', data)
       },
       processInput(charCode) {
         // remove it from array
@@ -253,7 +177,7 @@
           this.secretWordEntrance = false
           this.shakeWord = false
           this.tadaWord = false
-          this.getSecretWord()
+          this.startGame()
         }, 1300)
       },
       // skip() {
@@ -271,6 +195,10 @@
         ]
       },
       startGame() {
+        this.secretWord = this.data[this.currentLevel][this.currentStage].word
+        this.definition = this.data[this.currentLevel][this.currentStage].definition
+
+        this.secretWordArrayClone = [...this.secretWordArray]
         this.ready = true
         this.secretWordEntrance = true
 
@@ -306,12 +234,18 @@
             this.removeLetter(removedLetter)
           }
 
+          console.log('this.secretWordArray', this.secretWordArray)
+          console.log('this.secretWordArrayClone', this.secretWordArrayClone)
+          console.log('this.secretWord', this.secretWord)
+
           // console.log('incorrectLetters', this.incorrectLetters)
         }, 800)
       },
       winner() {
         console.log('YOU WIN')
         this.isWin = true
+        // this.currentLevel = `Level ` + (parseInt(this.currentLevel.split(' ')[1]) + 1)
+        this.currentStage++
         this.animateWord('tada')
         this.restartGame()
       }
@@ -327,22 +261,25 @@
       },
     },
     mounted() {
-      if (localStorage.getItem('firstRun') === 'false') {
-        this.getSecretWord()
-        this.firstRun = false
-        return
-      }
+      console.log(this.data)
+      this.startGame()
 
-      if (localStorage.getItem('firstRun') === null && this.firstRun) {
-        this.secretWord = 'happy'
-        this.definition = 'Enjoying or characterized by well-being and contentment'
-        this.secretWordArrayClone = [...this.secretWordArray]
-        this.startGame()
-        this.firstRun = false
-        // set local storage
-        localStorage.setItem('firstRun', 'false')
-        return
-      }
+      // if (localStorage.getItem('firstRun') === 'false') {
+      //   this.startGame()
+      //   this.firstRun = false
+      //   return
+      // }
+
+      // if (localStorage.getItem('firstRun') === null && this.firstRun) {
+      //   this.secretWord = 'happy'
+      //   this.definition = 'Enjoying or characterized by well-being and contentment'
+      //   this.secretWordArrayClone = [...this.secretWordArray]
+      //   this.startGame()
+      //   this.firstRun = false
+      //   // set local storage
+      //   localStorage.setItem('firstRun', 'false')
+      //   return
+      // }
 
       // if (localStorage.getItem('firstRun') === 'false' && !this.firstRun) {
       //   this.getSecretWord()
