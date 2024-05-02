@@ -52,276 +52,212 @@
   </div>
 </template>
 
-<script>
+<script setup>
+  import { computed, ref, watch, onMounted } from 'vue'
   import WgLoading from '@/components/WgLoading.vue'
   import WgTitle from '@/components/WgTitle.vue'
   import data from './data.yaml'
 
-  export default {
-    name: 'app',
-    components: {
-      WgLoading,
-      WgTitle
-    },
-    data() {
-      return {
-        correctLetters: [],
-        currentLevel: 'Level 1',
-        currentStage: 0,
-        data,
-        definition: '',
-        firstRun: true,
-        incorrectLetters: [],
-        inputAllowed: false,
-        isWin: false,
-        ready: false,
-        pulseWord: false,
-        secretWord: '',
-        secretWordArrayClone: [],
-        secretWordEntrance: false,
-        shakeWord: false,
-        tadaWord: false
-      }
-    },
-    computed: {
-      alphabet() { return [...'abcdefghijklmnopqrstuvwxyz'] },
-      // attemptedLetters() { return [...this.correctLetters, ...this.incorrectLetters] },
-      progressBarFill() {
-        return {
-          width: this.currentStage === 0
-            ? '0%'
-            : `${(this.currentStage) / this.data[this.currentLevel].length * 100}%`
-        }
-      },
-      qwerty() { return [...'qwertyuiopasdfghjklzxcvbnm'] },
-      secretWordArray() { return [...this.secretWord] },
-      secretWordClasses() {
-        return [
-          'secret-word',
-          'animate__animated',
-          {
-            'secret-word--win': this.isWin,
-            'animate__heartBeat animate__faster': this.pulseWord,
-            'animate__shakeX animate__faster': this.shakeWord,
-            'animate__tada': this.tadaWord
-          }
-        ]
-      },
-      uniqueLettersCount() { return [...new Set(this.secretWordArray)].length },
-      uniqueLettersArray() { return [...new Set(this.secretWordArray)] },
-    },
-    methods: {
-      animateWord(type, duration = '1000') {
-        this[`${type}Word`] = true
-        setTimeout(() => { this[`${type}Word`] = false }, duration)
-      },
-      checkWordForLetter(charCode) {
-        var letter = this.getLetter(charCode)
+  const correctLetters = ref([])
 
-        // if the letter is already in the correctLetters array, animate pulse and return
-        if (this.correctLetters.includes(letter)) {
-          this.animateWord('pulse')
-          return
-        }
+  const currentLevel = ref('Level 1')
+  watch(currentLevel, () => localStorage.setItem('currentLevel', currentLevel.value))
 
-        if (this.secretWordArray.includes(letter)) {
-          // if word contains letter
-          this.correctLetters.push(letter)
-          this.processInput(charCode)
-        } else {
-          this.animateWord('shake', 500)
-          this.removeLetter(letter)
-        }
-      },
-      displayCharacter(letter) {
-        return (this.correctLetters.includes(letter)) ? letter : '●'
-      },
-      filterSecretWord(word) {
-        // eslint-disable-next-line no-undef
-        const badlist = import.meta.env.VITE_APP_BAD_WORDS.split(',')
-        return badlist.includes(word)
-      },
-      getCharacterCode(letter) {
-        return letter.charCodeAt()
-      },
-      getLetter(charCode) {
-        return String.fromCharCode(charCode)
-      },
-      handleKeyPress(event) {
-        this.handleInput(event.key.charCodeAt(0))
-      },
-      handleInput(charCode) {
-        if (!this.inputAllowed) return
-        // if it's a letter, continue
-        if (charCode >= 97 && charCode <= 122) {
-          this.checkWordForLetter(charCode)
-          // this.processInput(charCode)
-        }
-      },
-      letterClasses(letter) {
-        return [
-          'selections__letter',
-          'animate__animated',
-          'animate__faster',
-          {
-            'correct': this.correctLetters.includes(letter),
-            'animate__fadeOutDown': this.incorrectLetters.includes(letter)
-          }
-        ]
-      },
-      processInput(charCode) {
-        // remove it from array
-        this.secretWordArrayClone = this.secretWordArrayClone
-          .filter(letter => { return letter !== this.getLetter(charCode) })
-      },
-      removeLetter(letter) {
-        this.incorrectLetters.push(letter)
-        setTimeout(() => {
-          document.getElementById(letter + '-letter').classList.add('hidden')
-        }, 600)
-      },
-      restartGame() {
-        setTimeout(() => {
-          console.clear()
-          this.correctLetters = []
-          this.definition = ''
-          this.incorrectLetters = []
-          this.inputAllowed = false
-          this.isWin = false
-          this.ready = false
-          this.pulseWord = false
-          this.secretWord = ''
-          this.secretWordArrayClone = []
-          this.secretWordEntrance = false
-          this.shakeWord = false
-          this.tadaWord = false
-          this.startGame()
-        }, 1300)
-      },
-      // skip() {
-      //   this.secretWordArrayClone.forEach(letter => this.correctLetters.push(letter))
-      //   this.restartGame()
-      // },
-      secretWordLetterClasses(letter) {
-        return [
-          'secret-word__letter',
-          'animate__animated',
-          {
-            'highlight': this.correctLetters.includes(letter),
-            'animate__bounceInUp': this.secretWordEntrance
-          }
-        ]
-      },
-      startGame() {
-        this.secretWord = this.data[this.currentLevel][this.currentStage].word
-        this.definition = this.data[this.currentLevel][this.currentStage].definition
+  const currentStage = ref(0)
+  watch(currentStage, () => localStorage.setItem('currentStage', currentStage.value.toString()))
 
-        this.secretWordArrayClone = [...this.secretWordArray]
+  const definition = ref('')
+  // const firstRun = ref(true)
+  const incorrectLetters = ref([])
+  const inputAllowed = ref(false)
+  const isWin = ref(false)
 
-        this.ready = true
-        this.secretWordEntrance = true
+  const ready = ref(false)
+  watch(ready, () => { if (ready.value) console.log('ready') })
 
-        setTimeout(() => {
-          this.inputAllowed = true
+  const pulseWord = ref(false)
+  const secretWord = ref('')
 
-          // give two freebie letters
-          this.handleInput(this.getCharacterCode(this.secretWord[1]))
-          this.handleInput(this.getCharacterCode(this.secretWord[3]))
+  const secretWordArray = computed(() => [...secretWord.value])
+  // clone for comparison
+  const secretWordArrayClone = ref([])
+  watch(secretWordArrayClone, (newVal) => {
+    if (newVal.length === 0) {
+      winner()
+    }
+  })
 
-          // filter uniqueLetters from alphabet
-          // Shuffle function to randomize array elements
-          function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-              const j = Math.floor(Math.random() * (i + 1));
-              [array[i], array[j]] = [array[j], array[i]]
-            }
-            return array
-          }
+  const secretWordEntrance = ref(false)
+  const shakeWord = ref(false)
+  const tadaWord = ref(false)
 
-          const filteredAlphabet = this.alphabet
-            .filter(letter => !this.uniqueLettersArray.includes(letter))
-            .filter(letter => !this.incorrectLetters.includes(letter))
+  const alphabet = [...'abcdefghijklmnopqrstuvwxyz']
+  // const attemptedLetters = [...correctLetters.value, ...incorrectLetters.value];
 
-          // console.log('filteredAlphabet', filteredAlphabet)
+  const progressBarFill = computed(() => ({
+    width: currentStage.value === 0 ? '0%' : `${(currentStage.value) / data[currentLevel.value].length * 100}%`
+  }))
 
-          // Shuffle the filtered alphabet
-          const shuffledAlphabet = shuffleArray(filteredAlphabet)
+  const secretWordClasses = computed(() => [
+    'secret-word',
+    'animate__animated',
+    {
+      'secret-word--win': isWin.value,
+      'animate__heartBeat animate__faster': pulseWord.value,
+      'animate__shakeX animate__faster': shakeWord.value,
+      'animate__tada': tadaWord.value
+    }
+  ])
 
-          // Remove letters until only 10 remain
-          while (shuffledAlphabet.length > 10 - this.uniqueLettersCount) {
-            const removedLetter = shuffledAlphabet.pop() // Remove the last letter
-            this.removeLetter(removedLetter)
-          }
+  const uniqueLettersCount = computed(() => [...new Set(secretWordArray.value)].length)
+  const uniqueLettersArray = computed(() => [...new Set(secretWordArray.value)])
 
-          console.log('this.secretWordArray', this.secretWordArray)
-          console.log('this.secretWordArrayClone', this.secretWordArrayClone)
-          console.log('this.secretWord', this.secretWord)
+  const animateWord = (type, duration = 1000) => {
+    eval(`${type}Word.value = true`)
+    setTimeout(() => { eval(`${type}Word.value = false`) }, duration)
+  }
 
-          // console.log('incorrectLetters', this.incorrectLetters)
-        }, 800)
-      },
-      winner() {
-        console.log('YOU WIN')
-        this.isWin = true
-        this.currentStage++
-        // if currentStage is the last stage, change Level to the next one
-        if (this.currentStage === this.data[this.currentLevel].length) {
-          this.currentLevel = `Level ${parseInt(this.currentLevel.split(' ')[1]) + 1}`
-          this.currentStage = 0
-        }
-        this.animateWord('tada')
-        this.restartGame()
-      }
-    },
-    watch: {
-      currentLevel() {
-        localStorage.setItem('currentLevel', this.currentLevel)
-      },
-      currentStage() {
-        localStorage.setItem('currentStage', this.currentStage.toString())
-      },
-      ready() {
-        if (this.ready) console.log('ready')
-      },
-      secretWordArrayClone(newVal) {
-        if (newVal.length === 0) {
-          this.winner()
-        }
-      },
-    },
-    mounted() {
-      console.log(this.data)
-      if (localStorage.getItem('currentLevel')) {
-        this.currentLevel = localStorage.getItem('currentLevel')
-      }
+  const checkWordForLetter = (charCode) => {
+    const letter = getLetter(charCode)
 
-      if (localStorage.getItem('currentStage')) {
-        this.currentStage = parseInt(localStorage.getItem('currentStage'))
-      }
-      this.startGame()
+    if (correctLetters.value.includes(letter)) {
+      animateWord('pulse')
+      return
+    }
 
-      // if (localStorage.getItem('firstRun') === 'false') {
-      //   this.startGame()
-      //   this.firstRun = false
-      //   return
-      // }
-
-      // if (localStorage.getItem('firstRun') === null && this.firstRun) {
-      //   this.secretWord = 'happy'
-      //   this.definition = 'Enjoying or characterized by well-being and contentment'
-      //   this.secretWordArrayClone = [...this.secretWordArray]
-      //   this.startGame()
-      //   this.firstRun = false
-      //   // set local storage
-      //   localStorage.setItem('firstRun', 'false')
-      //   return
-      // }
-
-      // if (localStorage.getItem('firstRun') === 'false' && !this.firstRun) {
-      //   this.getSecretWord()
-      // }
+    if (secretWordArray.value.includes(letter)) {
+      correctLetters.value.push(letter)
+      processInput(charCode)
+    } else {
+      animateWord('shake', 500)
+      removeLetter(letter)
     }
   }
+
+  const displayCharacter = (letter) => (correctLetters.value.includes(letter) ? letter : '●')
+
+  const getCharacterCode = (letter) => letter.charCodeAt()
+
+  const getLetter = (charCode) => String.fromCharCode(charCode)
+
+  const handleKeyPress = (event) => {
+    handleInput(event.key.charCodeAt(0))
+  }
+
+  const handleInput = (charCode) => {
+    if (!inputAllowed.value) return
+
+    if (charCode >= 97 && charCode <= 122) {
+      checkWordForLetter(charCode)
+    }
+  }
+
+  const letterClasses = (letter) => [
+    'selections__letter',
+    'animate__animated',
+    'animate__faster',
+    {
+      'correct': correctLetters.value.includes(letter),
+      'animate__fadeOutDown': incorrectLetters.value.includes(letter)
+    }
+  ]
+
+  const processInput = (charCode) => {
+    secretWordArrayClone.value = secretWordArrayClone.value.filter(letter => letter !== getLetter(charCode))
+  }
+
+  const removeLetter = (letter) => {
+    incorrectLetters.value.push(letter)
+    setTimeout(() => {
+      document.getElementById(letter + '-letter').classList.add('hidden')
+    }, 600)
+  }
+
+  const restartGame = () => {
+    setTimeout(() => {
+      console.clear()
+      correctLetters.value = []
+      definition.value = ''
+      incorrectLetters.value = []
+      inputAllowed.value = false
+      isWin.value = false
+      ready.value = false
+      pulseWord.value = false
+      secretWord.value = ''
+      secretWordArrayClone.value = []
+      secretWordEntrance.value = false
+      shakeWord.value = false
+      tadaWord.value = false
+      startGame()
+    }, 1300)
+  }
+
+  const secretWordLetterClasses = (letter) => [
+    'secret-word__letter',
+    'animate__animated',
+    {
+      'highlight': correctLetters.value.includes(letter),
+      'animate__bounceInUp': secretWordEntrance.value
+    }
+  ]
+
+  const startGame = () => {
+    secretWord.value = data[currentLevel.value][currentStage.value].word
+    definition.value = data[currentLevel.value][currentStage.value].definition
+    secretWordArrayClone.value = [...secretWordArray.value]
+    ready.value = true
+    secretWordEntrance.value = true
+
+    setTimeout(() => {
+      inputAllowed.value = true
+      handleInput(getCharacterCode(secretWord.value[1]))
+      handleInput(getCharacterCode(secretWord.value[3]))
+
+      const shuffleArray = (array) => {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]]
+        }
+        return array
+      }
+
+      const filteredAlphabet = alphabet.filter(letter => !uniqueLettersArray.value.includes(letter))
+        .filter(letter => !incorrectLetters.value.includes(letter))
+
+      const shuffledAlphabet = shuffleArray(filteredAlphabet)
+
+      while (shuffledAlphabet.length > 10 - uniqueLettersCount.value) {
+        const removedLetter = shuffledAlphabet.pop()
+        removeLetter(removedLetter)
+      }
+
+      console.log(secretWord.value)
+    }, 800)
+  }
+
+  const winner = () => {
+    console.log('YOU WIN')
+    isWin.value = true
+    currentStage.value++
+    if (currentStage.value === data[currentLevel.value].length) {
+      currentLevel.value = `Level ${parseInt(currentLevel.value.split(' ')[1]) + 1}`
+      currentStage.value = 0
+    }
+    animateWord('tada')
+    restartGame()
+  }
+
+  onMounted(() => {
+    // console.log(data)
+    if (localStorage.getItem('currentLevel')) {
+      currentLevel.value = localStorage.getItem('currentLevel')
+    }
+
+    if (localStorage.getItem('currentStage')) {
+      currentStage.value = parseInt(localStorage.getItem('currentStage'))
+    }
+    startGame()
+  })
 </script>
 
 <style lang="scss">
