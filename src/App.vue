@@ -27,7 +27,7 @@
     <div class="secret-word-container">
       <div
         v-if="ready"
-        :class="secretWordClasses"
+        class="secret-word"
       >
         <span
           v-for="(letter, index) in secretWordArray"
@@ -94,17 +94,6 @@
   const progressBarFill = computed(() => ({
     width: currentStage.value === 0 ? '0%' : `${(currentStage.value) / data[currentLevel.value].length * 100}%`
   }))
-
-  const secretWordClasses = computed(() => [
-    'secret-word',
-    'animate__animated',
-    {
-      'secret-word--win': isWin.value,
-      // 'animate__heartBeat animate__faster': pulseWord.value,
-      // 'animate__shakeX animate__faster': shakeWord.value,
-      // 'animate__tada': tadaWord.value
-    }
-  ])
 
   const uniqueLettersCount = computed(() => [...new Set(secretWordArray.value)].length)
   const uniqueLettersArray = computed(() => [...new Set(secretWordArray.value)])
@@ -345,10 +334,6 @@
         .secret-word__letter {
           color: var(--white) !important;
         }
-      }
-
-      &--loss {
-        color: var(--red-orange);
       }
 
       &__letter {
