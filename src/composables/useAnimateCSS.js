@@ -17,6 +17,7 @@ const useAnimateCSS = (element, animation, faster) => {
     function handleAnimationEnd(event) {
       event.stopPropagation()
       node.classList.remove('animate__animated', animationName)
+      node.style.removeProperty('--animate-duration')
       resolve('Animation ended')
     }
 
