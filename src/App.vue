@@ -42,7 +42,6 @@
       <div
         v-for="(letter, index) in alphabet"
         :key="index"
-        :id="letter + '-letter'"
         :class="letterClasses(letter)"
         @click="handleInput(getCharacterCode(letter))"
       >
@@ -137,11 +136,9 @@
 
   const letterClasses = (letter) => [
     'selections__letter',
-    'animate__animated',
-    'animate__faster',
+    `letter-${letter}`,
     {
       'correct': correctLetters.value.includes(letter),
-      'animate__fadeOutDown': incorrectLetters.value.includes(letter)
     }
   ]
 
@@ -151,14 +148,15 @@
 
   const removeLetter = (letter) => {
     incorrectLetters.value.push(letter)
-    setTimeout(() => {
-      document.getElementById(letter + '-letter').classList.add('hidden')
-    }, 600)
+    useAnimateCSS(`.letter-${letter}`, 'fadeOutDown', true).then(() => {
+      document.querySelector(`.letter-${letter}`).classList.add('hidden')
+    })
   }
 
   const restartGame = () => {
     setTimeout(() => {
       console.clear()
+      document.querySelectorAll('.selections__letter').forEach(letter => letter.classList.remove('hidden'))
       correctLetters.value = []
       definition.value = ''
       incorrectLetters.value = []
