@@ -57,6 +57,7 @@
   import WgLoading from '@/components/WgLoading.vue'
   import WgTitle from '@/components/WgTitle.vue'
   import data from './data.yaml'
+  import useAnimateCSS from '@/composables/useAnimateCSS.js'
 
   const correctLetters = ref([])
 
@@ -75,9 +76,7 @@
   const ready = ref(false)
   watch(ready, () => { if (ready.value) console.log('ready') })
 
-  const pulseWord = ref(false)
   const secretWord = ref('')
-
   const secretWordArray = computed(() => [...secretWord.value])
   // clone for comparison
   const secretWordArrayClone = ref([])
@@ -88,8 +87,6 @@
   })
 
   const secretWordEntrance = ref(false)
-  const shakeWord = ref(false)
-  const tadaWord = ref(false)
 
   const alphabet = [...'abcdefghijklmnopqrstuvwxyz']
   // const attemptedLetters = [...correctLetters.value, ...incorrectLetters.value];
@@ -103,25 +100,21 @@
     'animate__animated',
     {
       'secret-word--win': isWin.value,
-      'animate__heartBeat animate__faster': pulseWord.value,
-      'animate__shakeX animate__faster': shakeWord.value,
-      'animate__tada': tadaWord.value
+      // 'animate__heartBeat animate__faster': pulseWord.value,
+      // 'animate__shakeX animate__faster': shakeWord.value,
+      // 'animate__tada': tadaWord.value
     }
   ])
 
   const uniqueLettersCount = computed(() => [...new Set(secretWordArray.value)].length)
   const uniqueLettersArray = computed(() => [...new Set(secretWordArray.value)])
 
-  const animateWord = (type, duration = 1000) => {
-    eval(`${type}Word.value = true`)
-    setTimeout(() => { eval(`${type}Word.value = false`) }, duration)
-  }
-
   const checkWordForLetter = (charCode) => {
     const letter = getLetter(charCode)
 
     if (correctLetters.value.includes(letter)) {
-      animateWord('pulse')
+      // animateWord('pulse')
+      useAnimateCSS('.secret-word', 'heartBeat', true)
       return
     }
 
@@ -129,7 +122,8 @@
       correctLetters.value.push(letter)
       processInput(charCode)
     } else {
-      animateWord('shake', 500)
+      // animateWord('shake', 500)
+      useAnimateCSS('.secret-word', 'shakeX', true)
       removeLetter(letter)
     }
   }
@@ -182,12 +176,9 @@
       inputAllowed.value = false
       isWin.value = false
       ready.value = false
-      pulseWord.value = false
       secretWord.value = ''
       secretWordArrayClone.value = []
       secretWordEntrance.value = false
-      shakeWord.value = false
-      tadaWord.value = false
       startGame()
     }, 1300)
   }
@@ -237,13 +228,14 @@
 
   const winner = () => {
     console.log('YOU WIN')
-    isWin.value = true
+    // isWin.value = true
     currentStage.value++
     if (currentStage.value === data[currentLevel.value].length) {
       currentLevel.value = `Level ${parseInt(currentLevel.value.split(' ')[1]) + 1}`
       currentStage.value = 0
     }
-    animateWord('tada')
+    // animateWord('tada')
+    useAnimateCSS('.secret-word', 'tada', false)
     restartGame()
   }
 
