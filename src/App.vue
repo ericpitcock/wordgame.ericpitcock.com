@@ -118,6 +118,12 @@
       checkWordForLetter(charCode) {
         var letter = this.getLetter(charCode)
 
+        // if the letter is already in the correctLetters array, animate pulse and return
+        if (this.correctLetters.includes(letter)) {
+          this.animateWord('pulse')
+          return
+        }
+
         if (this.secretWordArray.includes(letter)) {
           // if word contains letter
           this.correctLetters.push(letter)
