@@ -91,23 +91,6 @@
   const uniqueLettersCount = computed(() => [...new Set(secretWordArray.value)].length)
   const uniqueLettersArray = computed(() => [...new Set(secretWordArray.value)])
 
-  const checkWordForLetter = (charCode) => {
-    const letter = getLetter(charCode)
-
-    if (correctLetters.value.includes(letter)) {
-      useAnimation('.secret-word', 'heartBeat', true)
-      return
-    }
-
-    if (secretWordArray.value.includes(letter)) {
-      correctLetters.value.push(letter)
-      processInput(charCode)
-    } else {
-      useAnimation('.secret-word', 'shakeX', true)
-      removeLetter(letter)
-    }
-  }
-
   const displayCharacter = (letter) => (correctLetters.value.includes(letter) ? letter : '/')
 
   const getCharacterCode = (letter) => letter.charCodeAt()
@@ -126,13 +109,22 @@
     }
   }
 
-  const letterClasses = (letter) => [
-    'selections__letter',
-    `letter-${letter}`,
-    {
-      'correct': correctLetters.value.includes(letter),
+  const checkWordForLetter = (charCode) => {
+    const letter = getLetter(charCode)
+
+    if (correctLetters.value.includes(letter)) {
+      useAnimation('.secret-word', 'heartBeat', true)
+      return
     }
-  ]
+
+    if (secretWordArray.value.includes(letter)) {
+      correctLetters.value.push(letter)
+      processInput(charCode)
+    } else {
+      useAnimation('.secret-word', 'shakeX', true)
+      removeLetter(letter)
+    }
+  }
 
   const processInput = (charCode) => {
     secretWordArrayClone.value = secretWordArrayClone.value.filter(letter => letter !== getLetter(charCode))
@@ -145,6 +137,14 @@
         document.querySelector(`.letter-${letter}`).classList.add('hidden')
       })
   }
+
+  const letterClasses = (letter) => [
+    'selections__letter',
+    `letter-${letter}`,
+    {
+      'correct': correctLetters.value.includes(letter),
+    }
+  ]
 
   const restartGame = () => {
     setTimeout(() => {
@@ -165,7 +165,6 @@
 
   const secretWordLetterClasses = (letter) => [
     'secret-word__letter',
-    // 'animate__animated',
     {
       'highlight': correctLetters.value.includes(letter),
     }
@@ -176,7 +175,6 @@
     definition.value = data[currentLevel.value][currentStage.value].definition
     secretWordArrayClone.value = [...secretWordArray.value]
 
-    // setTimeout(() => {
     useAnimation('.secret-word', 'fadeInUp')
       .then(() => {
         ready.value = true
@@ -205,7 +203,6 @@
         }
 
         console.log(secretWord.value)
-        // }, 800)
       })
   }
 
