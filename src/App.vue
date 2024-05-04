@@ -1,9 +1,6 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
-  <div
-    class="word-game"
-    @keypress="handleKeyPress"
-    tabindex="0"
-  >
+  <div class="word-game">
     <transition name="fade">
       <wg-loading v-show="!ready" />
     </transition>
@@ -21,14 +18,13 @@
     </div>
     <div class="definition-container">
       <div class="definition">
-        <p v-if="ready">{{ definition }}</p>
+        <p v-if="ready">
+          {{ definition }}
+        </p>
       </div>
     </div>
     <div class="secret-word-container">
-      <div
-        v-if="ready"
-        class="secret-word"
-      >
+      <div class="secret-word">
         <span
           v-for="(letter, index) in secretWordArray"
           :key="index"
@@ -55,8 +51,8 @@
   import { computed, ref, watch, onMounted } from 'vue'
   import WgLoading from '@/components/WgLoading.vue'
   import WgTitle from '@/components/WgTitle.vue'
-  import data from './data.yaml'
-  import useAnimateCSS from '@/composables/useAnimateCSS.js'
+  import data from './data-newer.yaml'
+  import useAnimation from '@/composables/useAnimation.js'
 
   const correctLetters = ref([])
 
@@ -85,8 +81,6 @@
     }
   })
 
-  const secretWordEntrance = ref(false)
-
   const alphabet = [...'abcdefghijklmnopqrstuvwxyz']
   // const attemptedLetters = [...correctLetters.value, ...incorrectLetters.value];
 
@@ -101,8 +95,7 @@
     const letter = getLetter(charCode)
 
     if (correctLetters.value.includes(letter)) {
-      // animateWord('pulse')
-      useAnimateCSS('.secret-word', 'heartBeat', true)
+      useAnimation('.secret-word', 'heartBeat', true)
       return
     }
 
@@ -110,13 +103,12 @@
       correctLetters.value.push(letter)
       processInput(charCode)
     } else {
-      // animateWord('shake', 500)
-      useAnimateCSS('.secret-word', 'shakeX', true)
+      useAnimation('.secret-word', 'shakeX', true)
       removeLetter(letter)
     }
   }
 
-  const displayCharacter = (letter) => (correctLetters.value.includes(letter) ? letter : '●')
+  const displayCharacter = (letter) => (correctLetters.value.includes(letter) ? letter : '/')
 
   const getCharacterCode = (letter) => letter.charCodeAt()
 
@@ -148,9 +140,10 @@
 
   const removeLetter = (letter) => {
     incorrectLetters.value.push(letter)
-    useAnimateCSS(`.letter-${letter}`, 'fadeOutDown', true).then(() => {
-      document.querySelector(`.letter-${letter}`).classList.add('hidden')
-    })
+    useAnimation(`.letter-${letter}`, 'fadeOutDown', true)
+      .then(() => {
+        document.querySelector(`.letter-${letter}`).classList.add('hidden')
+      })
   }
 
   const restartGame = () => {
@@ -165,17 +158,16 @@
       ready.value = false
       secretWord.value = ''
       secretWordArrayClone.value = []
-      secretWordEntrance.value = false
+      // secretWordEntrance.value = false
       startGame()
     }, 1300)
   }
 
   const secretWordLetterClasses = (letter) => [
     'secret-word__letter',
-    'animate__animated',
+    // 'animate__animated',
     {
       'highlight': correctLetters.value.includes(letter),
-      'animate__bounceInUp': secretWordEntrance.value
     }
   ]
 
@@ -183,34 +175,38 @@
     secretWord.value = data[currentLevel.value][currentStage.value].word
     definition.value = data[currentLevel.value][currentStage.value].definition
     secretWordArrayClone.value = [...secretWordArray.value]
-    ready.value = true
-    secretWordEntrance.value = true
 
-    setTimeout(() => {
-      inputAllowed.value = true
-      handleInput(getCharacterCode(secretWord.value[1]))
-      handleInput(getCharacterCode(secretWord.value[3]))
+    // setTimeout(() => {
+    useAnimation('.secret-word', 'fadeInUp')
+      .then(() => {
+        ready.value = true
+        inputAllowed.value = true
+        handleInput(getCharacterCode(secretWord.value[1]))
+        handleInput(getCharacterCode(secretWord.value[3]))
+      })
+      .then(() => {
 
-      const shuffleArray = (array) => {
-        for (let i = array.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [array[i], array[j]] = [array[j], array[i]]
+        const shuffleArray = (array) => {
+          for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]]
+          }
+          return array
         }
-        return array
-      }
 
-      const filteredAlphabet = alphabet.filter(letter => !uniqueLettersArray.value.includes(letter))
-        .filter(letter => !incorrectLetters.value.includes(letter))
+        const filteredAlphabet = alphabet.filter(letter => !uniqueLettersArray.value.includes(letter))
+          .filter(letter => !incorrectLetters.value.includes(letter))
 
-      const shuffledAlphabet = shuffleArray(filteredAlphabet)
+        const shuffledAlphabet = shuffleArray(filteredAlphabet)
 
-      while (shuffledAlphabet.length > 10 - uniqueLettersCount.value) {
-        const removedLetter = shuffledAlphabet.pop()
-        removeLetter(removedLetter)
-      }
+        while (shuffledAlphabet.length > 10 - uniqueLettersCount.value) {
+          const removedLetter = shuffledAlphabet.pop()
+          removeLetter(removedLetter)
+        }
 
-      console.log(secretWord.value)
-    }, 800)
+        console.log(secretWord.value)
+        // }, 800)
+      })
   }
 
   const winner = () => {
@@ -221,13 +217,14 @@
       currentLevel.value = `Level ${parseInt(currentLevel.value.split(' ')[1]) + 1}`
       currentStage.value = 0
     }
-    // animateWord('tada')
-    useAnimateCSS('.secret-word', 'tada', false)
+
+    useAnimation('.secret-word', 'tada')
     restartGame()
   }
 
   onMounted(() => {
-    // console.log(data)
+    document.addEventListener('keypress', handleKeyPress)
+
     if (localStorage.getItem('currentLevel')) {
       currentLevel.value = localStorage.getItem('currentLevel')
     }
@@ -280,15 +277,16 @@
   }
 
   .word-game {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+    // position: absolute;
+    // top: 0;
+    // right: 0;
+    // bottom: 0;
+    // left: 0;
     display: flex;
     flex-direction: column;
+    height: 50vh;
     padding: 2%;
-    overflow: hidden;
+    // overflow: hidden;
     transition: background-color 0.5s ease;
   }
 

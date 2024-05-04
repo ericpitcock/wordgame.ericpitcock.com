@@ -1,4 +1,4 @@
-const useAnimateCSS = (element, animation, faster) => {
+const useAnimation = (element, animation, faster = false) => {
   return new Promise((resolve, reject) => {
     const animationName = `animate__${animation}`
     const node = document.querySelector(element)
@@ -25,4 +25,4 @@ const useAnimateCSS = (element, animation, faster) => {
   })
 }
 
-export default useAnimateCSS
+export default useAnimation
